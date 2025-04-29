@@ -1,4 +1,4 @@
-import api from '~/config/api'
+import api from '~/apis'
 
 export const columnService = {
   async createNewColumn(newColumnData) {
