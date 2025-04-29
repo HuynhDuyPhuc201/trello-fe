@@ -3,21 +3,14 @@ import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import AppBar from '~/components/AppBar/AppBar'
 import { useEffect, useState } from 'react'
-import {
-  createNewCardAPI,
-  createNewColumnAPI,
-  fetchBoardDetailApi,
-  updateBoardDetailApi,
-  updateColumnDetailApi,
-  moveCardToDifferentColumnApi,
-  deleteColumnDetailApi
-} from '~/apis'
-import { mockData } from '~/apis/mock-data'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { isEmpty } from 'lodash'
 import { mapOrder } from '~/utils/sorts'
 import { Box, CircularProgress, Typography } from '@mui/material'
 import { toast } from 'react-toastify'
+import { boardService } from '~/services/board.service'
+import { columnService } from '~/services/column.service'
+import { cardService } from '~/services/card.service'
 
 function Board() {
   const [board, setBoard] = useState(null)
@@ -26,7 +19,7 @@ function Board() {
     // tạm thời fix cứng
     const boardId = '680c5df4dd56a0e4942ecc33'
     // Call api
-    fetchBoardDetailApi(boardId).then((board) => {
+    boardService.fetchBoardDetail(boardId).then((board) => {
       // sắp xếp  thứ tự các column luôn ở đây trước khi đưa dữ liệu xuống bên dưới các component con
       // (video 71 đã giải thích lí do ở phần fix bug quan trọng)
       board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
@@ -51,7 +44,7 @@ function Board() {
 
   // func này có nhiệm vụ gọi API tạo mới Column và làm lại dữ liệu State Board
   const createNewColumn = async (newColumnData) => {
-    const createdColumn = await createNewColumnAPI({
+    const createdColumn = await columnService.createNewColumn({
       ...newColumnData,
       boardId: board._id
     })
@@ -61,7 +54,7 @@ function Board() {
     createdColumn.cardOrderIds = [generatePlaceholderCard(createdColumn)._id]
 
     // cập nhật state board
-    // Phía FE chúng ta phải tự làm đúng lại state data board (thay vì phải gọi lại api fetchBoardDetailApi)
+    // Phía FE chúng ta phải tự làm đúng lại state data board (thay vì phải gọi lại api fetchBoardDetail)
     // Lưu ý: cách làm này phụ thuộc vào tùy lựa chọn và đặc thù dự án, có nơi thì BE sẽ hỗ trợ trả về luôn toàn bộ Board dù
     // đây có là api tạo Column hay Card đi chăng nữa => lúc này thì FE sẽ nhàn hơn
     const newBoard = { ...board }
@@ -72,7 +65,7 @@ function Board() {
 
   // func này có nhiệm vụ gọi API tạo mới column và làm lại dữ liệu State Board
   const createNewCard = async (newCardData) => {
-    const createdCard = await createNewCardAPI({
+    const createdCard = await cardService.createNewCard({
       ...newCardData,
       boardId: board._id
     })
@@ -114,7 +107,7 @@ function Board() {
     setBoard(newBoard)
 
     // Gọi API update board
-    updateBoardDetailApi(newBoard._id, { columnOrderIds: dndOderedColumnsIds })
+    boardService.updateBoardDetail(newBoard._id, { columnOrderIds: dndOderedColumnsIds })
   }
 
   // Khi di chuyển card trong cùng column:
@@ -130,7 +123,7 @@ function Board() {
     setBoard(newBoard)
 
     // gọi API update Column
-    updateColumnDetailApi(columnId, { cardOrderIds: dndOderedCardIds })
+    columnService.updateColumnDetail(columnId, { cardOrderIds: dndOderedCardIds })
   }
 
   // Khi di chuyển Card sang Column khác:
@@ -154,7 +147,7 @@ function Board() {
     // cần xóa nó đi trước khi gửi dữ liệu lên cho phía BE (nhớ lại video 37.2)
     if (prevCardOrderIds[0].includes('placeholder-card')) prevCardOrderIds = []
 
-    moveCardToDifferentColumnApi({
+    boardService.moveCardToDifferentColumn({
       currentCardId,
       prevColumnId,
       prevCardOrderIds,
@@ -173,7 +166,7 @@ function Board() {
 
     // gọi API xử lý phía BE
 
-    deleteColumnDetailApi(columnId).then((res) => {
+    columnService.deleteColumnDetail(columnId).then((res) => {
       toast.success(res?.deleteResult)
     })
   }

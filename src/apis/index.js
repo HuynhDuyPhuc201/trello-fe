@@ -1,47 +1,27 @@
 import axios from 'axios'
 import { API_ROOT } from '~/utils/constants'
 
-// Boards
-export const fetchBoardDetailApi = async (boardId) => {
-  const res = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
-  // Lưu ý: axios sẽ trả kết quả về qua property của nó là data
+// Khởi tạo Axios instance
+const api = axios.create({
+  baseURL: API_ROOT,
+  withCredentials: true, // ✅ Đảm bảo luôn gửi cookie trong request
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 
-  return res.data
-}
+// Request Interceptor: Gửi token trong header nếu có (nếu lưu access token vào cookie thì không cần gửi token trong header)
+api.interceptors.request.use((config) => {
+  return config
+})
 
-export const updateBoardDetailApi = async (boardId, updateData) => {
-  const res = await axios.put(`${API_ROOT}/v1/boards/${boardId}`, updateData)
+api.interceptors.response.use(
+  (res) => {
+    return res.data
+  },
+  async (err) => {
+    return Promise.reject(err)
+  }
+)
 
-  return res.data
-}
-
-export const moveCardToDifferentColumnApi = async (updateData) => {
-  const res = await axios.put(`${API_ROOT}/v1/boards/supports/moving_card`, updateData)
-
-  return res.data
-}
-
-// Columns
-export const createNewColumnAPI = async (newColumnData) => {
-  const res = await axios.post(`${API_ROOT}/v1/columns`, newColumnData)
-  // Lưu ý: axios sẽ trả kết quả về qua property của nó là data
-  return res.data
-}
-
-export const updateColumnDetailApi = async (columnId, updateData) => {
-  const res = await axios.put(`${API_ROOT}/v1/columns/${columnId}`, updateData)
-  return res.data
-}
-
-export const deleteColumnDetailApi = async (columnId) => {
-  const res = await axios.delete(`${API_ROOT}/v1/columns/${columnId}`)
-  return res.data
-}
-
-// Cards
-export const createNewCardAPI = async (newCardData) => {
-  const res = await axios.post(`${API_ROOT}/v1/cards`, newCardData)
-  // Lưu ý: axios sẽ trả kết quả về qua property của nó là data
-
-  return res.data
-}
+export default api
