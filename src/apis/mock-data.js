@@ -1,7 +1,3 @@
-/**
- * YouTube: TrungQuanDev - Một Lập Trình Viên
- * Created by trungquandev.com's author on Jun 28, 2023
- */
 export const mockData = {
   board: {
     _id: 'board-id-01',

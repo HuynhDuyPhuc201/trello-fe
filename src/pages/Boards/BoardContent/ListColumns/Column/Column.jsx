@@ -25,12 +25,20 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
+import { cardService } from '~/services/card.service'
+import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { useDispatch } from 'react-redux'
+import { columnService } from '~/services/column.service'
 
-function Column({ column, createNewCard, deleteColumnDetails }) {
+function Column({ column }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
     data: { ...column }
   })
+
+  const dispatch = useDispatch()
+  const { currentActiveBoard } = useActiveBoard()
+  const board = currentActiveBoard
 
   // fix bug Transform -> Translate
   const dndKitColumnStyles = {
@@ -63,52 +71,89 @@ function Column({ column, createNewCard, deleteColumnDetails }) {
 
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
 
-  const addNewCard = () => {
-    if (!newCardTitle) {
-      toast.error('Plese Enter Card title', { position: 'bottom-right' })
+  // gọi API tạo mới Card và làm lại dữ liệu Board
+  const addNewCard = async () => {
+    const title = newCardTitle.trim()
+
+    if (!title) {
+      toast.error('Please enter card title', { position: 'bottom-right' })
       return
     }
-    console.log(newCardTitle)
-    // gọi API ở đây
 
-    // Tạo dữ liệu Card để gọi API
-    const newCardData = {
-      title: newCardTitle,
-      columnId: column._id
+    try {
+      const newCardData = {
+        title,
+        columnId: column._id,
+        boardId: board._id
+      }
+
+      const createdCard = await cardService.createNewCard(newCardData)
+
+      if (!createdCard) throw new Error('Failed to create card')
+
+      const newBoard = {
+        ...board,
+        columns: board.columns.map((col) => {
+          if (col._id !== createdCard.columnId) return col
+
+          const hasPlaceholder = col.cards.some((card) => card.FE_PlaceholderCard)
+          if (hasPlaceholder) {
+            return {
+              ...col,
+              cards: [createdCard],
+              cardOrderIds: [createdCard._id]
+            }
+          }
+
+          return {
+            ...col,
+            cards: [...col.cards, createdCard],
+            cardOrderIds: [...col.cardOrderIds, createdCard._id]
+          }
+        })
+      }
+
+      dispatch(updateCurrentActiveBoard(newBoard))
+      setOpenNewCardForm(false)
+      setNewCardTitle('')
+    } catch (err) {
+      console.error('Error creating card:', err)
+      toast.error('Something went wrong while adding card')
     }
-
-    // Gọi lên props func createNewCard nằm ở component cha cao nhất (board/_id.jsx)
-    // Lưu ý về sau ở phần học MERN STACK advance nâng cao học trực tiếp vs mình thì chúng ta sẽ đưa
-    // dữ liệu Board ra ngoài Redux global Store
-    // và lúc này chúng ta có thể gọi luôn api là xong thay vì phải lần lượt gọi ngược lên những component cha phía bên trên
-    // (đối với component con nằm càng sâu thì càng khổ )
-    // Với việc sử dụng Redux sẽ clean code, sạch sẽ hơn
-    createNewCard(newCardData)
-
-    setOpenNewCardForm()
-    setNewCardTitle('')
   }
 
   // xử lý xóa 1 Column và Cards bên trong nó
   const confirmDeleteColumn = useConfirm()
-  const handleDeleteColumn = () => {
-    confirmDeleteColumn({
-      title: 'Delete Column?',
-      description: 'This action is permanently delete your Column and its Cards! Are you sure?',
-      confirmationText: 'Confirm',
-      cancellationText: 'Cancel'
-
-      // allowClose: false,
-      // dialogProps: { maxWidth: 'xs' },
-      // cancellationButtonProps: { color: 'inherit' },
-      // confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
-      // description: 'Phải nhập chữ duyphucdev mới được confirm',
-      // confirmationKeyword: 'duyphucdev',
-    })
-      .then(() => {
-        deleteColumnDetails(column._id)
+  const handleDeleteColumn = async () => {
+    try {
+      const confirmed = await confirmDeleteColumn({
+        title: 'Delete Column?',
+        description: 'This action will permanently delete the column and all its cards. Are you sure?',
+        confirmationText: 'Confirm',
+        cancellationText: 'Cancel'
       })
-      .catch(() => {})
+
+      if (!confirmed) return
+
+      // Tạo newBoard với column đã bị xoá
+      const newBoard = {
+        ...board,
+        columns: board.columns.filter((col) => col._id !== column._id),
+        columnOrderIds: board.columnOrderIds.filter((id) => id !== column._id)
+      }
+
+      dispatch(updateCurrentActiveBoard(newBoard))
+
+      try {
+        const res = await columnService.deleteColumnDetail(column._id)
+        toast.success(res?.deleteResult || 'Deleted successfully!')
+      } catch (err) {
+        console.error('❌ Failed to delete column:', err)
+        toast.error('Failed to delete column from server.')
+      }
+    } catch {
+      toast.info('Delete canceled')
+    }
   }
 
   return (

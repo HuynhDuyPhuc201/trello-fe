@@ -11,24 +11,31 @@ import 'react-toastify/dist/ReactToastify.css'
 // cấu hình MUI Dialog
 import { ConfirmProvider } from 'material-ui-confirm'
 import { Provider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
 import store from './redux/store'
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <Provider store={store}>
-    <CssVarsProvider theme={theme}>
-      <ConfirmProvider
-        defaultOptions={{
-          allowClose: false,
-          buttonOrder: ['confirm', 'cancel'],
+import { HelmetProvider } from 'react-helmet-async' // Đảm bảo đúng import
 
-          dialogProps: { maxWidth: 'xs' },
-          cancellationButtonProps: { color: 'inherit' },
-          confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
-        }}
-      >
-        <CssBaseline />
-        <App />
-        <ToastContainer position="bottom-left" theme="colored" />
-      </ConfirmProvider>
-    </CssVarsProvider>
-  </Provider>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <BrowserRouter>
+    <HelmetProvider>
+      <Provider store={store}>
+        <CssVarsProvider theme={theme}>
+          <ConfirmProvider
+            defaultOptions={{
+              allowClose: false,
+              buttonOrder: ['confirm', 'cancel'],
+
+              dialogProps: { maxWidth: 'xs' },
+              cancellationButtonProps: { color: 'inherit' },
+              confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
+            }}
+          >
+            <CssBaseline />
+            <App />
+            <ToastContainer position="bottom-left" theme="colored" />
+          </ConfirmProvider>
+        </CssVarsProvider>
+      </Provider>
+    </HelmetProvider>
+  </BrowserRouter>
 )

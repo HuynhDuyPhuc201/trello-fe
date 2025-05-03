@@ -9,37 +9,59 @@ import { toast } from 'react-toastify'
 
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
+import { useDispatch } from 'react-redux'
+import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { columnService } from '~/services/column.service'
+import { generatePlaceholderCard } from '~/utils/formatters'
 
-function ListColumns({ columns, createNewColumn, createNewCard, deleteColumnDetails }) {
+function ListColumns({ columns }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
+  const dispatch = useDispatch()
+  const { currentActiveBoard } = useActiveBoard()
+  const board = currentActiveBoard
+
   const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
 
-  const addNewColumn = () => {
-    if (!newColumnTitle) {
-      toast.error('Plese Enter Column title')
+  const addNewColumn = async () => {
+    if (!newColumnTitle.trim()) {
+      toast.error('Please enter a column title')
       return
     }
-    console.log(newColumnTitle)
-    // gọi API ở đây
+    try {
+      // Tạo dữ liệu column
+      const newColumnData = {
+        title: newColumnTitle.trim(),
+        boardId: board._id
+      }
 
-    // Tạo dự liệu Column để gọi API
-    const newColumnData = {
-      title: newColumnTitle
+      const createdColumn = await columnService.createNewColumn(newColumnData)
+
+      // Thêm placeholder nếu column rỗng
+      const placeholder = generatePlaceholderCard(createdColumn)
+      createdColumn.cards = [placeholder]
+      createdColumn.cardOrderIds = [placeholder._id]
+
+      // Tạo board mới kiểu immutable (clone cấp 1)
+      // Nếu board có nested sâu hơn (object lồng trong column) → có thể vẫn bị mutate sai nếu không cẩn thận, thì nên dùng cách 2 (cloneDeep)
+      const newBoard = {
+        ...board,
+        columns: [...board.columns, createdColumn],
+        columnOrderIds: [...board.columnOrderIds, createdColumn._id]
+      }
+
+      dispatch(updateCurrentActiveBoard(newBoard))
+
+      // Reset UI
+      setNewColumnTitle('')
+      setOpenNewColumnForm(false)
+    } catch (err) {
+      console.error('Failed to add column:', err)
+      toast.error('Something went wrong while adding column')
     }
-
-    // Gọi lên props func createNewCard nằm ở component cha cao nhất (board/_id.jsx)
-    // Lưu ý về sau ở phần học MERN STACK advance nâng cao học trực tiếp vs mình thì chúng ta sẽ đưa
-    // dữ liệu Board ra ngoài Redux global Store
-    // và lúc này chúng ta có thể gọi luôn api là xong thay vì phải lần lượt gọi ngược lên những component cha phía bên trên
-    // (đối với component con nằm càng sâu thì càng khổ )
-    // Với việc sử dụng Redux sẽ clean code, sạch sẽ hơn
-    createNewColumn(newColumnData)
-
-    setOpenNewColumnForm()
-    setNewColumnTitle('')
   }
+
   return (
     <SortableContext items={columns?.map((c) => c._id)} strategy={horizontalListSortingStrategy}>
       <Box
@@ -57,8 +79,6 @@ function ListColumns({ columns, createNewColumn, createNewCard, deleteColumnDeta
           <Column
             key={column._id}
             column={column}
-            createNewCard={createNewCard}
-            deleteColumnDetails={deleteColumnDetails}
           />
         ))}
 
