@@ -16,8 +16,8 @@ function Board() {
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
 
-  const {boardId} = useParams()
-  console.log('boardId', boardId)
+  // const location = useParams()
+  // console.log('location', location)
 
   useEffect(() => {
     const boardId = '680c5df4dd56a0e4942ecc33'

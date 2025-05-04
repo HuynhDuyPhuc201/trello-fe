@@ -24,7 +24,8 @@ const routers = [
   {
     path: path.Login,
     element: <Auth />
-  },{
+  },
+  {
     path: path.Register,
     element: <Auth />
   },

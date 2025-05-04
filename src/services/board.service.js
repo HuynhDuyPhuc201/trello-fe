@@ -1,4 +1,4 @@
-import api from '~/apis'
+import api from '~/apis/api'
 
 export const boardService = {
   async fetchBoardDetail(boardId) {

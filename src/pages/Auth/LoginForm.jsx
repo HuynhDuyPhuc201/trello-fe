@@ -71,7 +71,7 @@ function LoginForm() {
               padding: '0 1em'
             }}
           >
-            <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
+            {/* <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
               Your email&nbsp;
               <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
                 hdphuc201@gmail.com
@@ -87,7 +87,7 @@ function LoginForm() {
               </Typography>
               <br />
               Please check and verify your account before logging in!
-            </Alert>
+            </Alert> */}
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>
@@ -97,12 +97,13 @@ function LoginForm() {
                 label="Enter Email..."
                 type="text"
                 variant="outlined"
+                error={!!errors.email}
                 {...register('email', {
                   required: FIELD_REQUIRED_MESSAGE,
                   pattern: { value: EMAIL_RULE, message: EMAIL_RULE_MESSAGE }
                 })}
               />
-              <FieldErrorAlert errors={errors} fieldName={'email'}/>
+              <FieldErrorAlert errors={errors} fieldName={'email'} />
             </Box>
             <Box sx={{ marginTop: '1em' }}>
               <TextField
@@ -110,12 +111,13 @@ function LoginForm() {
                 label="Enter Password..."
                 type="password"
                 variant="outlined"
+                error={!!errors.password}
                 {...register('password', {
                   required: FIELD_REQUIRED_MESSAGE,
                   pattern: { value: PASSWORD_RULE, message: PASSWORD_RULE_MESSAGE }
                 })}
               />
-              <FieldErrorAlert errors={errors} fieldName={'password'}/>
+              <FieldErrorAlert errors={errors} fieldName={'password'} />
             </Box>
           </Box>
           <CardActions sx={{ padding: '0 1em 1em 1em' }}>
