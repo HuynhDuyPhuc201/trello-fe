@@ -1,7 +1,7 @@
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Box from '@mui/material/Box'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -30,7 +30,7 @@ import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/ac
 import { useDispatch } from 'react-redux'
 import { columnService } from '~/services/column.service'
 
-function Column({ column }) {
+function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
     data: { ...column }
@@ -66,10 +66,10 @@ function Column({ column }) {
 
   const orderedCards = column.cards
 
-  const [openNewCardForm, setOpenNewCardForm] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
+  const [openNewCardForm, setOpenNewCardForm] = useState(null)
+
 
   // gọi API tạo mới Card và làm lại dữ liệu Board
   const addNewCard = async () => {
@@ -114,7 +114,7 @@ function Column({ column }) {
       }
 
       dispatch(updateCurrentActiveBoard(newBoard))
-      setOpenNewCardForm(false)
+      onCloseForm()
       setNewCardTitle('')
     } catch (err) {
       console.error('Error creating card:', err)
@@ -126,14 +126,12 @@ function Column({ column }) {
   const confirmDeleteColumn = useConfirm()
   const handleDeleteColumn = async () => {
     try {
-      const confirmed = await confirmDeleteColumn({
+      await confirmDeleteColumn({
         title: 'Delete Column?',
         description: 'This action will permanently delete the column and all its cards. Are you sure?',
         confirmationText: 'Confirm',
         cancellationText: 'Cancel'
       })
-
-      if (!confirmed) return
 
       // Tạo newBoard với column đã bị xoá
       const newBoard = {
@@ -207,7 +205,7 @@ function Column({ column }) {
               }}
             >
               <MenuItem
-                onClick={toggleOpenNewCardForm}
+                onClick={onOpenForm}
                 sx={{
                   '&:hover': {
                     color: 'success.light',
@@ -220,7 +218,7 @@ function Column({ column }) {
                 <ListItemIcon>
                   <AddCardIcon className="add-card-icon" fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>Add new cart</ListItemText>
+                <ListItemText>Add new card</ListItemText>
               </MenuItem>
               <MenuItem>
                 <ListItemIcon>
@@ -277,9 +275,9 @@ function Column({ column }) {
             p: 2
           }}
         >
-          {!openNewCardForm ? (
+          {!isOpen ? (
             <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Button startIcon={<AddCardIcon />} onClick={toggleOpenNewCardForm}>
+              <Button startIcon={<AddCardIcon />} onClick={onOpenForm}>
                 Add new card
               </Button>
               <Tooltip title="Drag to move">
@@ -311,9 +309,19 @@ function Column({ column }) {
                   },
                   '& .MuiOutlinedInput-input': { borderRadius: 1 }
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    addNewCard()
+                  }
+                  if (e.key === 'Escape') {
+                    onCloseForm()
+                    setNewCardTitle('')
+                  }
+                }}
               />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Button
+                  className="interceptor-loading"
                   variant="contained"
                   color="success"
                   size="small"
@@ -337,7 +345,7 @@ function Column({ column }) {
                     cursor: 'pointer',
                     '&:hover': { color: (theme) => theme.palette.warning.light }
                   }}
-                  onClick={toggleOpenNewCardForm}
+                  onClick={onCloseForm}
                 />
               </Box>
             </Box>

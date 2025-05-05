@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { API_ROOT } from '~/config/constants'
+import { interceptorLoadingElements } from '~/utils/formatters'
 
 // Khởi tạo Axios instance
 const api = axios.create({
@@ -14,6 +15,8 @@ const api = axios.create({
 // Request Interceptor: Gửi token trong header nếu có (nếu lưu access token vào cookie thì không cần gửi token trong header)
 api.interceptors.request.use(
   (config) => {
+    // kỹ thuật chặn spam click
+    interceptorLoadingElements(true)
     return config
   },
   async (error) => {
@@ -23,9 +26,15 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (res) => {
+    // kỹ thuật chặn spam click
+    interceptorLoadingElements(false)
     return res.data
   },
   async (error) => {
+
+// kỹ thuật chặn spam click
+interceptorLoadingElements(false)
+
 
     let errorMessage = error?.message
     if (error.response?.data?.message) {

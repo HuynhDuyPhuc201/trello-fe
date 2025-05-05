@@ -9,7 +9,6 @@ import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
 import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
-import Alert from '@mui/material/Alert'
 import { useForm } from 'react-hook-form'
 import {
   FIELD_REQUIRED_MESSAGE,
@@ -17,7 +16,6 @@ import {
   EMAIL_RULE_MESSAGE,
   PASSWORD_RULE,
   PASSWORD_RULE_MESSAGE,
-  PASSWORD_CONFIRMATION_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 

@@ -17,7 +17,8 @@ import { generatePlaceholderCard } from '~/utils/formatters'
 function ListColumns({ columns }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
-
+  const [openNewCardColumnId, setOpenNewCardColumnId] = useState(null)
+  
   const dispatch = useDispatch()
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
@@ -61,6 +62,7 @@ function ListColumns({ columns }) {
       toast.error('Something went wrong while adding column')
     }
   }
+ 
 
   return (
     <SortableContext items={columns?.map((c) => c._id)} strategy={horizontalListSortingStrategy}>
@@ -77,6 +79,9 @@ function ListColumns({ columns }) {
         {/* columns */}
         {columns?.map((column) => (
           <Column
+            isOpen={openNewCardColumnId === column._id}
+            onOpenForm={() => setOpenNewCardColumnId(column._id)}
+            onCloseForm={() => setOpenNewCardColumnId(null)}
             key={column._id}
             column={column}
           />
@@ -147,10 +152,20 @@ function ListColumns({ columns }) {
                   '&.Mui-focused fieldset': { borderColor: 'white' }
                 }
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  addNewColumn()
+                }
+                if (e.key === 'Escape') {
+                  setNewColumnTitle('')
+                  toggleOpenNewColumnForm()
+                }
+              }}
             />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Button
                 variant="contained"
+                className="interceptor-loading"
                 color="success"
                 size="small"
                 onClick={addNewColumn}
