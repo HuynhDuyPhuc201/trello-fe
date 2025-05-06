@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import BoardList from './pages/Boards'
 import { path } from './config/path'
 import Board from './pages/Boards/_id'
+const AccountVerification = lazy(() => import('./pages/Auth/AccountVerification'))
 const Home = lazy(() => import('./pages/Home'))
 const Auth = lazy(() => import('./pages/Auth/Auth'))
 const NotFoundPage = lazy(() => import('./pages/NotFound/NotFoundPage'))
@@ -28,6 +29,10 @@ const routers = [
   {
     path: path.Register,
     element: <Auth />
+  },
+  {
+    path: path.Verify,
+    element: <AccountVerification />
   },
   {
     path: '*',

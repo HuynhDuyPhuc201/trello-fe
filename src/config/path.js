@@ -6,4 +6,5 @@ export const path = {
   },
   Login: '/login',
   Register: '/register',
+  Verify: '/account/verification',
 }

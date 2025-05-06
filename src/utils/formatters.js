@@ -26,7 +26,6 @@ export const generatePlaceholderCard = (column) => {
 export const interceptorLoadingElements = (calling) => {
   // DOM lấy ra toàn bộ phần tử trên page hiện tại có className là 'interceptor-loading'
   const elements = document.querySelectorAll('.interceptor-loading')
-  console.log('elements', elements)
   for (let i = 0; i < elements.length; i++) {
     if (calling) {
       // Nếu đang trong thời gian chờ gọi API (calling === true) thì sẽ làm mờ phần tử và chặn click bằng css pointer-events

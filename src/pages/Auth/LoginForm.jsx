@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
 import LockIcon from '@mui/icons-material/Lock'
 import Typography from '@mui/material/Typography'
-import { Card as MuiCard } from '@mui/material'
+import { Alert, Card as MuiCard } from '@mui/material'
 import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
 import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
@@ -15,9 +15,10 @@ import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
   PASSWORD_RULE,
-  PASSWORD_RULE_MESSAGE,
+  PASSWORD_RULE_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
+import { userService } from '~/services/user.service'
 
 function LoginForm() {
   const {
@@ -26,9 +27,17 @@ function LoginForm() {
     formState: { errors }
   } = useForm()
 
-  const submitLogIn = (data) => {
-    console.log('Login data:', data)
-    // Handle login logic here
+  const [searchParams] = useSearchParams()
+  const verifiedEmail = searchParams?.get('verifiedEmail') || null
+  const registerEmail = searchParams?.get('registerEmail') || null
+
+  const submitLogIn = async (data) => {
+    try {
+      const result = await userService.login(data)
+      console.log('result', result)
+    } catch (error) {
+      console.log('error', error)
+    }
   }
 
   return (
@@ -69,23 +78,27 @@ function LoginForm() {
               padding: '0 1em'
             }}
           >
-            {/* <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-              Your email&nbsp;
-              <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
-                hdphuc201@gmail.com
-              </Typography>
-              &nbsp;has been verified.
-              <br />
-              Now you can login to enjoy our services! Have a good day!
-            </Alert>
-            <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-              An email has been sent to&nbsp;
-              <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
-                hdphuc201@gmail.com
-              </Typography>
-              <br />
-              Please check and verify your account before logging in!
-            </Alert> */}
+            {registerEmail && (
+              <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
+                Your email&nbsp;
+                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
+                  {registerEmail}
+                </Typography>
+                &nbsp;has been verified.
+                <br />
+                Now you can login to enjoy our services! Have a good day!
+              </Alert>
+            )}
+            {verifiedEmail && (
+              <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
+                An email has been sent to&nbsp;
+                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
+                  hdphuc201@gmail.com
+                </Typography>
+                <br />
+                Please check and verify your account before logging in!
+              </Alert>
+            )}
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>

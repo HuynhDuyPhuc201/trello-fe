@@ -8,8 +8,8 @@
     "node": ">=18.x"
   },
   "scripts": {
-    "dev": "cross-env BUILD_MODE=dev vite --port 3000",
-    "build": "cross-env BUILD_MODE=production vite build --base=./",
+    "dev": "cross-env VITE_BUILD_MODE=dev vite --port 3000",
+    "build": "cross-env VITE_BUILD_MODE=production vite build --base=./",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

@@ -3,13 +3,13 @@ import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import AppBar from '~/components/AppBar/AppBar'
 import { useEffect } from 'react'
-import { Box, CircularProgress, Typography } from '@mui/material'
 import { boardService } from '~/services/board.service'
 import { columnService } from '~/services/column.service'
 import { useDispatch } from 'react-redux'
 import { fetchBoardDetail, updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { cloneDeep } from 'lodash'
 import { useParams } from 'react-router-dom'
+import LoadingSpiner from '~/components/Loading/Loading'
 
 function Board() {
   const dispatch = useDispatch()
@@ -22,7 +22,6 @@ function Board() {
   useEffect(() => {
     const boardId = '680c5df4dd56a0e4942ecc33'
     dispatch(fetchBoardDetail(boardId))
-    console.log('render useEffect')
   }, [dispatch])
 
   const moveColumns = (dndOrderedColumns) => {
@@ -101,23 +100,8 @@ function Board() {
       })
   }
 
-  console.log('board', board)
   if (!board) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          width: '100vw',
-          gap: 2
-        }}
-      >
-        <CircularProgress />
-        <Typography>Loading Board...</Typography>
-      </Box>
-    )
+    return <LoadingSpiner caption="Loading board..." />
   }
 
   return (
@@ -126,7 +110,6 @@ function Board() {
       <BoardBar board={board} />
       <BoardContent
         board={board}
-
         moveColumns={moveColumns}
         moveCardInTheSameColumn={moveCardInTheSameColumn}
         moveCardToDifferentColumn={moveCardToDifferentColumn}
