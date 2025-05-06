@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
@@ -19,6 +19,8 @@ import {
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { userService } from '~/services/user.service'
+import { useDispatch } from 'react-redux'
+import { loginUserAPI, userSlice, useUser } from '~/redux/user/userSlice'
 
 function LoginForm() {
   const {
@@ -27,16 +29,22 @@ function LoginForm() {
     formState: { errors }
   } = useForm()
 
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [searchParams] = useSearchParams()
   const verifiedEmail = searchParams?.get('verifiedEmail') || null
   const registerEmail = searchParams?.get('registerEmail') || null
 
+  const { currentUser } = useUser()
+  console.log('currentUser', currentUser)
+  
   const submitLogIn = async (data) => {
     try {
-      const result = await userService.login(data)
-      console.log('result', result)
+      const result = await dispatch(loginUserAPI(data))
+      console.log(result.payload)
+      navigate('/')
     } catch (error) {
-      console.log('error', error)
+      console.error(error)
     }
   }
 
