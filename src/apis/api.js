@@ -31,10 +31,8 @@ api.interceptors.response.use(
     return res.data
   },
   async (error) => {
-
-// kỹ thuật chặn spam click
-interceptorLoadingElements(false)
-
+    // kỹ thuật chặn spam click
+    interceptorLoadingElements(false)
 
     let errorMessage = error?.message
     if (error.response?.data?.message) {

@@ -2,12 +2,13 @@ import { lazy } from 'react'
 import BoardList from './pages/Boards'
 import { path } from './config/path'
 import Board from './pages/Boards/_id'
+import withAuth from './components/withAuth'
 const AccountVerification = lazy(() => import('./pages/Auth/AccountVerification'))
 const Home = lazy(() => import('./pages/Home'))
 const Auth = lazy(() => import('./pages/Auth/Auth'))
 const NotFoundPage = lazy(() => import('./pages/NotFound/NotFoundPage'))
 
-// admin
+const ProtectedBoard = withAuth(Board)
 
 const routers = [
   {
@@ -20,7 +21,7 @@ const routers = [
   },
   {
     path: path.Board.detail,
-    element: <Board />
+    element: <ProtectedBoard />
   },
   {
     path: path.Login,

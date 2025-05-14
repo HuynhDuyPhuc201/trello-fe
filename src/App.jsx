@@ -8,11 +8,7 @@ function App() {
 
   return (
     <>
-      <Suspense
-        fallback={<LoadingSpiner/>}
-      >
-        {element}
-      </Suspense>
+      <Suspense fallback={<LoadingSpiner />}>{element}</Suspense>
     </>
   )
 }
