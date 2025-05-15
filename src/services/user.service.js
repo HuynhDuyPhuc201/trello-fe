@@ -8,6 +8,14 @@ export const userService = {
     return res
   },
 
+  async logout() {
+    return await api.delete(`/v1/users/logout`)
+  },
+
+  async refreshToken(data) {
+    return await api.get(`/v1/users/refresh-token`, data)
+  },
+
   async register(data) {
     const res = await api.post(`/v1/users/register`, data)
     toast.success('Register successfully!')
@@ -18,5 +26,5 @@ export const userService = {
     const res = await api.put(`/v1/users/verify`, data)
     toast.success('Account verified successfully!')
     return res
-  },
+  }
 }

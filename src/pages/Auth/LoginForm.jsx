@@ -37,11 +37,10 @@ function LoginForm() {
 
   const { currentUser } = useUser()
   console.log('currentUser', currentUser)
-  
-  const submitLogIn = async (data) => {
+
+  const submitLogIn = (data) => {
     try {
-      const result = await dispatch(loginUserAPI(data))
-      console.log(result.payload)
+      dispatch(loginUserAPI(data))
       navigate('/')
     } catch (error) {
       console.error(error)

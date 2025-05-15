@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { userService } from '~/services/user.service'
+import { toast } from 'react-toastify'
 
 const initialState = {
   currentUser: null,
@@ -10,7 +11,18 @@ const initialState = {
 export const loginUserAPI = createAsyncThunk('user/loginUserAPI', async (data, thunkAPI) => {
   try {
     const response = await userService.login(data)
-    return response
+    const { accessToken, refreshToken, ...rest } = response
+    return rest
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
+  }
+})
+
+export const logoutUserAPI = createAsyncThunk('user/logoutUserAPI', async (showMessage = true, thunkAPI) => {
+  try {
+    const res = await userService.logout()
+    if (showMessage) toast.success('Logout successfully!')
+    return res
   } catch (error) {
     return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
   }
@@ -31,6 +43,9 @@ export const userSlice = createSlice({
       })
       .addCase(loginUserAPI.rejected, (state, action) => {
         state.error = action.payload
+      })
+      .addCase(logoutUserAPI.fulfilled, (state) => {
+        state.currentUser = null
       })
   }
 })

@@ -16,6 +16,9 @@ import { store } from './redux/store'
 import { HelmetProvider } from 'react-helmet-async' // Đảm bảo đúng import
 import { PersistGate } from 'redux-persist/integration/react'
 import persistStore from 'redux-persist/es/persistStore'
+import { injectStore } from './apis/api'
+
+injectStore(store)
 
 const persistor = persistStore(store)
 ReactDOM.createRoot(document.getElementById('root')).render(

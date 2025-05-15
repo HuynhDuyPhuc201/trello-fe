@@ -7,7 +7,7 @@ import { userReducer } from './user/userSlice'
 // https://edvins.io/how-to-use-redux-persist-with-redux-toolkit
 // https://www.npmjs.com/package/redux-persist
 import { combineReducers } from 'redux'
-import { persistStore, persistReducer } from 'redux-persist'
+import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
 
