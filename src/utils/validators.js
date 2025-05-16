@@ -14,7 +14,7 @@ export const ALLOW_COMMON_FILE_TYPES = ['image/jpg', 'image/jpeg', 'image/png']
 export const singleFileValidator = (file) => {
   if (!file || !file.name || !file.size || !file.type) {
     return 'File cannot be blank.'
-  } 
+  }
   if (file.size > LIMIT_COMMON_FILE_SIZE) {
     return 'Maximum file size exceeded. (10MB)'
   }

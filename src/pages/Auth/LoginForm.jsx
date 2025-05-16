@@ -40,7 +40,6 @@ function LoginForm() {
       const res = await dispatch(loginUserAPI(data))
 
       if (res.meta?.requestStatus === 'fulfilled') {
-        console.log('thanh cong')
         navigate('/')
       } else {
         // Hiển thị lỗi từ backend

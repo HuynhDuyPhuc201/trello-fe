@@ -22,8 +22,8 @@ export const userService = {
     return res
   },
 
-  async update(form) {
-    const res = await api.put(`/v1/users/update`, form)
+  async update(formData) {
+    const res = await api.put(`/v1/users/update`, formData)
     toast.success('Update successfully!')
     return res
   },

@@ -57,24 +57,23 @@ function AccountTab() {
   }
 
   const uploadAvatar = (e) => {
-    // Lấy file thông qua e.target?.files[0] và validate nó trước khi xử lý
-    console.log('e.target?.files[0]: ', e.target?.files[0])
-    const error = singleFileValidator(e.target?.files[0])
+    const file = e.target?.files?.[0]
+    const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
       return
     }
 
-    // Sử dụng FormData để xử lý dữ liệu liên quan tới file khi gọi API
-    let reqData = new FormData()
-    reqData.append('avatar', e.target?.files[0])
-    // Cách để log được dữ liệu thông qua FormData
-    console.log('reqData: ', reqData)
-    for (const value of reqData.values()) {
-      console.log('reqData Value: ', value)
+    const formData = new FormData()
+    formData.append('avatar', file) // 👈 key phải trùng với backend
+
+    // Kiểm tra kỹ giá trị trong FormData
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value) // 👈 phải in ra kiểu File, không phải {}
     }
 
-    // Gọi API...
+    dispatch(updateUserAPI(formData))
+    e.target.value = ''
   }
 
   return (

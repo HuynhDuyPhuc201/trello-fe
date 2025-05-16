@@ -29,9 +29,9 @@ export const logoutUserAPI = createAsyncThunk('user/logoutUserAPI', async (showM
   }
 })
 
-export const updateUserAPI = createAsyncThunk('user/updateUserAPI', async (form, thunkAPI) => {
+export const updateUserAPI = createAsyncThunk('user/updateUserAPI', async (formData, thunkAPI) => {
   try {
-    const res = await userService.update(form)
+    const res = await userService.update(formData)
     return res
   } catch (error) {
     return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
