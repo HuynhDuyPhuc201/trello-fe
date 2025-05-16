@@ -18,9 +18,9 @@ import {
   PASSWORD_RULE_MESSAGE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
-import { userService } from '~/services/user.service'
 import { useDispatch } from 'react-redux'
-import { loginUserAPI, userSlice, useUser } from '~/redux/user/userSlice'
+import { loginUserAPI } from '~/redux/user/userSlice'
+import { toast } from 'react-toastify'
 
 function LoginForm() {
   const {
@@ -35,15 +35,20 @@ function LoginForm() {
   const verifiedEmail = searchParams?.get('verifiedEmail') || null
   const registerEmail = searchParams?.get('registerEmail') || null
 
-  const { currentUser } = useUser()
-  console.log('currentUser', currentUser)
-
-  const submitLogIn = (data) => {
+  const submitLogIn = async (data) => {
     try {
-      dispatch(loginUserAPI(data))
-      navigate('/')
+      const res = await dispatch(loginUserAPI(data))
+
+      if (res.meta?.requestStatus === 'fulfilled') {
+        console.log('thanh cong')
+        navigate('/')
+      } else {
+        // Hiển thị lỗi từ backend
+        toast.error(res.payload?.message || 'Login failed!')
+      }
     } catch (error) {
-      console.error(error)
+      console.error('Unexpected error:', error)
+      toast.error('Unexpected error occurred!')
     }
   }
 

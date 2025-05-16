@@ -8,9 +8,7 @@ import { columnService } from '~/services/column.service'
 import { useDispatch } from 'react-redux'
 import { fetchBoardDetail, updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { cloneDeep } from 'lodash'
-import { Navigate } from 'react-router-dom'
 import LoadingSpiner from '~/components/Loading/Loading'
-import { useUser } from '~/redux/user/userSlice'
 
 function Board() {
   const dispatch = useDispatch()

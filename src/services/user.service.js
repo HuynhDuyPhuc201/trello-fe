@@ -22,6 +22,12 @@ export const userService = {
     return res
   },
 
+  async update(form) {
+    const res = await api.put(`/v1/users/update`, form)
+    toast.success('Update successfully!')
+    return res
+  },
+
   async verifyEmail(data) {
     const res = await api.put(`/v1/users/verify`, data)
     toast.success('Account verified successfully!')

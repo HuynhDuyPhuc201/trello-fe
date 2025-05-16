@@ -14,7 +14,8 @@ export const loginUserAPI = createAsyncThunk('user/loginUserAPI', async (data, t
     const { accessToken, refreshToken, ...rest } = response
     return rest
   } catch (error) {
-    return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
+    // Trả về lỗi từ backend
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Login failed')
   }
 })
 
@@ -22,6 +23,15 @@ export const logoutUserAPI = createAsyncThunk('user/logoutUserAPI', async (showM
   try {
     const res = await userService.logout()
     if (showMessage) toast.success('Logout successfully!')
+    return res
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
+  }
+})
+
+export const updateUserAPI = createAsyncThunk('user/updateUserAPI', async (form, thunkAPI) => {
+  try {
+    const res = await userService.update(form)
     return res
   } catch (error) {
     return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
@@ -46,6 +56,9 @@ export const userSlice = createSlice({
       })
       .addCase(logoutUserAPI.fulfilled, (state) => {
         state.currentUser = null
+      })
+      .addCase(updateUserAPI.fulfilled, (state, action) => {
+        state.currentUser = action.payload
       })
   }
 })

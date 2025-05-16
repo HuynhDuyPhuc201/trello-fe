@@ -6,9 +6,11 @@ import withAuth from './components/withAuth'
 const AccountVerification = lazy(() => import('./pages/Auth/AccountVerification'))
 const Home = lazy(() => import('./pages/Home'))
 const Auth = lazy(() => import('./pages/Auth/Auth'))
+const Settings = lazy(() => import('./pages/Settings/Settings'))
 const NotFoundPage = lazy(() => import('./pages/NotFound/NotFoundPage'))
 
 const ProtectedBoard = withAuth(Board)
+const ProtectedSettings = withAuth(Settings)
 
 const routers = [
   {
@@ -30,6 +32,14 @@ const routers = [
   {
     path: path.Register,
     element: <Auth />
+  },
+  {
+    path: path.Settings.Account,
+    element: <ProtectedSettings />
+  },
+  {
+    path: path.Settings.Security,
+    element: <ProtectedSettings />
   },
   {
     path: path.Verify,

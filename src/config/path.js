@@ -7,4 +7,8 @@ export const path = {
   Login: '/login',
   Register: '/register',
   Verify: '/account/verification',
+  Settings: {
+    Account: '/settings/account',
+    Security: '/settings/security'
+  }
 }

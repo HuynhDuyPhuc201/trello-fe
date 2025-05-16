@@ -20,6 +20,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { path } from '~/config/path'
 
 function AppBar() {
   const [searchValue, setSearchValue] = useState()
@@ -42,12 +44,14 @@ function AppBar() {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <AppsIcon sx={{ color: 'white' }} />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <SvgIcon component={trelloIcon} inheritViewBox sx={{ color: 'white' }} />
-          <Typography variant="span" sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>
-            Trello
-          </Typography>
-        </Box>
+        <Link to={path.Home} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <SvgIcon component={trelloIcon} inheritViewBox sx={{ color: 'white' }} />
+            <Typography variant="span" sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>
+              Trello
+            </Typography>
+          </Box>
+        </Link>
         {/* responsive */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
           <Workspaces />

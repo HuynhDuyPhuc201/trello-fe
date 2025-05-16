@@ -16,7 +16,8 @@ import { logoutUserAPI, useUser } from '~/redux/user/userSlice'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { path } from '~/config/path'
 
 function Profiles() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -70,9 +71,11 @@ function Profiles() {
           'aria-labelledby': 'basic-button-profiles'
         }}
       >
-        <MenuItem onClick={handleClose} sx={{ '&:hover': { color: 'success.light' } }}>
-          <Avatar sx={{ width: 28, height: 28, mr: 2 }} src={currentUser?.avatar} /> Profile
-        </MenuItem>
+        <Link to={path.Settings.Account} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem onClick={handleClose} sx={{ '&:hover': { color: 'success.light' } }}>
+            <Avatar sx={{ width: 28, height: 28, mr: 2 }} src={currentUser?.avatar} /> Profile
+          </MenuItem>
+        </Link>
         <Divider />
         <MenuItem>
           <ListItemIcon>
