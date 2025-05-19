@@ -8,6 +8,9 @@ const Home = () => {
         <li>
           Home
           <li>
+            <Link to={path.Board.index}>Board List</Link>
+          </li>
+          <li>
             <Link to="/boards/680c5df4dd56a0e4942ecc33">Board</Link>
           </li>
           <li>

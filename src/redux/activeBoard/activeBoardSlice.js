@@ -10,11 +10,11 @@ const initialState = {
 }
 
 // dùng middleware thunk thì phải đi kèm với extraReducers
-export const fetchBoardDetail = createAsyncThunk(
-  'activeboard/fetchBoardDetail',
+export const getBoardDetail = createAsyncThunk(
+  'activeboard/getBoardDetail',
   async (boardId, thunkAPI) => {
     try {
-      const board = await boardService.fetchBoardDetail(boardId)
+      const board = await boardService.getBoardDetail(boardId)
       // Sắp xếp columns
       // (video 71 đã giải thích lí do ở phần fix bug quan trọng)
       board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
@@ -48,10 +48,10 @@ export const activeBoardSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchBoardDetail.fulfilled, (state, action) => {
+      .addCase(getBoardDetail.fulfilled, (state, action) => {
         state.currentActiveBoard = action.payload
       })
-      .addCase(fetchBoardDetail.rejected, (state, action) => {
+      .addCase(getBoardDetail.rejected, (state, action) => {
         state.error = action.payload
       })
   }

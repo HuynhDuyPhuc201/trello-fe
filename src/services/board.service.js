@@ -1,7 +1,11 @@
 import api from '~/apis/api'
 
 export const boardService = {
-  async fetchBoardDetail(boardId) {
+  async getBoards(query) {
+    return await api.get(`/v1/boards${query ? `${query}` : ''}`)
+  },
+
+  async getBoardDetail(boardId) {
     return await api.get(`/v1/boards/${boardId}`)
   },
 

@@ -6,19 +6,20 @@ import { useEffect } from 'react'
 import { boardService } from '~/services/board.service'
 import { columnService } from '~/services/column.service'
 import { useDispatch } from 'react-redux'
-import { fetchBoardDetail, updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { getBoardDetail, updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { cloneDeep } from 'lodash'
 import LoadingSpiner from '~/components/Loading/Loading'
+import { useParams } from 'react-router-dom'
 
 function Board() {
   const dispatch = useDispatch()
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
+  const { boardId } = useParams()
 
   useEffect(() => {
-    const boardId = '680c5df4dd56a0e4942ecc33'
-    dispatch(fetchBoardDetail(boardId))
-  }, [dispatch])
+    dispatch(getBoardDetail(boardId))
+  }, [dispatch, boardId])
 
   const moveColumns = (dndOrderedColumns) => {
     const dndOrderedColumnIds = dndOrderedColumns.map((col) => col._id)
@@ -95,10 +96,14 @@ function Board() {
         console.error('❌ Failed to move card:', err)
       })
   }
-  
+
   if (!board) {
     return <LoadingSpiner caption="Loading board..." />
   }
+
+  // if (!board) {
+  //   return <Navigate to="/404" />
+  // }
 
   return (
     <Container disableGutters sx={{ height: '100vh' }} maxWidth={false}>
