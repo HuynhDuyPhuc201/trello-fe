@@ -10,11 +10,16 @@ import { getBoardDetail, updateCurrentActiveBoard, useActiveBoard } from '~/redu
 import { cloneDeep } from 'lodash'
 import LoadingSpiner from '~/components/Loading/Loading'
 import { useParams } from 'react-router-dom'
+import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
+import { useActiveCard } from '~/redux/activeCard/activeCardSlice'
 
 function Board() {
   const dispatch = useDispatch()
   const { currentActiveBoard } = useActiveBoard()
+  const { currentActiveCard } = useActiveCard()
   const board = currentActiveBoard
+  const activeCard = currentActiveCard
+
   const { boardId } = useParams()
 
   useEffect(() => {
@@ -34,7 +39,7 @@ function Board() {
 
     // Không cần await nếu không dùng loading, nhưng vẫn nên handle lỗi
     boardService
-      .updateBoardDetail(newBoard._id, {
+      .update(newBoard._id, {
         columnOrderIds: dndOrderedColumnIds
       })
       .catch((err) => {
@@ -59,7 +64,7 @@ function Board() {
 
     dispatch(updateCurrentActiveBoard(newBoard))
 
-    columnService.updateColumnDetail(columnId, { cardOrderIds: dndOrderedCardIds }).catch((err) => {
+    columnService.update(columnId, { cardOrderIds: dndOrderedCardIds }).catch((err) => {
       console.error('❌ Failed to update card order:', err)
       // Optional: rollback UI hoặc toast
     })
@@ -107,6 +112,11 @@ function Board() {
 
   return (
     <Container disableGutters sx={{ height: '100vh' }} maxWidth={false}>
+      {/* Modal active check đóng mỏ dựa theo điều kiện có tồn tại data activeCard lưu trong Redux hay không thì mới render. Mỗi thời điểm chỉ tồn tải cái modal card dang active */}
+
+      {activeCard && <ActiveCard />}
+      {/* các phần còn lại của Board Details */}
+
       <AppBar />
       <BoardBar board={board} />
       <BoardContent

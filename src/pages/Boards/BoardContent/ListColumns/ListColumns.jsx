@@ -37,7 +37,7 @@ function ListColumns({ columns }) {
         boardId: board._id
       }
 
-      const createdColumn = await columnService.createNewColumn(newColumnData)
+      const createdColumn = await columnService.create(newColumnData)
 
       // Thêm placeholder nếu column rỗng
       const placeholder = generatePlaceholderCard(createdColumn)

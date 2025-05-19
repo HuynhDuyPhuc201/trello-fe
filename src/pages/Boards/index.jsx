@@ -57,7 +57,7 @@ function Boards() {
 
   const fetchBoards = async () => {
     try {
-      const res = await boardService.getBoards(location.search)
+      const res = await boardService.getAll(location.search)
       if (res) {
         setBoards(res.boards || [])
         setTotalBoards(res.total || 0)

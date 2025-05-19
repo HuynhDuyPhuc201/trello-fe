@@ -10,11 +10,17 @@ import Button from '@mui/material/Button'
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useDispatch } from 'react-redux'
+import { updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+
 function Card({ card }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card?._id,
     data: { ...card }
   })
+
+  const dispatch = useDispatch()
+
   const dndKitCardStyles = {
     // touchAction: 'none', // dành cho sensor default dạng PointerSensor
     // https://docs.dndkit.com/api-documentation/sensors/pointer
@@ -29,9 +35,15 @@ function Card({ card }) {
   const shouldShowCardActions = () => {
     return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length
   }
+
+  const setActiveCard = () => {
+    dispatch(updateCurrentActiveCard(card))
+  }
+
   return (
     <>
       <MuiCard
+        onClick={setActiveCard}
         ref={setNodeRef}
         style={dndKitCardStyles}
         {...attributes}

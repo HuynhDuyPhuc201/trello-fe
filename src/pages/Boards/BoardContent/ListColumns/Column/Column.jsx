@@ -87,7 +87,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
         boardId: board._id
       }
 
-      const createdCard = await cardService.createNewCard(newCardData)
+      const createdCard = await cardService.create(newCardData)
 
       if (!createdCard) throw new Error('Failed to create card')
 
@@ -143,7 +143,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
       dispatch(updateCurrentActiveBoard(newBoard))
 
       try {
-        const res = await columnService.deleteColumnDetail(column._id)
+        const res = await columnService.delete(column._id)
         toast.success(res?.deleteResult || 'Deleted successfully!')
       } catch (err) {
         console.error('❌ Failed to delete column:', err)
@@ -156,7 +156,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
 
   const handleUpdateColumnTitle = async (newTitle) => {
     try {
-      await columnService.updateColumnDetail(column._id, { title: newTitle })
+      await columnService.update(column._id, { title: newTitle })
     } catch (err) {
       toast.error('Failed to update column title from server.')
     }

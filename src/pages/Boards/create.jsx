@@ -70,7 +70,7 @@ function SidebarCreateBoardModal({ refetch }) {
   const queryClient = useQueryClient()
 
   const createBoardMutation = useMutation({
-    mutationFn: boardService.createBoard,
+    mutationFn: boardService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boards'] })
       refetch()

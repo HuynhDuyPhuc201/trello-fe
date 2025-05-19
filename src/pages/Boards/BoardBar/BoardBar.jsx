@@ -11,6 +11,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { capitalizeFirstLetter } from '~/utils/formatters'
+import BoardUserGroup from './BoardUserGroup'
 
 const MENU_STYLES = {
   color: 'white',
@@ -57,6 +58,8 @@ function BoardBar({ board }) {
         <Button startIcon={<PersonAddIcon />} sx={{ color: 'white' }}>
           Invite
         </Button>
+        {/* danh sách thành viên */}
+        <BoardUserGroup/>
         <AvatarGroup
           max={3}
           sx={{

@@ -14,7 +14,7 @@ export const getBoardDetail = createAsyncThunk(
   'activeboard/getBoardDetail',
   async (boardId, thunkAPI) => {
     try {
-      const board = await boardService.getBoardDetail(boardId)
+      const board = await boardService.getDetails(boardId)
       // Sắp xếp columns
       // (video 71 đã giải thích lí do ở phần fix bug quan trọng)
       board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
