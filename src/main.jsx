@@ -19,34 +19,38 @@ import { HelmetProvider } from 'react-helmet-async' // Đảm bảo đúng impor
 import { PersistGate } from 'redux-persist/integration/react'
 import persistStore from 'redux-persist/es/persistStore'
 import { injectStore } from './apis/api'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 injectStore(store)
+const queryClient = new QueryClient()
 
 const persistor = persistStore(store)
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <HelmetProvider>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <CssVarsProvider theme={theme}>
-            <ConfirmProvider
-              defaultOptions={{
-                allowClose: false,
-                buttonOrder: ['confirm', 'cancel'],
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <CssVarsProvider theme={theme}>
+              <ConfirmProvider
+                defaultOptions={{
+                  allowClose: false,
+                  buttonOrder: ['confirm', 'cancel'],
 
-                dialogProps: { maxWidth: 'xs' },
-                cancellationButtonProps: { color: 'inherit' },
-                confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
-              }}
-            >
-              {/* <GlobalStyles styles={{ textDecoration: 'none' }} /> */}
-              <CssBaseline />
-              <App />
-              <ToastContainer position="bottom-left" theme="colored" />
-            </ConfirmProvider>
-          </CssVarsProvider>
-        </PersistGate>
-      </Provider>
+                  dialogProps: { maxWidth: 'xs' },
+                  cancellationButtonProps: { color: 'inherit' },
+                  confirmationButtonProps: { color: 'secondary', variant: 'outlined' }
+                }}
+              >
+                {/* <GlobalStyles styles={{ textDecoration: 'none' }} /> */}
+                <CssBaseline />
+                <App />
+                <ToastContainer position="bottom-left" theme="colored" />
+              </ConfirmProvider>
+            </CssVarsProvider>
+          </PersistGate>
+        </Provider>
+      </QueryClientProvider>
     </HelmetProvider>
   </BrowserRouter>
 )

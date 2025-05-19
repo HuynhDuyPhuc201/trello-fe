@@ -98,7 +98,7 @@ function Boards() {
             </Stack>
             <Divider sx={{ my: 1 }} />
             <Stack direction="column" spacing={1}>
-              <SidebarCreateBoardModal />
+              <SidebarCreateBoardModal refetch={fetchBoards} />
             </Stack>
           </Grid>
 

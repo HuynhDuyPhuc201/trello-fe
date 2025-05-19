@@ -10,7 +10,6 @@ function Auth() {
   const isRegister = pathname === '/register'
 
   const { currentUser } = useUser()
-  console.log('currentUser', currentUser)
 
   if (currentUser) {
     return <Navigate to="/" />

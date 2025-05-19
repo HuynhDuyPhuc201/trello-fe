@@ -29,6 +29,7 @@ import { cardService } from '~/services/card.service'
 import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { useDispatch } from 'react-redux'
 import { columnService } from '~/services/column.service'
+import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 
 function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -69,7 +70,6 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const [newCardTitle, setNewCardTitle] = useState('')
 
   const [openNewCardForm, setOpenNewCardForm] = useState(null)
-
 
   // gọi API tạo mới Card và làm lại dữ liệu Board
   const addNewCard = async () => {
@@ -154,6 +154,14 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
     }
   }
 
+  const handleUpdateColumnTitle = async (newTitle) => {
+    try {
+      await columnService.updateColumnDetail(column._id, { title: newTitle })
+    } catch (err) {
+      toast.error('Failed to update column title from server.')
+    }
+  }
+
   return (
     //  phải bọc div ở đây vì vấn đề chiều cao của column khi kéo thả sẽ có bug kiểu kiểu flickering (video 32)
     <div ref={setNodeRef} style={dndKitColumnStyles} {...attributes}>
@@ -176,12 +184,14 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
             p: 2,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            cursor: 'pointer'
           }}
         >
-          <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
+          {/* <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
             {column?.title}
-          </Typography>
+          </Typography> */}
+          <ToggleFocusInput data-no-dnd="true" value={column?.title} onChangedValue={handleUpdateColumnTitle} />
           <Box>
             <Tooltip title="More options">
               <ExpandMoreIcon
