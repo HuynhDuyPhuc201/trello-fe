@@ -188,9 +188,6 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
             cursor: 'pointer'
           }}
         >
-          {/* <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
-            {column?.title}
-          </Typography> */}
           <ToggleFocusInput data-no-dnd="true" value={column?.title} onChangedValue={handleUpdateColumnTitle} />
           <Box>
             <Tooltip title="More options">

@@ -67,10 +67,10 @@ function AccountTab() {
     const formData = new FormData()
     formData.append('avatar', file) // 👈 key phải trùng với backend
 
-    // Kiểm tra kỹ giá trị trong FormData
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value) // 👈 phải in ra kiểu File, không phải {}
-    }
+    // // Kiểm tra kỹ giá trị trong FormData
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(`${key}:`, value) // 👈 phải in ra kiểu File, không phải {}
+    // }
 
     dispatch(updateUserAPI(formData))
     e.target.value = ''

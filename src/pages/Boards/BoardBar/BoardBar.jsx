@@ -58,41 +58,7 @@ function BoardBar({ board }) {
         <Button startIcon={<PersonAddIcon />} sx={{ color: 'white' }}>
           Invite
         </Button>
-        {/* danh sách thành viên */}
-        <BoardUserGroup/>
-        <AvatarGroup
-          max={3}
-          sx={{
-            gap: '10px',
-            '& .MuiAvatar-root': {
-              width: 34,
-              height: 34,
-              fontSize: 16,
-              border: 'none',
-              color: 'white',
-              cursor: 'pointer',
-              '&:first-of-type': {
-                bgcolor: '#a4b0de'
-              }
-            }
-          }}
-        >
-          <Tooltip title="duyphucdev" sx={{ width: 20 }}>
-            <Avatar alt="duyphucdev" src="https://aphoto.vn/wp-content/uploads/2019/02/hinh2-32.jpg" />
-          </Tooltip>
-          <Tooltip title="duyphucdev" sx={{ width: 20 }}>
-            <Avatar alt="duyphucdev" src="https://aphoto.vn/wp-content/uploads/2019/02/hinh2-32.jpg" />
-          </Tooltip>
-          <Tooltip title="duyphucdev" sx={{ width: 20 }}>
-            <Avatar alt="duyphucdev" src="https://aphoto.vn/wp-content/uploads/2019/02/hinh2-32.jpg" />
-          </Tooltip>
-          <Tooltip title="duyphucdev" sx={{ width: 20 }}>
-            <Avatar alt="duyphucdev" src="https://aphoto.vn/wp-content/uploads/2019/02/hinh2-32.jpg" />
-          </Tooltip>
-          <Tooltip title="duyphucdev" sx={{ width: 20 }}>
-            <Avatar alt="duyphucdev" src="https://aphoto.vn/wp-content/uploads/2019/02/hinh2-32.jpg" />
-          </Tooltip>
-        </AvatarGroup>
+        <BoardUserGroup boardUsers={board?.allUsers} />
       </Box>
     </Box>
   )

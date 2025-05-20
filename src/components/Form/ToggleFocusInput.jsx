@@ -7,7 +7,8 @@ import { Box } from '@mui/material'
 // Controlled Input trong MUI: https://mui.com/material-ui/react-text-field/#uncontrolled-vs-controlled
 function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...props }) {
   const [inputValue, setInputValue] = useState(value)
-  const isDraggingRef = useRef()
+  const isDraggingRef = useRef(false)
+  const mouseDownTimeRef = useRef(0)
 
   // Blur là khi chúng ta không còn Focus vào phần tử nữa thì sẽ trigger hành động ở đây.
   const triggerBlur = () => {
@@ -23,9 +24,10 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
     // Khi giá trị có thay đổi ok thì gọi lên func ở Props cha để xử lý
     onChangedValue(inputValue)
   }
+
   const handleMouseDown = (e) => {
-    // Nếu click giữ (drag) thì flag là true
     isDraggingRef.current = false
+    mouseDownTimeRef.current = Date.now()
 
     const handleMouseMove = () => {
       isDraggingRef.current = true
@@ -35,14 +37,26 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
 
-      // Nếu không kéo (chỉ click thôi) thì focus vào input
-      if (!isDraggingRef.current) {
+      // Chỉ focus nếu không drag và thời gian giữ chuột ngắn (click)
+      const mouseUpTime = Date.now()
+      const mouseDownDuration = mouseUpTime - mouseDownTimeRef.current
+
+      if (!isDraggingRef.current && mouseDownDuration < 200) {
         e.target.focus()
       }
     }
 
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      e.target.blur()
+      triggerBlur()
+      setInputValue(inputValue.trim())
+    }
   }
 
   return (
@@ -58,6 +72,7 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
         }}
         onMouseDown={handleMouseDown}
         onBlur={triggerBlur}
+        onKeyDown={handleKeyDown}
         {...props}
         // Magic here :D
         sx={{
@@ -79,6 +94,7 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
           },
           '& .MuiOutlinedInput-input': {
             px: '6px',
+            // cursor: 'pointer',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis'

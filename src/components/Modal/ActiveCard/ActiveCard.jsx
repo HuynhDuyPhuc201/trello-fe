@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
@@ -24,6 +24,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
 import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
@@ -37,7 +38,9 @@ import { styled } from '@mui/material/styles'
 import { updateCurrentActiveCard, useActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { useDispatch } from 'react-redux'
 import { cardService } from '~/services/card.service'
-import { getBoardDetail } from '~/redux/activeBoard/activeBoardSlice'
+import { getBoardDetail, updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { Button, Popover } from '@mui/material'
+import { COLORS } from '~/config/constants'
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -63,6 +66,8 @@ const SidebarItem = styled(Box)(({ theme }) => ({
  */
 
 function ActiveCard() {
+  const [openCoverPopover, setOpenCoverPopover] = useState(false)
+  const coverButtonRef = useRef(null)
   const { currentActiveCard } = useActiveCard()
   const activeCard = currentActiveCard
 
@@ -75,28 +80,37 @@ function ActiveCard() {
     try {
       const updatedCard = await cardService.update(activeCard._id, updateData)
       dispatch(updateCurrentActiveCard(updatedCard))
-      dispatch(getBoardDetail(activeCard.boardId))
+      // gọi lại board detail để cập nhật lại các card trong board
+      // cách 1, gọi lại api getBoardDetail là xong
+      // dispatch(getBoardDetail(updatedCard.boardId))
+
+      // cách 2, dùng redux để cập nhật lại card trong board
+      dispatch(updateCardInBoard({ cardId: updatedCard._id, updateData }))
     } catch (error) {
       console.log(error)
     }
   }
 
-  const onUpdateCardTitle = (newTitle) => {
-    fetchUpdateCard({ title: newTitle.trim() })
+  const onUpdateCard = (type, value) => {
+    fetchUpdateCard({ [type]: value.trim() })
   }
 
   const onUploadCardCover = (event) => {
-    console.log(event.target?.files[0])
-    const error = singleFileValidator(event.target?.files[0])
+    const file = event.target?.files?.[0]
+    const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
       return
     }
-    let reqData = new FormData()
-    reqData.append('cardCover', event.target?.files[0])
-
-    // Gọi API...
+    let formData = new FormData()
+    formData.append('cardCover', file) // 👈 key phải trùng với backend
+    toast.promise(fetchUpdateCard(formData), { pending: 'Updating...' }).then(() => {
+      event.target.value = ''
+      toast.success('Update successfully!')
+    })
   }
+
+  const colorActiveCard = activeCard?.cover?.charAt(0) === '#'
 
   return (
     <Modal
@@ -108,7 +122,6 @@ function ActiveCard() {
       <Box
         sx={{
           position: 'relative',
-          // width: 900,
           maxWidth: 900,
           bgcolor: 'white',
           boxShadow: 24,
@@ -132,12 +145,87 @@ function ActiveCard() {
         </Box>
 
         {activeCard?.cover && (
-          <Box sx={{ mb: 4 }}>
-            <img
-              style={{ width: '100%', height: '320px', borderRadius: '6px', objectFit: 'cover' }}
-              src="https://trungquandev.com/wp-content/uploads/2023/08/fit-banner-for-facebook-blog-trungquandev-codetq.png"
-              alt="card-cover"
-            />
+          <Box sx={{ position: 'relative' }}>
+            <Box
+              sx={{
+                mb: 4,
+                backgroundColor: colorActiveCard ? activeCard?.cover : 'transparent',
+                width: '100%',
+                height: '320px'
+              }}
+            >
+              {!colorActiveCard && (
+                <img
+                  style={{ width: '100%', height: '320px', borderRadius: '6px', objectFit: 'cover' }}
+                  src={activeCard?.cover}
+                  alt="card-cover"
+                />
+              )}
+            </Box>
+            <Box
+              sx={{ position: 'absolute', bottom: 20, right: 20 }}
+              onClick={() => setOpenCoverPopover(!openCoverPopover)}
+            >
+              <Button
+                ref={coverButtonRef}
+                sx={{ display: 'flex', gap: '3px' }}
+                variant="contained"
+                onClick={() => setOpenCoverPopover(!openCoverPopover)}
+              >
+                <ImageOutlinedIcon fontSize="small" />
+                Cover
+              </Button>
+              <Popover
+                open={openCoverPopover}
+                anchorEl={coverButtonRef.current}
+                onClose={() => setOpenCoverPopover(false)}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left'
+                }}
+                sx={{
+                  '& .MuiPaper-rounded': {
+                    width: '300px',
+                    padding: '8px',
+                    marginTop: '10px'
+                  }
+                }}
+              >
+                <Box>
+                  <SidebarItem className="active" component="label" onClick={() => onUpdateCard('cover', '')}>
+                    <DeleteIcon fontSize="small" />
+                    Remove
+                  </SidebarItem>
+                  <Divider sx={{ py: 1 }} />
+                  <Box>
+                    <Typography sx={{ py: 1, fontSize: '12px' }}>Color</Typography>
+                    <Grid container spacing={1}>
+                      {COLORS.map((color, index) => (
+                        <Grid key={index} xs={4} md={3}>
+                          <Box
+                            sx={{ height: '30px', backgroundColor: color, borderRadius: '4px', cursor: 'pointer' }}
+                            onClick={() => onUpdateCard('cardCover', color)}
+                          ></Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                  <Divider sx={{ py: 1 }} />
+                  <Box>
+                    <Typography sx={{ py: 1, fontSize: '12px' }}>File</Typography>
+                    <SidebarItem className="active" component="label">
+                      <ImageOutlinedIcon fontSize="small" />
+                      Cover
+                      <VisuallyHiddenInput type="file" onChange={onUploadCardCover} />
+                    </SidebarItem>
+                  </Box>
+                </Box>
+              </Popover>
+            </Box>
           </Box>
         )}
 
@@ -145,7 +233,11 @@ function ActiveCard() {
           <CreditCardIcon />
 
           {/* Feature 01: Xử lý tiêu đề của Card */}
-          <ToggleFocusInput inputFontSize="22px" value={activeCard?.title} onChangedValue={onUpdateCardTitle} />
+          <ToggleFocusInput
+            inputFontSize="22px"
+            value={activeCard?.title}
+            onChangedValue={(value) => onUpdateCard('title', value)}
+          />
         </Box>
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -167,7 +259,10 @@ function ActiveCard() {
               </Box>
 
               {/* Feature 03: Xử lý mô tả của Card */}
-              <CardDescriptionMdEditor />
+              <CardDescriptionMdEditor
+                description={activeCard?.description || ''}
+                onUpdateCard={(value) => onUpdateCard('description', value)}
+              />
             </Box>
 
             <Box sx={{ mb: 3 }}>
@@ -193,11 +288,64 @@ function ActiveCard() {
                 Join
               </SidebarItem>
               {/* Feature 06: Xử lý hành động cập nhật ảnh Cover của Card */}
-              <SidebarItem className="active" component="label">
-                <ImageOutlinedIcon fontSize="small" />
-                Cover
-                <VisuallyHiddenInput type="file" onChange={onUploadCardCover} />
-              </SidebarItem>
+              {!activeCard?.cover && (
+                <Box onClick={() => setOpenCoverPopover(!openCoverPopover)}>
+                  <SidebarItem
+                    ref={coverButtonRef}
+                    className="active"
+                    component="label"
+                    onClick={() => setOpenCoverPopover(!openCoverPopover)}
+                  >
+                    <ImageOutlinedIcon fontSize="small" />
+                    Cover
+                  </SidebarItem>
+                  <Popover
+                    open={openCoverPopover}
+                    anchorEl={coverButtonRef.current}
+                    onClose={() => setOpenCoverPopover(false)}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left'
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left'
+                    }}
+                    sx={{
+                      '& .MuiPaper-rounded': {
+                        width: '300px',
+                        padding: '8px',
+                        marginTop: '10px'
+                      }
+                    }}
+                  >
+                    <Box>
+                      <Box>
+                        <Typography sx={{ py: 1, fontSize: '12px' }}>Color</Typography>
+                        <Grid container spacing={1}>
+                          {COLORS.map((color, index) => (
+                            <Grid key={index} xs={4} md={3}>
+                              <Box
+                                sx={{ height: '30px', backgroundColor: color, borderRadius: '4px', cursor: 'pointer' }}
+                                onClick={() => onUpdateCard('cardCover', color)}
+                              ></Box>
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </Box>
+                      <Divider sx={{ py: 1 }} />
+                      <Box>
+                        <Typography sx={{ py: 1, fontSize: '12px' }}>File</Typography>
+                        <SidebarItem className="active" component="label">
+                          <ImageOutlinedIcon fontSize="small" />
+                          Cover
+                          <VisuallyHiddenInput type="file" onChange={onUploadCardCover} />
+                        </SidebarItem>
+                      </Box>
+                    </Box>
+                  </Popover>
+                </Box>
+              )}
 
               <SidebarItem>
                 <AttachFileOutlinedIcon fontSize="small" />

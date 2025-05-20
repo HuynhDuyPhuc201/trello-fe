@@ -35,6 +35,7 @@ function Card({ card }) {
   const shouldShowCardActions = () => {
     return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length
   }
+  const colorCardImage = card?.cover?.charAt(0) === '#'
 
   const setActiveCard = () => {
     dispatch(updateCurrentActiveCard(card))
@@ -57,7 +58,7 @@ function Card({ card }) {
           '&:hover': { borderColor: (theme) => theme.palette.primary.main }
         }}
       >
-        {card?.cover && <CardMedia sx={{ height: 140 }} image={card?.cover} title="green iguana" />}
+        {card?.cover && <CardMedia sx={{ height: 140, backgroundColor: colorCardImage ? card?.cover : 'transparent' }} image={!colorCardImage &&card?.cover} title="green iguana" />}
         <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
           <Typography>{card?.title}</Typography>
         </CardContent>
