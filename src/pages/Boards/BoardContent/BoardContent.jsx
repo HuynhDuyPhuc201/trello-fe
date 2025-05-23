@@ -365,6 +365,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     [activeDragItemType, oderedColumns]
   )
 
+  const findColor = board?.cover.charAt(0) === 'l'
   return (
     <DndContext
       sensors={sensors}
@@ -383,7 +384,14 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     >
       <Box
         sx={{
-          bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'),
+          ...(findColor
+            ? { background: board?.cover || '#808080' }
+            : {
+                backgroundImage: `url(${board?.cover})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }),
           width: '100%',
           height: (theme) => theme.trello.boardContentHeight,
           p: '10px 0'

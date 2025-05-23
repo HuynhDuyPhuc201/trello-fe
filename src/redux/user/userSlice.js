@@ -12,7 +12,7 @@ export const loginUserAPI = createAsyncThunk('user/loginUserAPI', async (data, t
   try {
     const response = await userService.login(data)
     const { accessToken, refreshToken, ...rest } = response
-    return rest
+    return response
   } catch (error) {
     // Trả về lỗi từ backend
     return thunkAPI.rejectWithValue(error?.response?.data || 'Login failed')

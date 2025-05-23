@@ -21,6 +21,7 @@ import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
+import { path } from '~/config/path'
 
 function LoginForm() {
   const {
@@ -40,7 +41,7 @@ function LoginForm() {
       const res = await dispatch(loginUserAPI(data))
 
       if (res.meta?.requestStatus === 'fulfilled') {
-        navigate('/')
+        navigate(path.Board.index)
       } else {
         // Hiển thị lỗi từ backend
         toast.error(res.payload?.message || 'Login failed!')

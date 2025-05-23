@@ -11,7 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Divider from '@mui/material/Divider'
 import Check from '@mui/icons-material/Check'
 
-function Starred() {
+function Starred({ colorConfigs }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
@@ -23,7 +23,9 @@ function Starred() {
   return (
     <Box>
       <Button
-        sx={{ color: 'white' }}
+        sx={{
+          color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000')
+        }}
         id="basic-button-starred"
         aria-controls={open ? 'basic-menu-starred' : undefined}
         aria-haspopup="true"

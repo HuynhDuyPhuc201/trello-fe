@@ -3,16 +3,17 @@ import Box from '@mui/material/Box'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 import { useUser } from '~/redux/user/userSlice'
+import { path } from '~/config/path'
 
 function Auth() {
   const { pathname } = useLocation()
-  const isLogin = pathname === '/login'
+  const isLogin = pathname === '/login' || pathname === '/'
   const isRegister = pathname === '/register'
 
   const { currentUser } = useUser()
 
   if (currentUser) {
-    return <Navigate to="/" />
+    return <Navigate to={path.Board.index} />
   }
 
   return (

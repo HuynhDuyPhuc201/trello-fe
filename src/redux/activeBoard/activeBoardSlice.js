@@ -47,10 +47,13 @@ export const activeBoardSlice = createSlice({
         column.cards.some((card) => card._id === cardId)
       )
       if (cardIndex !== -1) {
-        state.currentActiveBoard.columns[cardIndex].cards = state.currentActiveBoard.columns[cardIndex].cards.map((card) =>
-          card._id === cardId ? { ...card, ...updateData } : card
+        state.currentActiveBoard.columns[cardIndex].cards = state.currentActiveBoard.columns[cardIndex].cards.map(
+          (card) => (card._id === cardId ? { ...card, ...updateData } : card)
         )
       }
+    },
+    clearCurrentActiveBoard: (state) => {
+      state.currentActiveBoard = null
     }
   },
   extraReducers: (builder) => {
@@ -65,6 +68,6 @@ export const activeBoardSlice = createSlice({
   }
 })
 
-export const { updateCurrentActiveBoard, updateCardInBoard } = activeBoardSlice.actions
+export const { updateCurrentActiveBoard, updateCardInBoard, clearCurrentActiveBoard } = activeBoardSlice.actions
 export const useActiveBoard = () => useSelector((state) => state.activeBoard)
 export const activeBoardReducer = activeBoardSlice.reducer

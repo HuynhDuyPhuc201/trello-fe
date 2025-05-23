@@ -1,4 +1,4 @@
-import { Card as MuiCard } from '@mui/material'
+import { Box, Checkbox, Card as MuiCard } from '@mui/material'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
@@ -11,7 +11,7 @@ import Button from '@mui/material/Button'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDispatch } from 'react-redux'
-import { updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { showModalActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 
 function Card({ card }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -35,12 +35,14 @@ function Card({ card }) {
   const shouldShowCardActions = () => {
     return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length
   }
-  const colorCardImage = card?.cover?.charAt(0) === '#'
 
   const setActiveCard = () => {
     dispatch(updateCurrentActiveCard(card))
+    dispatch(showModalActiveCard(true))
   }
 
+  const isColor = typeof card?.cover === 'string' && card.cover.startsWith('#')
+  const isImage = typeof card?.cover === 'string' && !card.cover.startsWith('#')
   return (
     <>
       <MuiCard
@@ -58,23 +60,36 @@ function Card({ card }) {
           '&:hover': { borderColor: (theme) => theme.palette.primary.main }
         }}
       >
-        {card?.cover && <CardMedia sx={{ height: 140, backgroundColor: colorCardImage ? card?.cover : 'transparent' }} image={!colorCardImage &&card?.cover} title="green iguana" />}
-        <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-          <Typography>{card?.title}</Typography>
+        {(isColor || isImage) && (
+          <CardMedia
+            component="div"
+            sx={{
+              height: isColor ? 70 : 140,
+              backgroundColor: isColor ? card.cover : 'transparent'
+            }}
+            image={isImage ? card.cover : undefined}
+            title="Card cover"
+          />
+        )}
+        <CardContent sx={{ p: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {card?.done && <Checkbox sx={{ p: 0 }} value={card?.done} checked={card?.done} />}
+            <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{card?.title}</Typography>
+          </Box>
         </CardContent>
         {shouldShowCardActions() && (
           <CardActions sx={{ p: '0 4px 8px 4px' }}>
-            {!!card?.memberIds.length && (
+            {!!card?.memberIds?.length && (
               <Button size="small" startIcon={<GroupIcon />}>
                 {card?.memberIds?.length}
               </Button>
             )}
-            {!!card?.comments.length && (
+            {!!card?.comments?.length && (
               <Button size="small" startIcon={<CommentIcon />}>
                 {card?.comments?.length}
               </Button>
             )}
-            {!!card?.attachments.length && (
+            {!!card?.attachments?.length && (
               <Button size="small" startIcon={<AttachmentIcon />}>
                 {card?.attachments?.length}
               </Button>

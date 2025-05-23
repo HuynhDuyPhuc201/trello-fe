@@ -122,7 +122,7 @@ function ListColumns({ columns }) {
               p: 1,
               borderRadius: '6px',
               height: 'fit-content',
-              bgcolor: '#ffffff3d',
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? '#34495e' : '#ffffff3d',
               display: 'flex',
               flexDirection: 'column',
               gap: 1

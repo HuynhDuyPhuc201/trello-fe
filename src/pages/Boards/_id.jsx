@@ -6,25 +6,36 @@ import { useEffect } from 'react'
 import { boardService } from '~/services/board.service'
 import { columnService } from '~/services/column.service'
 import { useDispatch } from 'react-redux'
-import { getBoardDetail, updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import {
+  clearCurrentActiveBoard,
+  getBoardDetail,
+  updateCurrentActiveBoard,
+  useActiveBoard
+} from '~/redux/activeBoard/activeBoardSlice'
 import { cloneDeep } from 'lodash'
 import LoadingSpiner from '~/components/Loading/Loading'
 import { useParams } from 'react-router-dom'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
 import { useActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { generateColorConfigs } from '~/utils/getTextColor'
 
 function Board() {
   const dispatch = useDispatch()
   const { currentActiveBoard } = useActiveBoard()
-  const { currentActiveCard } = useActiveCard()
-  const board = currentActiveBoard
-  const activeCard = currentActiveCard
+  const { isShowModalActiveCard } = useActiveCard()
 
+  const board = currentActiveBoard
   const { boardId } = useParams()
 
   useEffect(() => {
     dispatch(getBoardDetail(boardId))
+    return () => {
+      dispatch(clearCurrentActiveBoard())
+    }
   }, [dispatch, boardId])
+
+  const renderColor = generateColorConfigs()
+  const findColor = renderColor.find((item) => item.background === board?.cover)
 
   const moveColumns = (dndOrderedColumns) => {
     const dndOrderedColumnIds = dndOrderedColumns.map((col) => col._id)
@@ -112,14 +123,15 @@ function Board() {
 
   return (
     <Container disableGutters sx={{ height: '100vh' }} maxWidth={false}>
-      {/* Modal active check đóng mỏ dựa theo điều kiện có tồn tại data activeCard lưu trong Redux hay không thì mới render. Mỗi thời điểm chỉ tồn tải cái modal card dang active */}
+      {/* Modal active check đóng mỏ dựa theo điều kiện có tồn tại data isShowModalActiveCard lưu trong Redux hay không thì mới render. Mỗi thời điểm chỉ tồn tải cái modal card dang active */}
 
-      {activeCard && <ActiveCard />}
+      {isShowModalActiveCard && <ActiveCard />}
       {/* các phần còn lại của Board Details */}
 
-      <AppBar />
-      <BoardBar board={board} />
+      <AppBar colorConfigs={findColor} />
+      <BoardBar board={board} colorConfigs={findColor} />
       <BoardContent
+        colorConfigs={findColor}
         board={board}
         moveColumns={moveColumns}
         moveCardInTheSameColumn={moveCardInTheSameColumn}

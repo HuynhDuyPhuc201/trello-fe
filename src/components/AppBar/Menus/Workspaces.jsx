@@ -13,7 +13,7 @@ import ContentPaste from '@mui/icons-material/ContentPaste'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Cloud from '@mui/icons-material/Cloud'
 import Divider from '@mui/material/Divider'
-function Workspaces() {
+function Workspaces({ colorConfigs }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {
@@ -25,7 +25,9 @@ function Workspaces() {
   return (
     <Box>
       <Button
-        sx={{ color: 'white' }}
+        sx={{
+          color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000')
+        }}
         id="basic-button-workspaces"
         aria-controls={open ? 'basic-menu-workspaces' : undefined}
         aria-haspopup="true"

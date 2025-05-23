@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import Popover from '@mui/material/Popover'
-import { userService } from '~/services/user.service'
 
 function BoardUserGroup({ boardUsers = [], limit = 4 }) {
   /**

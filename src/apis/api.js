@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { API_ROOT } from '~/config/constants'
-import { logoutUserAPI, useUser } from '~/redux/user/userSlice'
+import { logoutUserAPI, updateUserAPI, useUser } from '~/redux/user/userSlice'
 import { userService } from '~/services/user.service'
 import { interceptorLoadingElements } from '~/utils/formatters'
 
@@ -58,8 +58,10 @@ api.interceptors.response.use(
         if (!refreshTokenPromise) {
           refreshTokenPromise = await userService.refreshToken()
           // Chờ một chút để cookie cập nhật
-          await new Promise((resolve) => setTimeout(resolve, 200)) // chờ 200ms
+          await new Promise((resolve) => setTimeout(resolve, 200))
         }
+        // api.defaults.headers.Authorization = `Bearer ${refreshTokenPromise}`
+
         return api(originalRequest)
       } catch (error) {
         // bất kỳ lỗi nào liên quan đến việc refresh token thì logout user
@@ -68,13 +70,11 @@ api.interceptors.response.use(
         refreshTokenPromise = null
       }
     }
-
     // dùng toast để hiển thị thông báo tất cả lỗi trừ lỗi 401 (Unauthorized)
     // 401 là lỗi không có quyền truy cập, thường là do token hết hạn hoặc không có quyền truy cập vào API đó
     if (error.response?.status === 401) {
       reduxStore.dispatch(logoutUserAPI(false))
     }
-
     return Promise.reject(error)
   }
 )

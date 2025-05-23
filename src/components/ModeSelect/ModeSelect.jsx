@@ -8,7 +8,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import Box from '@mui/material/Box'
 
-function ModeSelect() {
+function ModeSelect({ colorConfigs }) {
   const { mode, setMode } = useColorScheme()
 
   const handleChange = (event) => {
@@ -20,9 +20,11 @@ function ModeSelect() {
       <InputLabel
         id="label-select-dark-light-mode"
         sx={{
-          color: 'white',
+          color: (theme) =>
+            colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000',
           '&.Mui-focused': {
-            color: 'white'
+            color: (theme) =>
+              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
           }
         }}
       >
@@ -35,18 +37,23 @@ function ModeSelect() {
         label="Mode"
         onChange={handleChange}
         sx={{
-          color: 'white',
+          color: (theme) =>
+            colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000',
           '.MuiOutlinedInput-notchedOutline': {
-            borderColor: 'white'
+            borderColor: (theme) =>
+              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'white'
+            borderColor: (theme) =>
+              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'white'
+            borderColor: (theme) =>
+              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
           },
           '.MuiSvgIcon-root': {
-            color: 'white'
+            color: (theme) =>
+              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
           }
         }}
       >

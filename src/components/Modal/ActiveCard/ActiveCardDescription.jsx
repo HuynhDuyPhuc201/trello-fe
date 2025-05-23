@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { useColorScheme } from '@mui/material/styles'
 import MDEditor from '@uiw/react-md-editor'
 import rehypeSanitize from 'rehype-sanitize'
@@ -6,24 +6,26 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import EditNoteIcon from '@mui/icons-material/EditNote'
 import { getBoardDetail } from '~/redux/activeBoard/activeBoardSlice'
+import { useSelector } from 'react-redux'
 
 /**
  * Vài ví dụ Markdown từ lib
  * https://codesandbox.io/embed/markdown-editor-for-react-izdd6?fontsize=14&hidenavigation=1&theme=dark
  */
-function CardDescriptionMdEditor({ description, onUpdateCard }) {
+function ActiveCardDescription({ onUpdateCard }) {
   // Lấy giá trị 'dark', 'light' hoặc 'system' mode từ MUI để support phần Markdown bên dưới: data-color-mode={mode}
   // https://www.npmjs.com/package/@uiw/react-md-editor#support-dark-modenight-mode
   const { mode } = useColorScheme()
 
   // State xử lý chế độ Edit và chế độ View
-  const [markdownEditMode, setMarkdownEditMode] = useState(false)
+  const [markdownEditMode, setMarkdownEditMode] = useState(true)
   // State xử lý giá trị markdown khi chỉnh sửa
+  const description = useSelector((state) => state.activeCard.currentActiveCard.description)
   const [cardDescription, setCardDescription] = useState(description || '')
 
   const updateCardDescription = () => {
     setMarkdownEditMode(false)
-    onUpdateCard(cardDescription)
+    onUpdateCard('description', cardDescription)
   }
 
   return (
@@ -43,7 +45,7 @@ function CardDescriptionMdEditor({ description, onUpdateCard }) {
           <Button
             sx={{ alignSelf: 'flex-end' }}
             onClick={updateCardDescription}
-            className="interceptor-loading"
+            // className="interceptor-loading"
             type="button"
             variant="contained"
             size="small"
@@ -82,4 +84,4 @@ function CardDescriptionMdEditor({ description, onUpdateCard }) {
   )
 }
 
-export default CardDescriptionMdEditor
+export default ActiveCardDescription

@@ -95,6 +95,7 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
           '& .MuiOutlinedInput-input': {
             px: '6px',
             // cursor: 'pointer',
+            width: '100%' ,
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis'

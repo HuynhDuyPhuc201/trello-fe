@@ -7,7 +7,7 @@ import CancelIcon from '@mui/icons-material/Cancel'
 import { useForm, Controller } from 'react-hook-form'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
-import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
+import { FIELD_REQUIRED_MESSAGE, singleFileValidator } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import AbcIcon from '@mui/icons-material/Abc'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
@@ -19,6 +19,13 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import { styled } from '@mui/material/styles'
 import { boardService } from '~/services/board.service'
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { DeleteIcon } from '@mui/icons-material/Delete'
+import { Divider, Grid } from '@mui/material'
+import { COLORS, unsplashSamples } from '~/config/constants'
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
+import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
+import { generateColorConfigs } from '~/utils/getTextColor'
+import { toast } from 'react-toastify'
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -57,17 +64,21 @@ function SidebarCreateBoardModal({ refetch }) {
     defaultValues: {
       title: '',
       description: '',
-      type: BOARD_TYPES.PUBLIC
+      type: BOARD_TYPES.PUBLIC,
+      cover: ''
     }
   })
 
   const [isOpen, setIsOpen] = useState(false)
+  const [cover, setCover] = useState('')
   const handleOpenModal = () => setIsOpen(true)
   const handleCloseModal = () => {
     setIsOpen(false)
     reset()
   }
   const queryClient = useQueryClient()
+
+  const renderColor = generateColorConfigs()
 
   const createBoardMutation = useMutation({
     mutationFn: boardService.create,
@@ -82,6 +93,7 @@ function SidebarCreateBoardModal({ refetch }) {
   })
 
   const submitCreateNewBoard = async (data) => {
+    if (cover) data.cover = cover
     createBoardMutation.mutate(data)
   }
 
@@ -127,7 +139,6 @@ function SidebarCreateBoardModal({ refetch }) {
           <Box id="modal-modal-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <LibraryAddIcon />
             <Typography variant="h6" component="h2">
-              {' '}
               Create a new board
             </Typography>
           </Box>
@@ -156,7 +167,6 @@ function SidebarCreateBoardModal({ refetch }) {
                   />
                   <FieldErrorAlert errors={errors} fieldName={'title'} />
                 </Box>
-
                 <Box>
                   <TextField
                     fullWidth
@@ -180,7 +190,61 @@ function SidebarCreateBoardModal({ refetch }) {
                   />
                   <FieldErrorAlert errors={errors} fieldName={'description'} />
                 </Box>
+                <Box>
+                  <Box>
+                    <Typography sx={{ py: 1, fontSize: '12px' }}>Color</Typography>
+                    <Grid container spacing={1}>
+                      {renderColor.map((color, index) => (
+                        <Grid item key={index} xs={4} md={3}>
+                          <Box
+                            sx={{
+                              height: '30px',
+                              background: color.background,
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              border: (theme) =>
+                                cover === color.background
+                                  ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`
+                                  : 'none'
+                            }}
+                            onClick={() => setCover(color.background)}
+                          ></Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                  <Divider sx={{ py: 1 }} />
+                  <Box>
+                    <Typography sx={{ py: 1, fontSize: '12px' }}>Background</Typography>
 
+                    {/* Grid ảnh Unsplash */}
+                    <Grid container spacing={1} sx={{ mt: 1 }}>
+                      {unsplashSamples.map((item, index) => (
+                        <Grid item xs={6} md={4} key={index}>
+                          <Box
+                            component="img"
+                            src={item}
+                            sx={{
+                              width: '100%',
+                              height: '100px',
+                              objectFit: 'cover',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              '&:hover': {
+                                opacity: 0.8
+                              },
+                              border: (theme) =>
+                                cover === item
+                                  ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`
+                                  : 'none'
+                            }}
+                            onClick={() => setCover(item)}
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                </Box>
                 {/*
                  * Lưu ý đối với RadioGroup của MUI thì không thể dùng register tương tự TextField được mà phải sử dụng <Controller /> và props "control" của react-hook-form như cách làm dưới đây
                  * https://stackoverflow.com/a/73336101
@@ -207,7 +271,6 @@ function SidebarCreateBoardModal({ refetch }) {
                     </RadioGroup>
                   )}
                 />
-
                 <Box sx={{ alignSelf: 'flex-end' }}>
                   <Button className="interceptor-loading" type="submit" variant="contained" color="primary">
                     Create

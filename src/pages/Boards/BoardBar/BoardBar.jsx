@@ -12,6 +12,7 @@ import Button from '@mui/material/Button'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { capitalizeFirstLetter } from '~/utils/formatters'
 import BoardUserGroup from './BoardUserGroup'
+import InviteBoardUser from './InviteBoardUser'
 
 const MENU_STYLES = {
   color: 'white',
@@ -27,7 +28,7 @@ const MENU_STYLES = {
   }
 }
 
-function BoardBar({ board }) {
+function BoardBar({ board, colorConfigs }) {
   return (
     <Box
       sx={{
@@ -39,7 +40,7 @@ function BoardBar({ board }) {
         gap: 2,
         paddingX: 2,
         overflowX: 'auto',
-        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'),
+        bgcolor: (theme) => colorConfigs?.boardBarBg ? colorConfigs?.boardBarBg : theme.palette.mode === 'dark' ? '#34495e' : '#001f4d',
         '&::-webkit-scrollbar-track': {
           m: 2
         }
@@ -55,9 +56,7 @@ function BoardBar({ board }) {
         <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label="Filters" clickable />
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Button startIcon={<PersonAddIcon />} sx={{ color: 'white' }}>
-          Invite
-        </Button>
+        <InviteBoardUser board={board} />
         <BoardUserGroup boardUsers={board?.allUsers} />
       </Box>
     </Box>
