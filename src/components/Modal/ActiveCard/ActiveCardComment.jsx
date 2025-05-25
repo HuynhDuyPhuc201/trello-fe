@@ -9,6 +9,7 @@ import { useUser } from '~/redux/user/userSlice'
 import { memo, useRef, useState } from 'react'
 import { Button, Pagination } from '@mui/material'
 import { useCardComment } from '~/redux/activeCard/activeCardSlice'
+import { toast } from 'react-toastify'
 
 const ActiveCardComment = memo(({ onAddCardComment, onDeleteCardComment, onEditCardComment }) => {
   const { currentUser } = useUser()
@@ -34,7 +35,7 @@ const ActiveCardComment = memo(({ onAddCardComment, onDeleteCardComment, onEditC
           event.target.value = ''
         }
       } catch (error) {
-        console.log('error', error)
+        toast.error('Failed to add comment. Please try again.')
       }
     }
   }

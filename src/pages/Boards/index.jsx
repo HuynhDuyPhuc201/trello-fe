@@ -16,15 +16,17 @@ import CardContent from '@mui/material/CardContent'
 import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
 import { Link, useLocation } from 'react-router-dom'
-import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
 
 import { styled } from '@mui/material/styles'
 import LoadingSpiner from '~/components/Loading/Loading'
-import { boardService } from '~/services/board.service'
 import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/config/constants'
 import { CardMedia } from '@mui/material'
 import { path } from '~/config/path'
+import { useDispatch } from 'react-redux'
+import { getBoardAll, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import socket from '~/sockets'
+import { useUser } from '~/redux/user/userSlice'
 // Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -44,33 +46,30 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 }))
 
 function Boards() {
-  // Số lượng bản ghi boards hiển thị tối đa trên 1 page tùy dự án (thường sẽ là 12 cái)
-  const [boards, setBoards] = useState(null)
-  const [totalBoards, setTotalBoards] = useState(null)
-
+  const dispatch = useDispatch()
   const location = useLocation()
   const query = new URLSearchParams(location.search)
+
+  const { boards } = useActiveBoard()
+
   /**
    * Lấy giá trị page từ query, default sẽ là 1 nếu không tồn tại page từ url.
    * Nhắc lại kiến thức cơ bản hàm parseInt cần tham số thứ 2 là Hệ thập phân (hệ đếm cơ số 10) để đảm bảo chuẩn số cho phân trang
    */
   const page = parseInt(query.get('page') || DEFAULT_PAGE, 10)
 
-  const fetchBoards = async () => {
-    try {
-      const res = await boardService.getAll(location.search)
-      if (res) {
-        setBoards(res.boards || [])
-        setTotalBoards(res.total || 0)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   useEffect(() => {
-    fetchBoards()
+    dispatch(getBoardAll()) // Reset lại board detail khi chuyển sang trang boards
   }, [location.search])
+
+  const { currentUser } = useUser()
+  const handleClickToBoard = (boardId) => {
+    if (!boardId || !currentUser) return
+    socket.emit('user_join_board', {
+      boardId: boardId,
+      user: currentUser
+    })
+  }
 
   // Lúc chưa tồn tại boards > đang chờ gọi api thì hiện loading
   if (!boards) {
@@ -100,12 +99,12 @@ function Boards() {
               </Stack>
               <Divider sx={{ my: 1 }} />
               <Stack direction="column" spacing={1}>
-                <SidebarCreateBoardModal refetch={fetchBoards} />
+                <SidebarCreateBoardModal />
               </Stack>
             </Grid>
 
             <Grid xs={12} sm={9}>
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3}}>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
                 YOUR WORKSPACES:
               </Typography>
 
@@ -117,18 +116,22 @@ function Boards() {
               )}
 
               {/* Trường hợp gọi API và có boards trong Database trả về thì render danh sách boards */}
-              {boards?.length > 0 && (
+              {boards && boards?.length > 0 && (
                 <Grid container spacing={2}>
                   {boards?.map((board) => (
                     <Grid xs={2} sm={3} md={4} key={board._id}>
                       <Card sx={{ width: '250px' }}>
-                        {
-                          board?.cover.startsWith('l') ? (
-                            <Box sx={{ height: '100px', background: board?.cover || '#bdbdbd' }}></Box>
-                          ) : (
-                            <CardMedia component="img" height="100" image={board?.cover} />
-                          )
-                        }
+                        {(() => {
+                          const cover = board?.cover
+                          if (!cover) {
+                            return <Box sx={{ height: '100px', background: '#bdbdbd' }} />
+                          }
+                          if (cover.startsWith('l')) {
+                            return <Box sx={{ height: '100px', background: cover }} />
+                          }
+                          return <CardMedia component="img" height="100" image={cover} />
+                        })()}
+
                         <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
                           <Typography gutterBottom variant="h6" component="div">
                             {board.title || ''}
@@ -143,6 +146,7 @@ function Boards() {
                           <Box
                             component={Link}
                             to={`${path.Board.detail.replace(':boardId', board._id)}`}
+                            onClick={() => handleClickToBoard(board._id)}
                             sx={{
                               mt: 1,
                               display: 'flex',
@@ -160,8 +164,8 @@ function Boards() {
                   ))}
                 </Grid>
               )}
-              {/* Trường hợp gọi API và có totalBoards trong Database trả về thì render khu vực phân trang  */}
-              {totalBoards > 0 && (
+              {/* Trường hợp gọi API và có boards?.totalBoards trong Database trả về thì render khu vực phân trang  */}
+              {boards?.totalBoards > 0 && (
                 <Box sx={{ my: 3, pr: 5, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   <Pagination
                     size="large"
@@ -169,7 +173,7 @@ function Boards() {
                     showFirstButton
                     showLastButton
                     // Giá trị prop count của component Pagination là để hiển thị tổng số lượng page, công thức là lấy Tổng số lượng bản ghi chia cho số lượng bản ghi muốn hiển thị trên 1 page (ví dụ thường để 12, 24, 26, 48...vv). sau cùng là làm tròn số lên bằng hàm Math.ceil
-                    count={Math.ceil(totalBoards / DEFAULT_ITEMS_PER_PAGE)}
+                    count={Math.ceil(boards?.totalBoards / DEFAULT_ITEMS_PER_PAGE)}
                     // Giá trị của page hiện tại đang đứng
                     page={page}
                     // Render các page item và đồng thời cũng là những cái link để chúng ta click chuyển trang

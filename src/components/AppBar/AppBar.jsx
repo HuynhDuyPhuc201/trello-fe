@@ -22,6 +22,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { path } from '~/config/path'
+import Notifications from './Notifications/Notifications'
 
 function AppBar({ colorConfigs }) {
   const [searchValue, setSearchValue] = useState()
@@ -37,8 +38,10 @@ function AppBar({ colorConfigs }) {
         gap: 2,
         paddingX: 2,
         overflowX: 'auto',
-        borderBottom: (theme) => `1px solid ${ colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'}`,
-        bgcolor: (theme) => colorConfigs?.headerBg ? colorConfigs?.headerBg : theme.palette.mode === 'dark' ? '#000' : '#e6f0ff',
+        borderBottom: (theme) =>
+          `1px solid ${colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'}`,
+        bgcolor: (theme) =>
+          colorConfigs?.headerBg ? colorConfigs?.headerBg : theme.palette.mode === 'dark' ? '#000' : '#e6f0ff',
         '&::-webkit-scrollbar-track': {
           m: 2
         }
@@ -161,16 +164,8 @@ function AppBar({ colorConfigs }) {
         />
         <ModeSelect colorConfigs={colorConfigs} />
 
-        <Tooltip title="Notification">
-          <Badge color="warning" variant="dot" sx={{ cursor: 'pointer' }}>
-            <NotificationsNoneIcon
-              sx={{
-                color: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-              }}
-            />
-          </Badge>
-        </Tooltip>
+        {/* Notifications */}
+        <Notifications colorConfigs={colorConfigs}/>
 
         <Tooltip title="HelpOutlineIcon">
           <HelpOutlineIcon

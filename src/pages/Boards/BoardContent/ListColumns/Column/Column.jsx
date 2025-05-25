@@ -30,6 +30,7 @@ import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/ac
 import { useDispatch } from 'react-redux'
 import { columnService } from '~/services/column.service'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
+import socket from '~/sockets'
 
 function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -69,9 +70,22 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
 
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const [openNewCardForm, setOpenNewCardForm] = useState(null)
-
   // gọi API tạo mới Card và làm lại dữ liệu Board
+
+  // useEffect(() => {
+  //   const handleCardAndColumn = (Invitation) => {
+  //     // dispatch(getInvite()) // không cần gọi lại getInvite vì đã có useNotification
+  //     // nếu có thông báo mới thì sẽ tự động cập nhật vào currentNotification
+  //     if (Invitation.inviteeId === currentUser._id) {
+  //       dispatch(addNotification(Invitation))
+  //     }
+  //   }
+  //   socket.on('handle_card_and_column', (Invitation) => handleCardAndColumn(Invitation))
+  //   return () => {
+  //     socket.off('handle_card_and_column', handleCardAndColumn)
+  //   }
+  // })
+
   const addNewCard = async () => {
     const title = newCardTitle.trim()
 

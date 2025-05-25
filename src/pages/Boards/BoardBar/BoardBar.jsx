@@ -5,14 +5,11 @@ import VpnLockIcon from '@mui/icons-material/VpnLock'
 import AddToDriveIcon from '@mui/icons-material/AddToDrive'
 import BoltIcon from '@mui/icons-material/Bolt'
 import FilterListIcon from '@mui/icons-material/FilterList'
-import AvatarGroup from '@mui/material/AvatarGroup'
-import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
-import Button from '@mui/material/Button'
-import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { capitalizeFirstLetter } from '~/utils/formatters'
 import BoardUserGroup from './BoardUserGroup'
 import InviteBoardUser from './InviteBoardUser'
+import Members from './Members'
 
 const MENU_STYLES = {
   color: 'white',
@@ -27,8 +24,7 @@ const MENU_STYLES = {
     bgcolor: 'primary.50'
   }
 }
-
-function BoardBar({ board, colorConfigs }) {
+function BoardBar({ board, colorConfigs}) {
   return (
     <Box
       sx={{
@@ -40,7 +36,8 @@ function BoardBar({ board, colorConfigs }) {
         gap: 2,
         paddingX: 2,
         overflowX: 'auto',
-        bgcolor: (theme) => colorConfigs?.boardBarBg ? colorConfigs?.boardBarBg : theme.palette.mode === 'dark' ? '#34495e' : '#001f4d',
+        bgcolor: (theme) =>
+          colorConfigs?.boardBarBg ? colorConfigs?.boardBarBg : theme.palette.mode === 'dark' ? '#34495e' : '#001f4d',
         '&::-webkit-scrollbar-track': {
           m: 2
         }
@@ -57,6 +54,7 @@ function BoardBar({ board, colorConfigs }) {
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <InviteBoardUser board={board} />
+        <Members board={board} />
         <BoardUserGroup boardUsers={board?.allUsers} />
       </Box>
     </Box>

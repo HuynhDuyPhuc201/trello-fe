@@ -7,7 +7,7 @@ import CancelIcon from '@mui/icons-material/Cancel'
 import { useForm, Controller } from 'react-hook-form'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
-import { FIELD_REQUIRED_MESSAGE, singleFileValidator } from '~/utils/validators'
+import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import AbcIcon from '@mui/icons-material/Abc'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
@@ -18,14 +18,12 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 
 import { styled } from '@mui/material/styles'
 import { boardService } from '~/services/board.service'
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { DeleteIcon } from '@mui/icons-material/Delete'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Divider, Grid } from '@mui/material'
-import { COLORS, unsplashSamples } from '~/config/constants'
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
-import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
+import { unsplashSamples } from '~/config/constants'
 import { generateColorConfigs } from '~/utils/getTextColor'
-import { toast } from 'react-toastify'
+import { getBoardAll } from '~/redux/activeBoard/activeBoardSlice'
+import { useDispatch } from 'react-redux'
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -53,7 +51,7 @@ const BOARD_TYPES = {
  * Bản chất của cái component SidebarCreateBoardModal này chúng ta sẽ trả về một cái SidebarItem để hiển thị ở màn Board List cho phù hợp giao diện bên đó, đồng thời nó cũng chứa thêm một cái Modal để xử lý riêng form create board nhé.
  * Note: Modal là một low-component mà bọn MUI sử dụng bên trong những thứ như Dialog, Drawer, Menu, Popover. Ở đây dĩ nhiên chúng ta có thể sử dụng Dialog cũng không thành vấn đề gì, nhưng sẽ sử dụng Modal để dễ linh hoạt tùy biến giao diện từ con số 0 cho phù hợp với mọi nhu cầu nhé.
  */
-function SidebarCreateBoardModal({ refetch }) {
+function SidebarCreateBoardModal() {
   const {
     control,
     register,
@@ -71,6 +69,8 @@ function SidebarCreateBoardModal({ refetch }) {
 
   const [isOpen, setIsOpen] = useState(false)
   const [cover, setCover] = useState('')
+  const dispatch = useDispatch()
+
   const handleOpenModal = () => setIsOpen(true)
   const handleCloseModal = () => {
     setIsOpen(false)
@@ -84,7 +84,7 @@ function SidebarCreateBoardModal({ refetch }) {
     mutationFn: boardService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boards'] })
-      refetch()
+      dispatch(getBoardAll())
       handleCloseModal()
     },
     onError: (error) => {
@@ -234,9 +234,7 @@ function SidebarCreateBoardModal({ refetch }) {
                                 opacity: 0.8
                               },
                               border: (theme) =>
-                                cover === item
-                                  ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`
-                                  : 'none'
+                                cover === item ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}` : 'none'
                             }}
                             onClick={() => setCover(item)}
                           />

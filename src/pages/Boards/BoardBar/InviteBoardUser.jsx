@@ -10,6 +10,10 @@ import { useForm } from 'react-hook-form'
 import { EMAIL_RULE, FIELD_REQUIRED_MESSAGE, EMAIL_RULE_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { inviteService } from '~/services/invite.service'
+import { getInvite } from '~/redux/notifications/notificationsSlice'
+import { useDispatch } from 'react-redux'
+import socket from '~/sockets'
+import { toast } from 'react-toastify'
 
 function InviteBoardUser({ board }) {
   /**
@@ -17,6 +21,7 @@ function InviteBoardUser({ board }) {
    * https://mui.com/material-ui/react-popover/
    */
   const [anchorPopoverElement, setAnchorPopoverElement] = useState(null)
+  const dispatch = useDispatch()
   const isOpenPopover = Boolean(anchorPopoverElement)
   const popoverId = isOpenPopover ? 'invite-board-user-popover' : undefined
   const handleTogglePopover = (event) => {
@@ -34,12 +39,16 @@ function InviteBoardUser({ board }) {
     const { inviteeEmail } = data
     try {
       const res = await inviteService.inviteUserToBoard({ inviteeEmail, boardId: board._id })
-      console.log('res:', res)
+
       // Clear thẻ input sử dụng react-hook-form bằng setValue
-      setValue('inviteeEmail', null)
-      setAnchorPopoverElement(null)
+      if (res) {
+        dispatch(getInvite())
+        setValue('inviteeEmail', null)
+        setAnchorPopoverElement(null)
+        socket.emit('invite_to_board', res)
+      }
     } catch (error) {
-      console.log('error:', error)
+      toast.error('Failed to invite. Please try again.')
     }
   }
 

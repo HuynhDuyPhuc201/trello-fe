@@ -18,11 +18,16 @@ import { useParams } from 'react-router-dom'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
 import { useActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { generateColorConfigs } from '~/utils/getTextColor'
+import socket from '~/sockets'
+import { useUser } from '~/redux/user/userSlice'
+import { toast } from 'react-toastify'
 
 function Board() {
   const dispatch = useDispatch()
+
   const { currentActiveBoard } = useActiveBoard()
   const { isShowModalActiveCard } = useActiveCard()
+  const { currentUser } = useUser()
 
   const board = currentActiveBoard
   const { boardId } = useParams()
@@ -33,6 +38,43 @@ function Board() {
       dispatch(clearCurrentActiveBoard())
     }
   }, [dispatch, boardId])
+
+  useEffect(() => {
+    if (!board?._id) return
+
+    const handleUserJoin = (newUser) => {
+      toast.success(`${newUser.name || newUser.email} vừa tham gia board!`)
+      dispatch(getBoardDetail(board._id))
+    }
+
+    const handleUserLeave = (newUser) => {
+      toast.success(`${newUser.name || newUser.email} vừa rời khỏi board!`)
+      dispatch(getBoardDetail(board._id))
+    }
+
+    socket.on('user_join_board', handleUserJoin)
+    socket.on('user_leave_board', handleUserLeave)
+
+    return () => {
+      socket.off('user_join_board', handleUserJoin)
+      socket.off('user_leave_board', handleUserLeave)
+    }
+  }, [board?._id, dispatch])
+
+  useEffect(() => {
+    return () => {
+      if (boardId && currentUser) {
+        socket.emit('user_leave_board', {
+          boardId,
+          user: {
+            _id: currentUser._id,
+            name: currentUser.name,
+            email: currentUser.email
+          }
+        })
+      }
+    }
+  }, [boardId, currentUser])
 
   const renderColor = generateColorConfigs()
   const findColor = renderColor.find((item) => item.background === board?.cover)
@@ -54,8 +96,7 @@ function Board() {
         columnOrderIds: dndOrderedColumnIds
       })
       .catch((err) => {
-        console.error('Failed to update column order:', err)
-        // Optional: dispatch rollback nếu cần
+        toast.error('Cập nhật thứ tự thất bại!', err)
       })
   }
 

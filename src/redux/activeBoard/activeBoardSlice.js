@@ -6,7 +6,8 @@ import { isEmpty } from 'lodash'
 import { mapOrder } from '~/utils/sorts'
 const initialState = {
   currentActiveBoard: null,
-  error: null
+  error: null,
+  boards: []
 }
 // dùng middleware thunk thì phải đi kèm với extraReducers
 export const getBoardDetail = createAsyncThunk('activeboard/getBoardDetail', async (boardId, thunkAPI) => {
@@ -29,6 +30,15 @@ export const getBoardDetail = createAsyncThunk('activeboard/getBoardDetail', asy
       }
     })
     return board
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
+  }
+})
+
+export const getBoardAll = createAsyncThunk('boards/getBoardAll', async (data, thunkAPI) => {
+  try {
+    const allBoards = await boardService.getAll(data)
+    return allBoards
   } catch (error) {
     return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
   }
@@ -61,6 +71,10 @@ export const activeBoardSlice = createSlice({
       .addCase(getBoardDetail.fulfilled, (state, action) => {
         state.currentActiveBoard = action.payload
         state.currentActiveBoard.allUsers = [...state.currentActiveBoard.owners, ...state.currentActiveBoard.members]
+      })
+      .addCase(getBoardAll.fulfilled, (state, action) => {
+        state.boards = [action.payload.boards].flat()
+        state.totalBoards = action.payload.total || 0
       })
       .addCase(getBoardDetail.rejected, (state, action) => {
         state.error = action.payload

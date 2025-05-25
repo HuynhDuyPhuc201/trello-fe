@@ -13,3 +13,9 @@ export const unsplashSamples = [
   "https://images.unsplash.com/photo-1496307653780-42ee777d4833",
   "https://images.unsplash.com/photo-1485217988980-11786ced9454"
 ]
+
+export const BOARD_INVITATION_STATUS = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED'
+}

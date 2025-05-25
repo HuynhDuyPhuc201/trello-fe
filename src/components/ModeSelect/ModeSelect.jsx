@@ -14,14 +14,12 @@ function ModeSelect({ colorConfigs }) {
   const handleChange = (event) => {
     setMode(event.target.value)
   }
-
   return (
     <FormControl size="small" sx={{ minWidth: '120px' }}>
       <InputLabel
         id="label-select-dark-light-mode"
         sx={{
-          color: (theme) =>
-            colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000',
+          color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'),
           '&.Mui-focused': {
             color: (theme) =>
               colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
@@ -37,8 +35,7 @@ function ModeSelect({ colorConfigs }) {
         label="Mode"
         onChange={handleChange}
         sx={{
-          color: (theme) =>
-            colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000',
+          color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'),
           '.MuiOutlinedInput-notchedOutline': {
             borderColor: (theme) =>
               colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'

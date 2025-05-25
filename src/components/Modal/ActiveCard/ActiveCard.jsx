@@ -89,7 +89,7 @@ function ActiveCard() {
         }
         return { success: true, updatedCard }
       } catch (error) {
-        console.log(error)
+        toast.error('Failed to update card. Please try again.')
       }
     },
     [activeCard._id, dispatch]

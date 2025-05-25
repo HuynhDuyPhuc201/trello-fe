@@ -4,7 +4,7 @@ import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import Popover from '@mui/material/Popover'
 
-function BoardUserGroup({ boardUsers = [], limit = 4 }) {
+function BoardUserGroup({ boardUsers = [], limit = 4, avatarColor = false }) {
   /**
    * Xử lý Popover để ẩn hoặc hiện toàn bộ user trên một cái popup, tương tự docs để tham khảo ở đây:
    * https://mui.com/material-ui/react-popover/
@@ -25,7 +25,21 @@ function BoardUserGroup({ boardUsers = [], limit = 4 }) {
         if (index < limit) {
           return (
             <Tooltip title={user?.username} key={index}>
-              <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user?.username} src={user?.avatar} />
+              <Avatar
+                sx={{
+                  width: 34,
+                  height: 34,
+                  cursor: 'pointer',
+                  ...(avatarColor && {
+                    borderColor: '#00fc2f',
+                    borderWidth: '2px',
+                    borderStyle: 'solid',
+                    borderRadius: '50%'
+                  })
+                }}
+                alt={user?.username}
+                src={user?.avatar}
+              />
             </Tooltip>
           )
         }

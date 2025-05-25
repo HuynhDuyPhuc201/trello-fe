@@ -365,7 +365,23 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     [activeDragItemType, oderedColumns]
   )
 
-  const findColor = board?.cover.charAt(0) === 'l'
+  const renderColor = (cover) => {
+    const isColor = cover.charAt(0) === 'l'
+    if (!cover) {
+      return { background: '#808080' }
+    }
+
+    if (isColor) {
+      return { background: cover }
+    }
+
+    return {
+      backgroundImage: `url(${cover})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }
+  }
   return (
     <DndContext
       sensors={sensors}
@@ -383,19 +399,12 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
       onDragEnd={handleDragEnd}
     >
       <Box
-        sx={{
-          ...(findColor
-            ? { background: board?.cover || '#808080' }
-            : {
-                backgroundImage: `url(${board?.cover})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
-              }),
+        sx={(theme) => ({
+          ...renderColor(board?.cover),
           width: '100%',
-          height: (theme) => theme.trello.boardContentHeight,
+          height: theme.trello.boardContentHeight,
           p: '10px 0'
-        }}
+        })}
       >
         <ListColumns columns={oderedColumns} />
         <DragOverlay dropAnimation={customDropAnimation}>
