@@ -41,10 +41,11 @@ import {
 } from '~/redux/activeCard/activeCardSlice'
 import { useDispatch } from 'react-redux'
 import { cardService } from '~/services/card.service'
-import { getBoardDetail } from '~/redux/activeBoard/activeBoardSlice'
+import { getBoardDetail, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { Button, Checkbox, Popover, Tooltip } from '@mui/material'
-import { COLORS } from '~/config/constants'
+import { CARD_MEMBER_ACTION, COLORS } from '~/config/constants'
 import ActiveCardTitle from './ActiveCardTitle'
+import { useUser } from '~/redux/user/userSlice'
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -75,6 +76,8 @@ function ActiveCard() {
 
   const dispatch = useDispatch()
 
+  const { currentUser } = useUser()
+
   const handleCloseModal = () => {
     dispatch(clearAndHideCurrentActiveCard())
   }
@@ -96,7 +99,7 @@ function ActiveCard() {
   )
 
   const onChangeDone = () => {
-    setDone(prev => !prev)
+    setDone((prev) => !prev)
   }
 
   useEffect(() => {
@@ -135,14 +138,14 @@ function ActiveCard() {
     })
   }
 
-  const onAddCardComment = useCallback(
-    (commentToAdd) => {
-      // fetchUpdateCard({ comments: [...(activeCard?.comments || []), commentToAdd] })
-      // làm theo anh quân
-      return fetchUpdateCard({ commentToAdd })
-    },
-    [fetchUpdateCard]
-  )
+  const onAddCardComment = (commentToAdd) => {
+    return fetchUpdateCard({ commentToAdd })
+  }
+
+  const onUpdateCardMembers = async (inComingMemberInfor) => {
+    console.log('inComingMemberInfor', inComingMemberInfor)
+    return fetchUpdateCard({ inComingMemberInfor })
+  }
 
   const onEditCardComment = useCallback(
     (commentId, valueEditComment) => {
@@ -168,6 +171,7 @@ function ActiveCard() {
     [fetchUpdateCard, activeCard?.comments]
   )
 
+  console.log('activeCard', activeCard)
   const colorActiveCard = activeCard?.cover?.charAt(0) === '#'
 
   return (
@@ -296,7 +300,7 @@ function ActiveCard() {
             {/* 02:  Members */}
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: '400', color: 'primary.main', mb: 1 }}>Members</Typography>
-              <CardUserGroup />
+              <CardUserGroup cardMemberIds={activeCard?.memberIds} onUpdateCardMembers={onUpdateCardMembers} />
             </Box>
 
             {/* 03:  Description */}
@@ -331,10 +335,22 @@ function ActiveCard() {
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Add To Card</Typography>
             <Stack direction="column" spacing={1}>
               {/* 05: Join*/}
-              <SidebarItem className="active">
-                <PersonOutlineOutlinedIcon fontSize="small" />
-                Join
-              </SidebarItem>
+
+              {!activeCard?.memberIds?.includes(currentUser._id) && (
+                <SidebarItem
+                  className="active"
+                  onClick={() =>
+                    onUpdateCardMembers({
+                      userId: currentUser._id,
+                      action: CARD_MEMBER_ACTION.ADD
+                    })
+                  }
+                >
+                  <PersonOutlineOutlinedIcon fontSize="small" />
+                  Join
+                </SidebarItem>
+              )}
+
               {/* 06: Xử lý hành động cập nhật ảnh Cover của Card */}
               {!activeCard?.cover && (
                 <Box onClick={() => setOpenCoverPopover(!openCoverPopover)}>

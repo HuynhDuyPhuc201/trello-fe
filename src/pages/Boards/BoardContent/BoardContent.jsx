@@ -16,17 +16,29 @@ import {
 } from '@dnd-kit/core'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
-import Column from './ListColumns/Column/Column'
-import Card from './ListColumns/Column/ListCards/Card/Card'
 import { cloneDeep, isEmpty } from 'lodash'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { TouchSensor, MouseSensor } from '~/libs/DndKitSensors'
-
+import { IconButton, Menu, MenuItem, Typography, Tooltip, Card, Pagination } from '@mui/material'
+import { boardService } from '~/services/board.service'
+import { useNavigate } from 'react-router-dom'
+import { path } from '~/config/path'
+// import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import AddIcon from '@mui/icons-material/Add'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import Column from './ListColumns/Column/Column'
+import { useDispatch } from 'react-redux'
+import { deleteBoard, updateBoards } from '~/redux/activeBoard/activeBoardSlice'
+import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { toast } from 'react-toastify'
+import CreateBoardModal from '~/components/Modal/Board/CreateBoardModal'
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToDifferentColumn }) {
+  const navigation = useNavigate()
+
   //https://docs.dndkit.com/api-documentation/sensors
   // nếu dùng PointerSensor mặc định thì phải kết hợp vs thuộc tính css touch-action: none ở những phần tử kéo thả - nhưng mà còn bug
   // const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
@@ -365,14 +377,22 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     [activeDragItemType, oderedColumns]
   )
 
-  const renderColor = (cover) => {
+  const renderColor = (cover, type = false) => {
     const isColor = cover.charAt(0) === 'l'
     if (!cover) {
-      return { background: '#808080' }
+      return { background: '#bdbdbd' }
     }
 
     if (isColor) {
       return { background: cover }
+    }
+
+    if (type === true) {
+      return {
+        background: 'rgba(255, 255, 255, 0.2)',
+        backdropFilter: 'blur(10px)', // làm mờ nền phía sau
+        WebkitBackdropFilter: 'blur(10px)' // Safari suppo
+      }
     }
 
     return {
@@ -382,38 +402,208 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
       backgroundRepeat: 'no-repeat'
     }
   }
+
+  const dispatch = useDispatch()
+
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [open, setOpen] = useState(false)
+  const [boardMenuAnchor, setBoardMenuAnchor] = useState(null)
+  const [selectedBoardId, setSelectedBoardId] = useState(null)
+  const { boards } = useActiveBoard()
+  const handleMainMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleMainMenuClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleBoardMenuOpen = (event, boardId) => {
+    setBoardMenuAnchor(event.currentTarget)
+    setSelectedBoardId(boardId)
+  }
+  const handleBoardMenuClose = () => {
+    setBoardMenuAnchor(null)
+    setSelectedBoardId(null)
+  }
+
+  const handleDeleteBoard = (boardId) => {
+    if (boardId === board._id) {
+      return toast.warning("Can't delete this board")
+    }
+    dispatch(deleteBoard(boardId))
+    handleBoardMenuClose()
+  }
+
+  const handleCreateBoard = () => {
+    setOpen(true)
+  }
+
+  const handleSortBoard = ({ type }) => {
+    // Tạo bản sao để không mutate mảng gốc
+    let sortedBoards = [...boards]
+
+    if (type === 'name') {
+      sortedBoards.sort((a, b) => a.title.localeCompare(b.title))
+    }
+
+    if (type === 'time') {
+      sortedBoards.sort((a, b) => new Date(a.createAt).getTime() - new Date(b.createAt).getTime())
+    }
+
+    dispatch(updateBoards(sortedBoards))
+    handleMainMenuClose()
+  }
+
+  const [currentPage, setCurrentPage] = useState(1)
+  const BOARDS_PER_PAGE = 10
+  const totalBoards = boards || []
+  const totalPages = Math.ceil(boards.length / BOARDS_PER_PAGE)
+
+  const paginatedBoards = totalBoards.slice((currentPage - 1) * BOARDS_PER_PAGE, currentPage * BOARDS_PER_PAGE)
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value)
+  }
+
   return (
-    <DndContext
-      sensors={sensors}
-      // thuật toán phát hiện va chạm (nếu kh có nó thì card với cover lớn sẽ không kéo qua Column được vì lúc
-      // này nó đang bị conflict giữa  card và column), chúng ta sẽ dùng closestCorners thay vì closestCenter
-      // https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms
-      // update video 37: nếu chỉ dùng closestCorners sẽ có bug flickering + sai lệch dữ liệu ( xem video 37)
+    <>
+      <Box sx={{ position: 'relative' }}>
+        {/* Sidebar trái */}
+        <Box
+          sx={(theme) => ({
+            position: 'absolute',
+            width: '260px',
+            height: '100%',
+            backgroundColor: '#f4f5f7',
+            borderRight: '1px solid #ddd',
+            display: 'flex',
+            flexDirection: 'column',
+            p: 2,
+            overflowY: 'auto',
+            ...renderColor(board?.cover, true),
+            scrollbarWidth: 'thin',
+            '&::-webkit-scrollbar': {
+              width: '6px'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#c1c1c1',
+              borderRadius: '3px'
+            }
+          })}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 2,
+              color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff')
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold">
+              My Boards
+            </Typography>
+            <Box>
+              <IconButton size="small" onClick={handleMainMenuOpen}>
+                <MoreHorizIcon sx={{ color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff') }} />
+              </IconButton>
+              <IconButton size="small" onClick={handleCreateBoard}>
+                <AddIcon sx={{ color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff') }} />
+              </IconButton>
+            </Box>
+            {/* Menu chính */}
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMainMenuClose}>
+              <MenuItem onClick={() => handleSortBoard({ type: 'name' })}>Sort alphabetically</MenuItem>
+              <MenuItem onClick={() => handleSortBoard({ type: 'time' })}>Sort by newest</MenuItem>
+            </Menu>
+            <CreateBoardModal isOpen={open} handleClose={() => setOpen(false)} />
+          </Box>
 
-      // collisionDetection={closestCorners}
+          {paginatedBoards?.map((item, i) => (
+            <Box
+              key={i}
+              sx={{
+                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff'),
+                borderRadius: 2,
+                boxShadow: 1,
+                p: 1,
+                mb: 1,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease-in-out',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                '&:hover': {
+                  backgroundColor: '#f0f0f0',
+                  transform: 'scale(1.02)',
+                  color: '#000'
+                },
+                color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000')
+              }}
+              onClick={() => navigation(path.Board.detail.replace(':boardId', item._id))}
+            >
+              <Typography variant="body2" noWrap>
+                {item?.title || ''}
+              </Typography>
 
-      // tự custom nâng cao thuật toán phát hiện va chạm (video fix bug số 37)
-      collisionDetection={collisionDetectionStrategy}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
-      <Box
-        sx={(theme) => ({
-          ...renderColor(board?.cover),
-          width: '100%',
-          height: theme.trello.boardContentHeight,
-          p: '10px 0'
-        })}
-      >
-        <ListColumns columns={oderedColumns} />
-        <DragOverlay dropAnimation={customDropAnimation}>
-          {!activeDragItemType && null}
-          {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && <Column column={activeDragItemData} />}
-          {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD && <Card card={activeDragItemData} />}
-        </DragOverlay>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleBoardMenuOpen(e, item._id)
+                }}
+                sx={{ ml: 1 }}
+              >
+                <MoreHorizIcon
+                  sx={{
+                    fontSize: 20,
+                    color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000')
+                  }}
+                />
+              </IconButton>
+            </Box>
+          ))}
+
+          {/* Menu cho từng board */}
+          <Menu anchorEl={boardMenuAnchor} open={Boolean(boardMenuAnchor)} onClose={handleBoardMenuClose}>
+            <MenuItem onClick={() => handleDeleteBoard(selectedBoardId)}>Delete</MenuItem>
+          </Menu>
+          {totalPages > 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Pagination count={totalPages} page={currentPage} onChange={handleChangePage} color="primary" />
+            </Box>
+          )}
+        </Box>
+
+        {/* Phần board chính */}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={collisionDetectionStrategy}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <Box
+            sx={(theme) => ({
+              flex: 1,
+              height: theme.trello.boardContentHeight,
+              p: 2,
+              overflowX: 'auto',
+              display: 'flex',
+              gap: 2,
+              paddingLeft: '260px',
+              ...renderColor(board?.cover)
+            })}
+          >
+            <ListColumns columns={oderedColumns} />
+            <DragOverlay dropAnimation={customDropAnimation}>
+              {!activeDragItemType && null}
+              {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && <Column column={activeDragItemData} />}
+              {activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD && <Card card={activeDragItemData} />}
+            </DragOverlay>
+          </Box>
+        </DndContext>
       </Box>
-    </DndContext>
+    </>
   )
 }
 

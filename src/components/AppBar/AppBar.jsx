@@ -10,8 +10,6 @@ import Recent from './Menus/Recent'
 import Starred from './Menus/Starred'
 import Templates from './Menus/Templates'
 import Button from '@mui/material/Button'
-import Badge from '@mui/material/Badge'
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import Tooltip from '@mui/material/Tooltip'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import Profiles from './Menus/Profiles'
@@ -23,6 +21,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { path } from '~/config/path'
 import Notifications from './Notifications/Notifications'
+import AutoCompleteSearchBoard from './SearchBoards/AutoCompleteSearchBoard'
 
 function AppBar({ colorConfigs }) {
   const [searchValue, setSearchValue] = useState()
@@ -162,6 +161,7 @@ function AppBar({ colorConfigs }) {
             }
           }}
         />
+        <AutoCompleteSearchBoard/>
         <ModeSelect colorConfigs={colorConfigs} />
 
         {/* Notifications */}

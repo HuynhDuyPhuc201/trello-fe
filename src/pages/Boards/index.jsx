@@ -82,7 +82,7 @@ function Boards() {
       <Container disableGutters maxWidth="xl">
         <Box sx={{ paddingX: 2, my: 4 }}>
           <Grid container spacing={3}>
-            <Grid xs={12} sm={2}>
+            <Grid xs={12} sm={4} lg={2}>
               <Stack direction="column" spacing={1}>
                 <SidebarItem className="active">
                   <SpaceDashboardIcon fontSize="small" />
@@ -103,7 +103,7 @@ function Boards() {
               </Stack>
             </Grid>
 
-            <Grid xs={12} sm={9}>
+            <Grid xs={12} sm={8} lg={10}>
               <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
                 YOUR WORKSPACES:
               </Typography>

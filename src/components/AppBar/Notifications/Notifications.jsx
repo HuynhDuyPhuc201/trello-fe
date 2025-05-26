@@ -57,6 +57,7 @@ function Notifications({ colorConfigs }) {
       toast.error('Failed to delete all board. Please try again.', error)
     }
   }
+
   useEffect(() => {
     dispatch(getInvite())
     if (!currentUser._id) return

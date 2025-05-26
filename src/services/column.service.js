@@ -11,5 +11,9 @@ export const columnService = {
   },
   async delete(columnId) {
     return await api.delete(`${ENDPOINT}/${columnId}`)
+  },
+
+  async moveColumn (columnId, newBoardId) {
+    return api.put(`${ENDPOINT}/move/${columnId}`, { boardId: newBoardId });
   }
 }

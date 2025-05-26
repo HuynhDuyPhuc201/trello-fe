@@ -30,7 +30,7 @@ import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/ac
 import { useDispatch } from 'react-redux'
 import { columnService } from '~/services/column.service'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
-import socket from '~/sockets'
+import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select } from '@mui/material'
 
 function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -39,7 +39,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   })
 
   const dispatch = useDispatch()
-  const { currentActiveBoard } = useActiveBoard()
+  const { currentActiveBoard, boards } = useActiveBoard()
   const board = currentActiveBoard
 
   // fix bug Transform -> Translate
@@ -69,22 +69,6 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const orderedCards = column.cards
 
   const [newCardTitle, setNewCardTitle] = useState('')
-
-  // gọi API tạo mới Card và làm lại dữ liệu Board
-
-  // useEffect(() => {
-  //   const handleCardAndColumn = (Invitation) => {
-  //     // dispatch(getInvite()) // không cần gọi lại getInvite vì đã có useNotification
-  //     // nếu có thông báo mới thì sẽ tự động cập nhật vào currentNotification
-  //     if (Invitation.inviteeId === currentUser._id) {
-  //       dispatch(addNotification(Invitation))
-  //     }
-  //   }
-  //   socket.on('handle_card_and_column', (Invitation) => handleCardAndColumn(Invitation))
-  //   return () => {
-  //     socket.off('handle_card_and_column', handleCardAndColumn)
-  //   }
-  // })
 
   const addNewCard = async () => {
     const title = newCardTitle.trim()
@@ -176,11 +160,35 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
     }
   }
 
+  const [showModalMove, setShowModalMove] = useState(false)
+  const [selectedBoardId, setSelectedBoardId] = useState(false)
+  const handleMoveCard = () => {
+    setShowModalMove(true)
+  }
+  const handleConfirmMoveColumn = async () => {
+    // Tạo newBoard với column đã bị xoá
+    const newBoard = {
+      ...board,
+      columns: board.columns.filter((col) => col._id !== column._id),
+      columnOrderIds: board.columnOrderIds.filter((id) => id !== column._id)
+    }
+
+    dispatch(updateCurrentActiveBoard(newBoard))
+    try {
+      const res = await columnService.moveColumn(column._id, selectedBoardId)
+      if (res) {
+        setShowModalMove(false)
+      }
+    } catch (error) {
+      toast.error('Failed to move column!')
+    }
+  }
+
   return (
     //  phải bọc div ở đây vì vấn đề chiều cao của column khi kéo thả sẽ có bug kiểu kiểu flickering (video 32)
     <div ref={setNodeRef} style={dndKitColumnStyles} {...attributes}>
       <Box
-        {...listeners}
+        {...(!showModalMove ? { ...listeners } : {})}
         sx={{
           minWidth: '300px',
           maxWidth: '300px',
@@ -241,24 +249,20 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                 </ListItemIcon>
                 <ListItemText>Add new card</ListItemText>
               </MenuItem>
-              <MenuItem>
+              <MenuItem onClick={handleMoveCard}>
                 <ListItemIcon>
                   <ContentCut fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>Cut</ListItemText>
+                <ListItemText>Move</ListItemText>
               </MenuItem>
-              <MenuItem>
-                <ListItemIcon>
-                  <ContentCopy fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Copy</ListItemText>
-              </MenuItem>
-              <MenuItem>
-                <ListItemIcon>
-                  <ContentPaste fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Paste</ListItemText>
-              </MenuItem>
+              {showModalMove && (
+                <MenuItem onClick={handleMoveCard}>
+                  <ListItemIcon>
+                    <ContentCut fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Chinh3</ListItemText>
+                </MenuItem>
+              )}
               <Divider />
               <MenuItem
                 onClick={handleDeleteColumn}
@@ -276,15 +280,46 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                 </ListItemIcon>
                 <ListItemText>Delete this column</ListItemText>
               </MenuItem>
-              <MenuItem>
-                <ListItemIcon>
-                  <Cloud fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Archive this column</ListItemText>
-              </MenuItem>
             </Menu>
           </Box>
         </Box>
+        {showModalMove && (
+          <Dialog open={showModalMove} onClose={() => setShowModalMove(false)}>
+            <DialogTitle>Move column to another board</DialogTitle>
+            <DialogContent>
+              <FormControl fullWidth margin="dense">
+                <InputLabel id="select-board-label">Select Board</InputLabel>
+                <Select
+                  labelId="select-board-label"
+                  value={selectedBoardId}
+                  label="Select Board"
+                  onChange={(e) => setSelectedBoardId(e.target.value)}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        zIndex: 1302 // cao hơn Dialog (1300 mặc định)
+                      }
+                    }
+                  }}
+                >
+                  {boards
+                    .filter((b) => b._id !== board._id)
+                    .map((b) => (
+                      <MenuItem key={b._id} value={b._id}>
+                        {b.title}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowModalMove(false)}>Cancel</Button>
+              <Button onClick={handleConfirmMoveColumn} variant="contained">
+                Move
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
 
         {/* box list cart */}
         <ListCards cards={orderedCards} />
@@ -362,9 +397,9 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                 <CloseIcon
                   fontSize="small"
                   sx={{
-                    color: 'white',
+                    color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000'),
                     cursor: 'pointer',
-                    '&:hover': { color: (theme) => theme.palette.warning.light }
+                    '&:hover': { background: '#d9d6d0' }
                   }}
                   onClick={onCloseForm}
                 />

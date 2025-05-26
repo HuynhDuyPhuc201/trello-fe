@@ -71,7 +71,14 @@ function Card({ card }) {
             title="Card cover"
           />
         )}
-        <CardContent sx={{ p: 1.5 }}>
+        <CardContent
+          sx={{
+            p: 1.5,
+            '&:last-child': {
+              paddingBottom: '12px' // Ghi đè padding mặc định của last-child
+            }
+          }}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {card?.done && <Checkbox sx={{ p: 0 }} value={card?.done} checked={card?.done} />}
             <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{card?.title}</Typography>

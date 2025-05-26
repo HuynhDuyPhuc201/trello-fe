@@ -44,6 +44,15 @@ export const getBoardAll = createAsyncThunk('boards/getBoardAll', async (data, t
   }
 })
 
+export const deleteBoard = createAsyncThunk('boards/deleteBoard', async (boardId, thunkAPI) => {
+  try {
+    const deletedBoard = await boardService.deleteBoard(boardId)
+    return deletedBoard
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
+  }
+})
+
 export const activeBoardSlice = createSlice({
   name: 'activeBoard',
   initialState,
@@ -62,6 +71,9 @@ export const activeBoardSlice = createSlice({
         )
       }
     },
+    updateBoards: (state, action) => {
+      state.boards = action.payload
+    },
     clearCurrentActiveBoard: (state) => {
       state.currentActiveBoard = null
     }
@@ -76,12 +88,16 @@ export const activeBoardSlice = createSlice({
         state.boards = [action.payload.boards].flat()
         state.totalBoards = action.payload.total || 0
       })
+      .addCase(deleteBoard.fulfilled, (state, action) => {
+        state.boards = [action.payload.boards].flat()
+        state.totalBoards = state.boards.length
+      })
       .addCase(getBoardDetail.rejected, (state, action) => {
         state.error = action.payload
       })
   }
 })
 
-export const { updateCurrentActiveBoard, updateCardInBoard, clearCurrentActiveBoard } = activeBoardSlice.actions
+export const { updateCurrentActiveBoard, updateCardInBoard, updateBoards, clearCurrentActiveBoard } = activeBoardSlice.actions
 export const useActiveBoard = () => useSelector((state) => state.activeBoard)
 export const activeBoardReducer = activeBoardSlice.reducer

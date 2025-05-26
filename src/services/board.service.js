@@ -21,6 +21,10 @@ export const boardService = {
     return await api.put(`${ENDPOINT}/${boardId}`, updateData)
   },
 
+  async deleteBoard(boardId) {
+    return await api.delete(`${ENDPOINT}/${boardId}`)
+  },
+
   async moveCardToDifferentColumn(updateData) {
     return await api.put(`${ENDPOINT}/supports/moving_card`, updateData)
   }

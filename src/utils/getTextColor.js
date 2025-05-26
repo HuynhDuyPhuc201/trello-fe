@@ -10,7 +10,7 @@ export const generateColorConfigs = () => {
 
   return COLORSBACKGROUND?.map(([fromColor, toColor]) => {
     const averageColor = tinycolor.mix(fromColor, toColor, 50).toHexString()
-    const textColor = tinycolor(averageColor).isLight() ? '#000000' : '#ffffff'
+    const textColor = tinycolor(averageColor).isLight() ? '#ffffff' : '#ffffff'
     const headerBg = tinycolor(averageColor).isLight()
       ? tinycolor(averageColor).darken(10).toHexString()
       : tinycolor(averageColor).lighten(10).toHexString()
@@ -20,7 +20,8 @@ export const generateColorConfigs = () => {
       background: `linear-gradient(135deg, ${fromColor}, ${toColor})`,
       text: textColor,
       headerBg,
-      boardBarBg
+      boardBarBg,
+      sideBar: `linear-gradient(250deg, ${fromColor}, ${toColor})`,
     }
   })
 }
