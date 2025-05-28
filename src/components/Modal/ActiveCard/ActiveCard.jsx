@@ -27,11 +27,12 @@ import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
 import DeleteIcon from '@mui/icons-material/Delete'
 
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
-import { singleFileValidator } from '~/utils/validators'
+import { singleFileAttachValidator, singleFileValidator } from '~/utils/validators'
 import { toast } from 'react-toastify'
 import CardUserGroup from './CardUserGroup'
 import ActiveCardDescription from './ActiveCardDescription'
 import ActiveCardComment from './ActiveCardComment'
+import AttachmentIcon from '@mui/icons-material/Attachment'
 
 import { styled } from '@mui/material/styles'
 import {
@@ -42,10 +43,11 @@ import {
 import { useDispatch } from 'react-redux'
 import { cardService } from '~/services/card.service'
 import { getBoardDetail, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
-import { Button, Checkbox, Popover, Tooltip } from '@mui/material'
-import { CARD_MEMBER_ACTION, COLORS } from '~/config/constants'
+import { Button, Checkbox, ClickAwayListener, Popover, TextField, Tooltip } from '@mui/material'
+import { API_ROOT, CARD_MEMBER_ACTION, COLORS, imageCards } from '~/config/constants'
 import ActiveCardTitle from './ActiveCardTitle'
 import { useUser } from '~/redux/user/userSlice'
+import ActiveCardAttach from './ActiveCardAttach'
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -68,12 +70,17 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 
 function ActiveCard() {
   const [openCoverPopover, setOpenCoverPopover] = useState(false)
+  const [openAttach, setOpenAttach] = useState(false)
+  const [attachmentUrl, setAttachmentUrl] = useState('')
   const coverButtonRef = useRef(null)
+  const attachButtonRef = useRef(null)
+  const labelButtonRef = useRef(null)
+  const checkListButtonRef = useRef(null)
+  const dateButtonRef = useRef(null)
   const { currentActiveCard, isShowModalActiveCard } = useActiveCard()
   const activeCard = currentActiveCard
   const [done, setDone] = useState(activeCard?.done || false)
   const isFirstRender = useRef(true)
-
   const dispatch = useDispatch()
 
   const { currentUser } = useUser()
@@ -123,7 +130,7 @@ function ActiveCard() {
     [fetchUpdateCard]
   )
 
-  const onUploadCardCover = (event) => {
+  const onUploadCardCover = async (event) => {
     const file = event.target?.files?.[0]
     const error = singleFileValidator(file)
     if (error) {
@@ -132,10 +139,35 @@ function ActiveCard() {
     }
     let formData = new FormData()
     formData.append('cover', file) // 👈 key phải trùng với backend
+
     toast.promise(fetchUpdateCard(formData), { pending: 'Updating...' }).then(() => {
       event.target.value = ''
       toast.success('Update successfully!')
+      setOpenCoverPopover(false)
     })
+  }
+  const onUploadFileAttach = async (event) => {
+    const files = event.target?.files
+    if (!files || files.length === 0) return
+
+    for (let file of files) {
+      const error = singleFileAttachValidator(file)
+      if (error) {
+        toast.error(error)
+        continue // bỏ qua file bị lỗi, không làm gì nữa
+      }
+
+      const formData = new FormData()
+      formData.append('fileAttach', file)
+      // Chờ upload xong file này rồi mới qua file kế
+      await toast.promise(fetchUpdateCard(formData), {
+        pending: `Loading...${file.name}`
+      })
+    }
+
+    // Reset input và đóng popover sau khi tất cả upload xong
+    event.target.value = ''
+    setOpenAttach(false)
   }
 
   const onAddCardComment = (commentToAdd) => {
@@ -143,7 +175,6 @@ function ActiveCard() {
   }
 
   const onUpdateCardMembers = async (inComingMemberInfor) => {
-    console.log('inComingMemberInfor', inComingMemberInfor)
     return fetchUpdateCard({ inComingMemberInfor })
   }
 
@@ -164,6 +195,7 @@ function ActiveCard() {
     [fetchUpdateCard, activeCard?.comments]
   )
 
+  // on delete
   const onDeleteCardComment = useCallback(
     (comment) => {
       fetchUpdateCard({ comments: [...(activeCard?.comments || []).filter((c) => c._id !== comment._id)] })
@@ -171,8 +203,33 @@ function ActiveCard() {
     [fetchUpdateCard, activeCard?.comments]
   )
 
-  console.log('activeCard', activeCard)
-  const colorActiveCard = activeCard?.cover?.charAt(0) === '#'
+  const onDeleteAttach = useCallback(
+    (file) => {
+      const updatedFileAttach = (activeCard?.fileAttach || []).filter((c) => c._id !== file._id)
+      fetchUpdateCard({ fileAttach: updatedFileAttach })
+    },
+    [fetchUpdateCard, activeCard?.fileAttach]
+  )
+
+  const onAttachdLink = async (url) => {
+    if (!url) return
+    // Xử lý attach link vào card ở đây
+    await toast.promise(
+      fetchUpdateCard({
+        fileAttach: {
+          originalname: url,
+          type: 'link'
+        }
+      }),
+      {
+        pending: `Loading...`
+      }
+    )
+    setOpenAttach(false)
+    setAttachmentUrl('')
+  }
+
+  const colorActiveCard = activeCard && typeof activeCard?.cover !== 'object' && activeCard?.cover?.startsWith('#')
 
   return (
     <Modal disableScrollLock open={isShowModalActiveCard} onClose={handleCloseModal} sx={{ overflowY: 'auto' }}>
@@ -208,13 +265,13 @@ function ActiveCard() {
                 mb: 4,
                 backgroundColor: colorActiveCard ? activeCard?.cover : 'transparent',
                 width: '100%',
-                height: '300px'
+                height: '200px'
               }}
             >
               {!colorActiveCard && (
                 <img
-                  style={{ width: '100%', height: '300px', borderRadius: '6px', objectFit: 'cover' }}
-                  src={activeCard?.cover}
+                  style={{ width: '100%', height: '200px', borderRadius: '6px', objectFit: 'cover' }}
+                  src={imageCards(activeCard)}
                   alt="card-cover"
                 />
               )}
@@ -298,7 +355,7 @@ function ActiveCard() {
           {/* Left side */}
           <Grid xs={12} sm={9}>
             {/* 02:  Members */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 3, paddingLeft: 5 }}>
               <Typography sx={{ fontWeight: '400', color: 'primary.main', mb: 1 }}>Members</Typography>
               <CardUserGroup cardMemberIds={activeCard?.memberIds} onUpdateCardMembers={onUpdateCardMembers} />
             </Box>
@@ -314,7 +371,20 @@ function ActiveCard() {
               <ActiveCardDescription onUpdateCard={onUpdateCard} />
             </Box>
 
-            {/* 04:  Activity - comment */}
+            {/* 04:  Attach */}
+            {activeCard?.fileAttach && activeCard?.fileAttach.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <AttachmentIcon />
+                  <Typography variant="span" sx={{ fontWeight: '400', fontSize: '20px' }}>
+                    Attachment
+                  </Typography>
+                </Box>
+                <ActiveCardAttach onUpdateCard={onUpdateCard} activeCard={activeCard} onDeleteAttach={onDeleteAttach} />
+              </Box>
+            )}
+
+            {/* 05:  Activity - comment */}
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <DvrOutlinedIcon />
@@ -411,10 +481,69 @@ function ActiveCard() {
                 </Box>
               )}
 
-              <SidebarItem>
-                <AttachFileOutlinedIcon fontSize="small" />
-                Attachment
-              </SidebarItem>
+              <Box sx={{ position: 'relative' }}>
+                <Box>
+                  <SidebarItem ref={attachButtonRef} onClick={() => setOpenAttach(!openAttach)}>
+                    <LocalOfferOutlinedIcon fontSize="small" />
+                    Attach
+                  </SidebarItem>
+                  <Popover
+                    open={openAttach}
+                    anchorEl={attachButtonRef.current}
+                    onClose={() => setOpenAttach(false)} // bắt buộc vẫn phải có onClose
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left'
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left'
+                    }}
+                    sx={{
+                      '& .MuiPaper-rounded': {
+                        width: '300px',
+                        padding: '8px',
+                        marginTop: '10px'
+                      }
+                    }}
+                  >
+                    <ClickAwayListener onClickAway={() => setOpenAttach(false)}>
+                      <Stack spacing={2}>
+                        {/* Upload File */}
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
+                            Upload a file
+                          </Typography>
+                          <Button variant="outlined" component="label" fullWidth>
+                            Chọn tệp
+                            <input hidden type="file" name="files" onChange={onUploadFileAttach} multiple />
+                          </Button>
+                        </Box>
+
+                        <Divider />
+
+                        {/* Nhập link */}
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
+                            Link
+                          </Typography>
+                          <TextField
+                            fullWidth
+                            size="small"
+                            placeholder="Dán link liên kết ở đây..."
+                            value={attachmentUrl}
+                            onChange={(e) => setAttachmentUrl(e.target.value)}
+                          />
+                          <Button variant="contained" sx={{ mt: 1 }} onClick={() => onAttachdLink(attachmentUrl)}>
+                            Add
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </ClickAwayListener>
+                  </Popover>
+                </Box>
+              </Box>
+
               <SidebarItem>
                 <LocalOfferOutlinedIcon fontSize="small" />
                 Labels

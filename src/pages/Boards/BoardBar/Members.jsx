@@ -8,6 +8,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
 import { Scrollbar } from 'react-scrollbars-custom'
+import { imageAvatar } from '~/config/constants'
 
 function Members({ board }) {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -44,7 +45,7 @@ function Members({ board }) {
             width: 300,
             maxHeight: 400,
             borderRadius: 2,
-            p: 2,
+            p: 2
           }
         }}
       >
@@ -67,11 +68,15 @@ function Members({ board }) {
                   p: 1,
                   borderRadius: 1,
                   '&:hover': {
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: '#f5f5f5'
                   }
                 }}
               >
-                <Avatar alt={member.name} src={member.avatar} sx={{ width: 32, height: 32 }} />
+                <Avatar
+                  alt={member.name}
+                  src={imageAvatar(member)}
+                  sx={{ width: 32, height: 32 }}
+                />
                 <Box>
                   <Typography variant="body1">{member.displayName || 'No Name'}</Typography>
                   <Typography variant="body2" color="text.secondary">

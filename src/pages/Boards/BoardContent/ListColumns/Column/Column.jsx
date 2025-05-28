@@ -31,6 +31,7 @@ import { useDispatch } from 'react-redux'
 import { columnService } from '~/services/column.service'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select } from '@mui/material'
+import { useUser } from '~/redux/user/userSlice'
 
 function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -39,6 +40,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   })
 
   const dispatch = useDispatch()
+  const { currentUser } = useUser()
   const { currentActiveBoard, boards } = useActiveBoard()
   const board = currentActiveBoard
 
@@ -122,8 +124,11 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
 
   // xử lý xóa 1 Column và Cards bên trong nó
   const confirmDeleteColumn = useConfirm()
+
   const handleDeleteColumn = async () => {
+    const owner = board && board.ownerIds[0] === currentUser._id
     try {
+      if (!owner) return toast.warning("You can't delete this column")
       await confirmDeleteColumn({
         title: 'Delete Column?',
         description: 'This action will permanently delete the column and all its cards. Are you sure?',
@@ -144,11 +149,11 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
         const res = await columnService.delete(column._id)
         toast.success(res?.deleteResult || 'Deleted successfully!')
       } catch (err) {
-        console.error('❌ Failed to delete column:', err)
+        console.error('Failed to delete column:', err)
         toast.error('Failed to delete column from server.')
       }
     } catch {
-      toast.info('Delete canceled')
+      // null
     }
   }
 
@@ -163,6 +168,8 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const [showModalMove, setShowModalMove] = useState(false)
   const [selectedBoardId, setSelectedBoardId] = useState(false)
   const handleMoveCard = () => {
+    const owner = board && board.ownerIds[0] === currentUser._id
+    if (!owner) return toast.warning("You can't move this column")
     setShowModalMove(true)
   }
   const handleConfirmMoveColumn = async () => {

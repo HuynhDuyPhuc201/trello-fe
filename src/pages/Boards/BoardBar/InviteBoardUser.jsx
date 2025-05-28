@@ -13,7 +13,6 @@ import { inviteService } from '~/services/invite.service'
 import { getInvite } from '~/redux/notifications/notificationsSlice'
 import { useDispatch } from 'react-redux'
 import socket from '~/sockets'
-import { toast } from 'react-toastify'
 
 function InviteBoardUser({ board }) {
   /**
@@ -48,7 +47,7 @@ function InviteBoardUser({ board }) {
         socket.emit('invite_to_board', res)
       }
     } catch (error) {
-      toast.error('Failed to invite. Please try again.')
+      // 
     }
   }
 

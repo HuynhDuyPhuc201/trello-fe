@@ -10,6 +10,7 @@ import { memo, useRef, useState } from 'react'
 import { Button, Pagination } from '@mui/material'
 import { useCardComment } from '~/redux/activeCard/activeCardSlice'
 import { toast } from 'react-toastify'
+import { imageAvatar } from '~/config/constants'
 
 const ActiveCardComment = memo(({ onAddCardComment, onDeleteCardComment, onEditCardComment }) => {
   const { currentUser } = useUser()
@@ -81,8 +82,8 @@ const ActiveCardComment = memo(({ onAddCardComment, onDeleteCardComment, onEditC
   return (
     <Box sx={{ mt: 2 }}>
       {/* Xử lý thêm comment vào Card */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <Avatar sx={{ width: 36, height: 36, cursor: 'pointer' }} alt="trungquandev" src={currentUser.avatar} />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, paddingLeft: 5 }}>
+        <Avatar sx={{ width: 36, height: 36, cursor: 'pointer' }} alt={currentUser.displayName} src={imageAvatar(currentUser)} />
         <TextField
           fullWidth
           placeholder="Write a comment..."
@@ -102,19 +103,13 @@ const ActiveCardComment = memo(({ onAddCardComment, onDeleteCardComment, onEditC
         />
       </Box>
 
-      {/* Hiển thị danh sách các comments */}
-      {paginatedComments.length === 0 && (
-        <Typography sx={{ pl: '45px', fontSize: '14px', fontWeight: '500', color: '#b1b1b1' }}>
-          No activity found!
-        </Typography>
-      )}
       {paginatedComments?.map((comment, index) => (
-        <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5 }} key={index}>
+        <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5, paddingLeft: 5 }} key={index}>
           <Tooltip title={currentUser?.displayName}>
             <Avatar
               sx={{ width: 36, height: 36, cursor: 'pointer', borderRadius: '50%' }}
-              alt="trungquandev"
-              src={currentUser?.avatar}
+              alt={currentUser?.displayName}
+              src={imageAvatar(currentUser)}
             />
           </Tooltip>
           <Box sx={{ width: 'inherit' }}>

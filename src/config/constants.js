@@ -6,12 +6,18 @@ export const DEFAULT_ITEMS_PER_PAGE = 12
 
 export const COLORS = ['#4CCB9E', '#F1C94C', '#F5A25D', '#F06A65', '#A293F1', '#A3C943', '#DC84C5', '#8A94A6 ']
 
+import unsplash_1 from '../assets/images/unsplash_1.jpg'
+import unsplash_2 from '../assets/images/unsplash_2.jpg'
+import unsplash_3 from '../assets/images/unsplash_3.jpg'
+import unsplash_4 from '../assets/images/unsplash_4.jpg'
+import unsplash_5 from '../assets/images/unsplash_5.jpg'
+import unsplash_6 from '../assets/images/unsplash_6.jpg'
+import unsplash_7 from '../assets/images/unsplash_7.jpg'
+
 export const unsplashSamples = [
-  "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
-  "https://images.unsplash.com/photo-1522199755839-a2bacb67c546",
-  "https://images.unsplash.com/photo-1506765515384-028b60a970df",
-  "https://images.unsplash.com/photo-1496307653780-42ee777d4833",
-  "https://images.unsplash.com/photo-1485217988980-11786ced9454"
+  'https://images.unsplash.com/photo-1506765515384-028b60a970df',
+  'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1504941214544-9c1c44559ab4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
 ]
 
 export const BOARD_INVITATION_STATUS = {
@@ -28,4 +34,20 @@ export const CARD_MEMBER_ACTION = {
 export const BOARD_TYPES = {
   PUBLIC: 'public',
   PRIVATE: 'private'
+}
+
+export const USER_ROLES = {
+  CLIENT: 'client',
+  ADMIN: 'admin'
+}
+
+export const imageAvatar = (user) => {
+  return `${API_ROOT}/uploads/avatar/${user?.avatar.filename}`
+}
+export const imageAttach = (file) => {
+  return `${API_ROOT}/uploads/attachs/${file?.filename}`
+}
+
+export const imageCards = (file) => {
+  return `${API_ROOT}/uploads/cards/${file?.cover.filename}`
 }

@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import { Link, useNavigate } from 'react-router-dom'
 import { path } from '~/config/path'
+import { API_ROOT, imageAvatar } from '~/config/constants'
 
 function Profiles() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -43,7 +44,7 @@ function Profiles() {
       dispatch(logoutUserAPI())
       navigate('/')
     } catch {
-      toast.info('Delete canceled')
+      // null
     }
   }
 
@@ -58,7 +59,11 @@ function Profiles() {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
         >
-          <Avatar sx={{ width: 36, height: 36 }} alt="duyphucdev" src={currentUser?.avatar} />
+          <Avatar
+            sx={{ width: 36, height: 36 }}
+            alt={currentUser?.displayName}
+            src={imageAvatar(currentUser)}
+          />
         </IconButton>
       </Tooltip>
       <Menu

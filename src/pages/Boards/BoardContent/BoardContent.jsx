@@ -19,7 +19,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import { cloneDeep, isEmpty } from 'lodash'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { TouchSensor, MouseSensor } from '~/libs/DndKitSensors'
-import { IconButton, Menu, MenuItem, Typography, Tooltip, Card, Pagination } from '@mui/material'
+import { IconButton, Menu, MenuItem, Typography, Tooltip, Card, Pagination, CardMedia, TextField } from '@mui/material'
 import { boardService } from '~/services/board.service'
 import { useNavigate } from 'react-router-dom'
 import { path } from '~/config/path'
@@ -28,7 +28,7 @@ import AddIcon from '@mui/icons-material/Add'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import Column from './ListColumns/Column/Column'
 import { useDispatch } from 'react-redux'
-import { deleteBoard, updateBoards } from '~/redux/activeBoard/activeBoardSlice'
+import { deleteBoard, updateBoard, updateBoards } from '~/redux/activeBoard/activeBoardSlice'
 import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { toast } from 'react-toastify'
 import CreateBoardModal from '~/components/Modal/Board/CreateBoardModal'
@@ -377,7 +377,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     [activeDragItemType, oderedColumns]
   )
 
-  const renderColor = (cover, type = false) => {
+  const renderBackgroud = (cover, type = false) => {
     const isColor = cover.charAt(0) === 'l'
     if (!cover) {
       return { background: '#bdbdbd' }
@@ -409,6 +409,11 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
   const [open, setOpen] = useState(false)
   const [boardMenuAnchor, setBoardMenuAnchor] = useState(null)
   const [selectedBoardId, setSelectedBoardId] = useState(null)
+  const valueRename = useRef(null)
+  const [openInput, setOpenInput] = useState({
+    boardId: '',
+    isOpen: false
+  })
   const { boards } = useActiveBoard()
   const handleMainMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -426,11 +431,38 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     setSelectedBoardId(null)
   }
 
-  const handleDeleteBoard = (boardId) => {
-    if (boardId === board._id) {
-      return toast.warning("Can't delete this board")
+
+  const onChangeRenameBoard = async (event) => {
+    const value = event.target.value || valueRename.current
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault() // Thêm dòng này để khi Enter không bị nhảy dòng
+      if (!value) return
+
+      // dùng await để chờ update hoàn thành thì mới setOpenInput tránh tình trạng "giật UI"
+      const res = await dispatch(updateBoard({ boardId: openInput.boardId, title: value.trim() }))
+      if (res) {
+        setOpenInput({
+          boardId: '',
+          isOpen: false
+        })
+      }
     }
-    dispatch(deleteBoard(boardId))
+  }
+  const handleEventBoardItem = (boardId, type) => {
+    if (type === 'delete') {
+      if (boardId === board._id) {
+        return toast.warning("Can't delete this board")
+      }
+      dispatch(deleteBoard(boardId))
+    }
+
+    if (type === 'rename') {
+      setOpenInput({
+        boardId,
+        isOpen: true
+      })
+    }
+
     handleBoardMenuClose()
   }
 
@@ -479,7 +511,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
             flexDirection: 'column',
             p: 2,
             overflowY: 'auto',
-            ...renderColor(board?.cover, true),
+            ...renderBackgroud(board?.cover, true),
             scrollbarWidth: 'thin',
             '&::-webkit-scrollbar': {
               width: '6px'
@@ -515,7 +547,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
               <MenuItem onClick={() => handleSortBoard({ type: 'name' })}>Sort alphabetically</MenuItem>
               <MenuItem onClick={() => handleSortBoard({ type: 'time' })}>Sort by newest</MenuItem>
             </Menu>
-            <CreateBoardModal isOpen={open} handleClose={() => setOpen(false)} />
+            <CreateBoardModal isOpen={open} directPage handleClose={() => setOpen(false)} />
           </Box>
 
           {paginatedBoards?.map((item, i) => (
@@ -532,6 +564,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+
                 '&:hover': {
                   backgroundColor: '#f0f0f0',
                   transform: 'scale(1.02)',
@@ -541,10 +574,28 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
               }}
               onClick={() => navigation(path.Board.detail.replace(':boardId', item._id))}
             >
-              <Typography variant="body2" noWrap>
-                {item?.title || ''}
-              </Typography>
-
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Typography variant="body2" noWrap>
+                  {item.cover.startsWith('h') ? (
+                    <CardMedia component="img" height="30" width="30" sx={{ width: '30px' }} image={item.cover} />
+                  ) : (
+                    <Box sx={{ width: 30, height: 30, background: item.cover || '#bdbdbd', borderRadius: '4px' }}></Box>
+                  )}
+                </Typography>
+                {openInput.isOpen && openInput.boardId === item._id ? (
+                  <TextField
+                    defaultValue={item?.title}
+                    size="small"
+                    sx={{ width: '60%' }}
+                    onKeyDown={onChangeRenameBoard}
+                    onChange={(event) => (valueRename.current = event.target.value)}
+                  />
+                ) : (
+                  <Typography variant="body2" noWrap>
+                    {item?.title || ''}
+                  </Typography>
+                )}
+              </Box>
               <IconButton
                 size="small"
                 onClick={(e) => {
@@ -565,10 +616,11 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
 
           {/* Menu cho từng board */}
           <Menu anchorEl={boardMenuAnchor} open={Boolean(boardMenuAnchor)} onClose={handleBoardMenuClose}>
-            <MenuItem onClick={() => handleDeleteBoard(selectedBoardId)}>Delete</MenuItem>
+            <MenuItem onClick={() => handleEventBoardItem(selectedBoardId, 'delete')}>Delete</MenuItem>
+            <MenuItem onClick={() => handleEventBoardItem(selectedBoardId, 'rename')}>Rename</MenuItem>
           </Menu>
           {totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, position: 'absolute', bottom: '10px' }}>
               <Pagination count={totalPages} page={currentPage} onChange={handleChangePage} color="primary" />
             </Box>
           )}
@@ -591,7 +643,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
               display: 'flex',
               gap: 2,
               paddingLeft: '260px',
-              ...renderColor(board?.cover)
+              ...renderBackgroud(board?.cover)
             })}
           >
             <ListColumns columns={oderedColumns} />

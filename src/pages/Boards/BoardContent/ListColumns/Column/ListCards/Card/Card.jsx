@@ -12,13 +12,18 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDispatch } from 'react-redux'
 import { showModalActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { useUser } from '~/redux/user/userSlice'
+import { API_ROOT, imageCards } from '~/config/constants'
 
 function Card({ card }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card?._id,
     data: { ...card }
   })
-
+  const { currentUser } = useUser()
+  const { currentActiveBoard } = useActiveBoard()
+  const board = currentActiveBoard
   const dispatch = useDispatch()
 
   const dndKitCardStyles = {
@@ -33,16 +38,15 @@ function Card({ card }) {
   }
 
   const shouldShowCardActions = () => {
-    return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length
+    return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.fileAttach?.length
   }
 
   const setActiveCard = () => {
     dispatch(updateCurrentActiveCard(card))
     dispatch(showModalActiveCard(true))
   }
-
   const isColor = typeof card?.cover === 'string' && card.cover.startsWith('#')
-  const isImage = typeof card?.cover === 'string' && !card.cover.startsWith('#')
+
   return (
     <>
       <MuiCard
@@ -60,14 +64,14 @@ function Card({ card }) {
           '&:hover': { borderColor: (theme) => theme.palette.primary.main }
         }}
       >
-        {(isColor || isImage) && (
+        {(isColor || card?.cover) && (
           <CardMedia
             component="div"
             sx={{
               height: isColor ? 70 : 140,
               backgroundColor: isColor ? card.cover : 'transparent'
             }}
-            image={isImage ? card.cover : undefined}
+            image={card?.cover !== null && !isColor ? imageCards(card) : undefined}
             title="Card cover"
           />
         )}
@@ -86,7 +90,7 @@ function Card({ card }) {
         </CardContent>
         {shouldShowCardActions() && (
           <CardActions sx={{ p: '0 4px 8px 4px' }}>
-            {!!card?.memberIds?.length && (
+            {board?.ownerIds?.[0] !== currentUser._id && !!card?.memberIds?.length && (
               <Button size="small" startIcon={<GroupIcon />}>
                 {card?.memberIds?.length}
               </Button>
@@ -96,9 +100,9 @@ function Card({ card }) {
                 {card?.comments?.length}
               </Button>
             )}
-            {!!card?.attachments?.length && (
+            {!!card?.fileAttach?.length && (
               <Button size="small" startIcon={<AttachmentIcon />}>
-                {card?.attachments?.length}
+                {card?.fileAttach?.length}
               </Button>
             )}
           </CardActions>

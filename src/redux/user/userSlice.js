@@ -31,6 +31,7 @@ export const logoutUserAPI = createAsyncThunk('user/logoutUserAPI', async (showM
 
 export const updateUserAPI = createAsyncThunk('user/updateUserAPI', async (formData, thunkAPI) => {
   try {
+    console.log('formData', formData)
     const res = await userService.update(formData)
     return res
   } catch (error) {

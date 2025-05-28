@@ -2,7 +2,7 @@ import Container from '@mui/material/Container'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import AppBar from '~/components/AppBar/AppBar'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
 import { boardService } from '~/services/board.service'
 import { columnService } from '~/services/column.service'
 import { useDispatch } from 'react-redux'
@@ -11,6 +11,7 @@ import {
   getBoardAll,
   getBoardDetail,
   updateCurrentActiveBoard,
+  updateMemberBoardBar,
   useActiveBoard
 } from '~/redux/activeBoard/activeBoardSlice'
 import LoadingSpiner from '~/components/Loading/Loading'
@@ -31,51 +32,51 @@ function Board() {
   const board = currentActiveBoard
   const { boardId } = useParams()
 
+  // Lấy thông tin board + tất cả board
   useEffect(() => {
+    if (!boardId) return
     dispatch(getBoardDetail(boardId))
     dispatch(getBoardAll())
 
     return () => {
+      if (boardId && currentUser) {
+        socket.emit('user_leave_board', { boardId, user: currentUser })
+      }
       dispatch(clearCurrentActiveBoard())
     }
-  }, [dispatch, boardId])
+  }, [dispatch, boardId, currentUser])
 
+  // Khi board và currentUser có mặt => emit user_join_board
   useEffect(() => {
-    if (!board?._id) return
+    if (!board?._id || !currentUser) return
 
+    socket.emit('user_join_board', {
+      boardId: board._id,
+      user: currentUser
+    })
+  }, [board?._id, currentUser])
+
+  // Lắng nghe người mới join
+  useEffect(() => {
     const handleUserJoin = (newUser) => {
-      toast.success(`${newUser.name || newUser.email} vừa tham gia board!`)
-      dispatch(getBoardDetail(board._id))
+      dispatch(updateMemberBoardBar({ user: newUser, type: 'join' }))
     }
-
-    const handleUserLeave = (newUser) => {
-      toast.success(`${newUser.name || newUser.email} vừa rời khỏi board!`)
-      dispatch(getBoardDetail(board._id))
+    const boardMemeber = ({ members }) => {
+      dispatch(updateMemberBoardBar({ members, type: 'set' }))
     }
-
+    const handleUserLeave = (leftUser) => {
+      dispatch(updateMemberBoardBar({ user: leftUser, type: 'leave' }))
+    }
     socket.on('user_join_board', handleUserJoin)
+    socket.on('current_board_members', boardMemeber)
     socket.on('user_leave_board', handleUserLeave)
 
     return () => {
       socket.off('user_join_board', handleUserJoin)
+      socket.off('current_board_members', boardMemeber)
       socket.off('user_leave_board', handleUserLeave)
     }
-  }, [board?._id, dispatch])
-
-  useEffect(() => {
-    return () => {
-      if (boardId && currentUser) {
-        socket.emit('user_leave_board', {
-          boardId,
-          user: {
-            _id: currentUser._id,
-            name: currentUser.name,
-            email: currentUser.email
-          }
-        })
-      }
-    }
-  }, [boardId, currentUser])
+  }, [dispatch, currentUser])
 
   const renderColor = generateColorConfigs()
   const findColor = renderColor.find((item) => item.background === board?.cover)
@@ -161,7 +162,6 @@ function Board() {
   if (!board) {
     return <LoadingSpiner caption="Loading board..." />
   }
-
 
   return (
     <Container disableGutters sx={{ height: '100vh' }} maxWidth={false}>

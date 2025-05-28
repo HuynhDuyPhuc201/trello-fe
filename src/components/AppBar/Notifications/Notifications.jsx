@@ -239,12 +239,15 @@ function Notifications({ colorConfigs }) {
               {index !== notificationOfInvitee?.length - 1 && <Divider />}
             </Box>
           ))}
-        <Box
-          sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'end' }}
-          onClick={handleDeleteAll}
-        >
-          {notificationOfInvitee && notificationOfInvitee.length > 0 && <Button>Delete all</Button>}
-        </Box>
+
+        {notificationOfInvitee && notificationOfInvitee.length > 0 && (
+          <Box
+            sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'end' }}
+            onClick={handleDeleteAll}
+          >
+            {<Button>Delete all</Button>}
+          </Box>
+        )}
       </Menu>
     </Box>
   )

@@ -25,8 +25,10 @@ import { boardService } from '~/services/board.service'
 import { useDispatch } from 'react-redux'
 import { useState } from 'react'
 import { getBoardAll } from '~/redux/activeBoard/activeBoardSlice'
+import { useNavigate } from 'react-router-dom'
+import { path } from '~/config/path'
 
-const CreateBoardModal = ({ isOpen, handleClose }) => {
+const CreateBoardModal = ({ isOpen, handleClose, directPage = false }) => {
   const renderColor = generateColorConfigs()
   const {
     control,
@@ -42,6 +44,7 @@ const CreateBoardModal = ({ isOpen, handleClose }) => {
       cover: ''
     }
   })
+  const navigaton = useNavigate()
   const [cover, setCover] = useState('')
   const dispatch = useDispatch()
   const queryClient = useQueryClient()
@@ -53,10 +56,13 @@ const CreateBoardModal = ({ isOpen, handleClose }) => {
 
   const createBoardMutation = useMutation({
     mutationFn: boardService.create,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['boards'] })
       dispatch(getBoardAll())
       handleCloseModal()
+      if (directPage) {
+        navigaton(path.Board.detail.replace(':boardId', data._id))
+      }
     },
     onError: (error) => {
       console.error('Create board failed:', error)
@@ -89,8 +95,8 @@ const CreateBoardModal = ({ isOpen, handleClose }) => {
           backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1A2027' : 'white')
         }}
       >
-        <Box sx={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }} onClick={handleCloseModal}>
-          <CancelIcon color="error" sx={{ '&:hover': { color: 'error.light' } }} />
+        <Box sx={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer', }} onClick={handleCloseModal}>
+          <CancelIcon width='30' color="success" sx={{ '&:hover': { color: '#808080' } }} />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <LibraryAddIcon />
@@ -154,7 +160,7 @@ const CreateBoardModal = ({ isOpen, handleClose }) => {
                     <Grid item key={index} xs={3} md={3}>
                       <Box
                         sx={{
-                          height: '20px',
+                          height: '30px',
                           background: color.background,
                           borderRadius: '4px',
                           cursor: 'pointer',
@@ -174,12 +180,12 @@ const CreateBoardModal = ({ isOpen, handleClose }) => {
 
                   {/* Grid ảnh Unsplash */}
                   <Grid container spacing={1} sx={{ mt: 1 }}>
-                    {unsplashSamples.map((item, index) => (
+                    {unsplashSamples?.map((item, index) => (
                       <Grid item xs={6} md={4} key={index}>
                         <Box
                           component="img"
                           src={item}
-                          onClick={() => setCover(item)} // <-- Đưa ra ngoài sx
+                          onClick={() => setCover(item)}
                           sx={(theme) => ({
                             width: '100%',
                             height: '100px',

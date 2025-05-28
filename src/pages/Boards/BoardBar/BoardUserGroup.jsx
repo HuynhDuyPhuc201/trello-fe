@@ -3,8 +3,12 @@ import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Tooltip from '@mui/material/Tooltip'
 import Popover from '@mui/material/Popover'
+import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { imageAvatar } from '~/config/constants'
 
-function BoardUserGroup({ boardUsers = [], limit = 4, avatarColor = false }) {
+function BoardUserGroup({ limit = 4, avatarColor = false }) {
+  const { memberBoardBar } = useActiveBoard()
+
   /**
    * Xử lý Popover để ẩn hoặc hiện toàn bộ user trên một cái popup, tương tự docs để tham khảo ở đây:
    * https://mui.com/material-ui/react-popover/
@@ -21,10 +25,10 @@ function BoardUserGroup({ boardUsers = [], limit = 4, avatarColor = false }) {
   return (
     <Box sx={{ display: 'flex', gap: '4px' }}>
       {/* Hiển thị giới hạn số lượng user theo số limit */}
-      {boardUsers?.map((user, index) => {
+      {memberBoardBar.length > 0 && memberBoardBar?.map((user, index) => {
         if (index < limit) {
           return (
-            <Tooltip title={user?.username} key={index}>
+            <Tooltip title={user?.displayName || user?.email} key={index}>
               <Avatar
                 sx={{
                   width: 34,
@@ -37,8 +41,8 @@ function BoardUserGroup({ boardUsers = [], limit = 4, avatarColor = false }) {
                     borderRadius: '50%'
                   })
                 }}
-                alt={user?.username}
-                src={user?.avatar}
+                alt={user?.username || user?.displayName}
+                src={imageAvatar(user)}
               />
             </Tooltip>
           )
@@ -46,7 +50,7 @@ function BoardUserGroup({ boardUsers = [], limit = 4, avatarColor = false }) {
       })}
 
       {/* Nếu số lượng users nhiều hơn limit thì hiện thêm +number */}
-      {boardUsers?.length > limit && (
+      {memberBoardBar?.length > limit && (
         <Tooltip title="Show more">
           <Box
             aria-describedby={popoverId}
@@ -65,7 +69,7 @@ function BoardUserGroup({ boardUsers = [], limit = 4, avatarColor = false }) {
               backgroundColor: '#a4b0be'
             }}
           >
-            +{boardUsers?.length - limit}
+            +{memberBoardBar?.length - limit}
           </Box>
         </Tooltip>
       )}
@@ -79,9 +83,9 @@ function BoardUserGroup({ boardUsers = [], limit = 4, avatarColor = false }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box sx={{ p: 2, maxWidth: '235px', display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          {boardUsers?.map((user, index) => (
-            <Tooltip title={user.username} key={index}>
-              <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user.username} src={user.avatar} />
+          {memberBoardBar?.map((user, index) => (
+            <Tooltip title={user?.name || user?.email} key={index}>
+              <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user?.name || user?.email} src={user?.avatar} />
             </Tooltip>
           ))}
         </Box>

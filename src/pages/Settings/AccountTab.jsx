@@ -17,6 +17,7 @@ import { updateUserAPI, useUser } from '~/redux/user/userSlice'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
+import { imageAvatar } from '~/config/constants'
 
 // Xử lý custom đẹp cái input file ở đây: https://mui.com/material-ui/react-button/#file-upload
 // Ngoài ra note thêm lib này từ docs của MUI nó recommend nếu cần dùng: https://github.com/viclafouch/mui-file-input
@@ -58,6 +59,7 @@ function AccountTab() {
 
   const uploadAvatar = (e) => {
     const file = e.target?.files?.[0]
+    console.log('file', file)
     const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
@@ -72,9 +74,10 @@ function AccountTab() {
     //   console.log(`${key}:`, value) // 👈 phải in ra kiểu File, không phải {}
     // }
 
-    dispatch(updateUserAPI(formData))
+    dispatch(updateUserAPI(formData)).unwrap()
     e.target.value = ''
   }
+  console.log('currentUser', `http://localhost:8017/uploads/attachs/${currentUser?.avatar.filename}`)
 
   return (
     <Box
@@ -98,7 +101,11 @@ function AccountTab() {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box>
-            <Avatar sx={{ width: 84, height: 84, mb: 1 }} alt="TrungQuanDev" src={currentUser?.avatar} />
+            <Avatar
+              sx={{ width: 84, height: 84, mb: 1 }}
+              alt={currentUser?.displayName}
+              src={imageAvatar(currentUser)}
+            />
             <Tooltip title="Upload a new image to update your avatar immediately.">
               <Button component="label" variant="contained" size="small" startIcon={<CloudUploadIcon />}>
                 Upload

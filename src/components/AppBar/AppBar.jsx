@@ -100,68 +100,7 @@ function AppBar({ colorConfigs }) {
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <TextField
-          id="outlined-search"
-          label="Search..."
-          type="text"
-          size="small"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon
-                  sx={{
-                    color: (theme) =>
-                      colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-                  }}
-                />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                {searchValue && (
-                  <CloseIcon
-                    fontSize="small"
-                    sx={{ color: searchValue ? colorConfigs?.text || '#000000' : 'transparent', cursor: 'pointer' }}
-                    onClick={() => setSearchValue('')}
-                  />
-                )}
-              </InputAdornment>
-            )
-          }}
-          sx={{
-            minWidth: '120px',
-            maxWidth: '180px',
-            '& label': {
-              color: (theme) =>
-                colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-            },
-            '& input': {
-              color: (theme) =>
-                colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-            },
-            '& label.Mui-focused': {
-              color: (theme) =>
-                colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-            },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-              },
-              '&:hover fieldset': {
-                borderColor: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
-              }
-            }
-          }}
-        />
-        <AutoCompleteSearchBoard/>
+        <AutoCompleteSearchBoard colorConfigs={colorConfigs}/>
         <ModeSelect colorConfigs={colorConfigs} />
 
         {/* Notifications */}

@@ -31,7 +31,7 @@ function ActiveCardDescription({ onUpdateCard }) {
   return (
     <Box sx={{ mt: -4 }}>
       {markdownEditMode ? (
-        <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 1, paddingLeft: 5 }}>
           <Box data-color-mode={mode}>
             <MDEditor
               value={cardDescription}

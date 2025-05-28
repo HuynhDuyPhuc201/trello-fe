@@ -7,7 +7,8 @@ import { mapOrder } from '~/utils/sorts'
 const initialState = {
   currentActiveBoard: null,
   error: null,
-  boards: []
+  boards: [],
+  memberBoardBar: []
 }
 // dùng middleware thunk thì phải đi kèm với extraReducers
 export const getBoardDetail = createAsyncThunk('activeboard/getBoardDetail', async (boardId, thunkAPI) => {
@@ -53,6 +54,16 @@ export const deleteBoard = createAsyncThunk('boards/deleteBoard', async (boardId
   }
 })
 
+export const updateBoard = createAsyncThunk('boards/updateBoard', async (data, thunkAPI) => {
+  const { boardId, title } = data
+  try {
+    const deletedBoard = await boardService.update(boardId, { title })
+    return deletedBoard
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')
+  }
+})
+
 export const activeBoardSlice = createSlice({
   name: 'activeBoard',
   initialState,
@@ -76,6 +87,24 @@ export const activeBoardSlice = createSlice({
     },
     clearCurrentActiveBoard: (state) => {
       state.currentActiveBoard = null
+      state.memberBoardBar = []
+    },
+
+    // member
+    updateMemberBoardBar: (state, action) => {
+      const { user, type, members } = action.payload
+      if (type === 'join') {
+        const existed = state.memberBoardBar.find((u) => u._id === user._id)
+        if (!existed) {
+          state.memberBoardBar.push(user)
+        }
+      }
+      if (type === 'leave') {
+        state.memberBoardBar = state.memberBoardBar.filter((u) => u._id !== user._id)
+      }
+      if (type === 'set' && members) {
+        state.memberBoardBar = members
+      }
     }
   },
   extraReducers: (builder) => {
@@ -95,9 +124,31 @@ export const activeBoardSlice = createSlice({
       .addCase(getBoardDetail.rejected, (state, action) => {
         state.error = action.payload
       })
+      .addCase(updateBoard.fulfilled, (state, action) => {
+        const updatedBoard = action.payload
+        const index = state.boards.findIndex((b) => b._id === updatedBoard._id)
+
+        if (index !== -1) {
+          state.boards[index] = updatedBoard
+        }
+
+        // Nếu board đang được mở là cái đang update => cập nhật luôn
+        if (state.currentActiveBoard?._id === updatedBoard._id) {
+          state.currentActiveBoard = {
+            ...state.currentActiveBoard,
+            ...updatedBoard
+          }
+        }
+      })
   }
 })
 
-export const { updateCurrentActiveBoard, updateCardInBoard, updateBoards, clearCurrentActiveBoard } = activeBoardSlice.actions
+export const {
+  updateCurrentActiveBoard,
+  updateCardInBoard,
+  updateBoards,
+  clearCurrentActiveBoard,
+  updateMemberBoardBar
+} = activeBoardSlice.actions
 export const useActiveBoard = () => useSelector((state) => state.activeBoard)
 export const activeBoardReducer = activeBoardSlice.reducer

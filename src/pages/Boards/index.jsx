@@ -24,7 +24,7 @@ import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/config/constants'
 import { CardMedia } from '@mui/material'
 import { path } from '~/config/path'
 import { useDispatch } from 'react-redux'
-import { getBoardAll, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { getBoardAll, updateMemberBoardBar, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import socket from '~/sockets'
 import { useUser } from '~/redux/user/userSlice'
 // Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
@@ -51,7 +51,6 @@ function Boards() {
   const query = new URLSearchParams(location.search)
 
   const { boards } = useActiveBoard()
-
   /**
    * Lấy giá trị page từ query, default sẽ là 1 nếu không tồn tại page từ url.
    * Nhắc lại kiến thức cơ bản hàm parseInt cần tham số thứ 2 là Hệ thập phân (hệ đếm cơ số 10) để đảm bảo chuẩn số cho phân trang
@@ -65,10 +64,8 @@ function Boards() {
   const { currentUser } = useUser()
   const handleClickToBoard = (boardId) => {
     if (!boardId || !currentUser) return
-    socket.emit('user_join_board', {
-      boardId: boardId,
-      user: currentUser
-    })
+    socket.emit('user_join_board', { boardId: boardId, user: currentUser })
+    dispatch(updateMemberBoardBar({ user: currentUser, type: 'join' }))
   }
 
   // Lúc chưa tồn tại boards > đang chờ gọi api thì hiện loading

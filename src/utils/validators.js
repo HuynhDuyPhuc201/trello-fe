@@ -23,3 +23,21 @@ export const singleFileValidator = (file) => {
   }
   return null
 }
+
+export const ALLOWED_TYPES = [
+  'image/jpeg', 'image/png', 'application/pdf',
+  'application/msword', // .doc
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+  'application/zip',
+  'text/plain',
+  'video/mp4'
+]
+
+
+export const singleFileAttachValidator = (file) => {
+  if (!file) return 'File không hợp lệ'
+  const maxSize = 20 * 1024 * 1024 // 20MB
+  if (file.size > maxSize) return 'File quá lớn (tối đa 20MB)'
+  if (!ALLOWED_TYPES.includes(file.type)) return 'Định dạng không hỗ trợ'
+  return null
+}
