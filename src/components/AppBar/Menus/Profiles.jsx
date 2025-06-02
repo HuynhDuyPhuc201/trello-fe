@@ -14,11 +14,10 @@ import PersonAdd from '@mui/icons-material/PersonAdd'
 import Logout from '@mui/icons-material/Logout'
 import { logoutUserAPI, useUser } from '~/redux/user/userSlice'
 import { useDispatch } from 'react-redux'
-import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
 import { Link, useNavigate } from 'react-router-dom'
 import { path } from '~/config/path'
-import { API_ROOT, imageAvatar } from '~/config/constants'
+import { imageAvatar } from '~/config/constants'
 
 function Profiles() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -62,7 +61,7 @@ function Profiles() {
           <Avatar
             sx={{ width: 36, height: 36 }}
             alt={currentUser?.displayName}
-            src={imageAvatar(currentUser)}
+            src={imageAvatar(currentUser) || undefined}
           />
         </IconButton>
       </Tooltip>
@@ -78,7 +77,7 @@ function Profiles() {
       >
         <Link to={path.Settings.Account} style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem onClick={handleClose} sx={{ '&:hover': { color: 'success.light' } }}>
-            <Avatar sx={{ width: 28, height: 28, mr: 2 }} src={currentUser?.avatar} /> Profile
+            <Avatar sx={{ width: 28, height: 28, mr: 2 }} src={imageAvatar(currentUser)} /> Profile
           </MenuItem>
         </Link>
         <Divider />

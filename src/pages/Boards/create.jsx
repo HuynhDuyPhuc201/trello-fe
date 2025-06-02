@@ -1,14 +1,8 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
-import { useDispatch } from 'react-redux'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { boardService } from '~/services/board.service'
-import { getBoardAll } from '~/redux/activeBoard/activeBoardSlice'
 
 import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { BOARD_TYPES } from '~/config/constants'
 import CreateBoardModal from '~/components/Modal/Board/CreateBoardModal'
 
 const SidebarItem = styled(Box)(({ theme }) => ({

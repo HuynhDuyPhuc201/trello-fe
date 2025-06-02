@@ -29,3 +29,9 @@
 * "eslint-plugin-react-hooks": "^4.6.0"
 * "eslint-plugin-react-refresh": "^0.3.4"
 ```
+
+<!-- có thể dùng unwrap() cho dispatch để kiểm tra dispatch đó hoàn thành hay chưa, nhưng chỉ với nhung dispatch dung createAsyncThunk -->
+dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()
+
+<!-- cũng có thể kiểm tra và lấy giá trị trả về (res), nhưng phải kèm await + unwrap() -->
+ const res = await dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()

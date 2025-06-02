@@ -10,6 +10,11 @@ export const userService = {
     return res
   },
 
+  async loginGoogle(token) {
+    const res = await api.post(`${ENDPOINT}/login-google`, token)
+    return res
+  },
+
   async logout() {
     return await api.delete(`${ENDPOINT}/logout`)
   },

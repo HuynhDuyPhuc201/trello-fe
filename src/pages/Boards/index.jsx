@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import AppBar from '~/components/AppBar/AppBar'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -15,7 +15,7 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import SidebarCreateBoardModal from './create'
 
 import { styled } from '@mui/material/styles'
@@ -51,26 +51,25 @@ function Boards() {
   const query = new URLSearchParams(location.search)
 
   const { boards } = useActiveBoard()
-  /**
-   * Lấy giá trị page từ query, default sẽ là 1 nếu không tồn tại page từ url.
-   * Nhắc lại kiến thức cơ bản hàm parseInt cần tham số thứ 2 là Hệ thập phân (hệ đếm cơ số 10) để đảm bảo chuẩn số cho phân trang
-   */
+  // parseInt cần tham số thứ 2 là Hệ thập phân (hệ đếm cơ số 10) để đảm bảo chuẩn số cho phân trang
   const page = parseInt(query.get('page') || DEFAULT_PAGE, 10)
+  const { currentUser } = useUser()
 
   useEffect(() => {
-    dispatch(getBoardAll()) // Reset lại board detail khi chuyển sang trang boards
+    dispatch(getBoardAll())
   }, [location.search])
 
-  const { currentUser } = useUser()
   const handleClickToBoard = (boardId) => {
     if (!boardId || !currentUser) return
     socket.emit('user_join_board', { boardId: boardId, user: currentUser })
     dispatch(updateMemberBoardBar({ user: currentUser, type: 'join' }))
   }
 
-  // Lúc chưa tồn tại boards > đang chờ gọi api thì hiện loading
   if (!boards) {
     return <LoadingSpiner caption="Loading Boards..." />
+  }
+  if (!boards || !currentUser) {
+    return <Navigate to={'/'} />
   }
 
   return (
@@ -112,7 +111,6 @@ function Boards() {
                 </Typography>
               )}
 
-              {/* Trường hợp gọi API và có boards trong Database trả về thì render danh sách boards */}
               {boards && boards?.length > 0 && (
                 <Grid container spacing={2}>
                   {boards?.map((board) => (
@@ -161,7 +159,6 @@ function Boards() {
                   ))}
                 </Grid>
               )}
-              {/* Trường hợp gọi API và có boards?.totalBoards trong Database trả về thì render khu vực phân trang  */}
               {boards?.totalBoards > 0 && (
                 <Box sx={{ my: 3, pr: 5, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   <Pagination
@@ -169,11 +166,8 @@ function Boards() {
                     color="secondary"
                     showFirstButton
                     showLastButton
-                    // Giá trị prop count của component Pagination là để hiển thị tổng số lượng page, công thức là lấy Tổng số lượng bản ghi chia cho số lượng bản ghi muốn hiển thị trên 1 page (ví dụ thường để 12, 24, 26, 48...vv). sau cùng là làm tròn số lên bằng hàm Math.ceil
                     count={Math.ceil(boards?.totalBoards / DEFAULT_ITEMS_PER_PAGE)}
-                    // Giá trị của page hiện tại đang đứng
                     page={page}
-                    // Render các page item và đồng thời cũng là những cái link để chúng ta click chuyển trang
                     renderItem={(item) => (
                       <PaginationItem
                         component={Link}

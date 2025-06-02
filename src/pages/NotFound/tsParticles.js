@@ -51,6 +51,6 @@ const particles404Config = {
     }
   },
   detectRetina: true
-};
+}
 
-export default particles404Config;
+export default particles404Config

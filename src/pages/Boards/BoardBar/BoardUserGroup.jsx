@@ -6,7 +6,7 @@ import Popover from '@mui/material/Popover'
 import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { imageAvatar } from '~/config/constants'
 
-function BoardUserGroup({ limit = 4, avatarColor = false }) {
+function BoardUserGroup() {
   const { memberBoardBar } = useActiveBoard()
 
   /**
@@ -20,34 +20,29 @@ function BoardUserGroup({ limit = 4, avatarColor = false }) {
     if (!anchorPopoverElement) setAnchorPopoverElement(event.currentTarget)
     else setAnchorPopoverElement(null)
   }
-
+  const limit = 4
   // Lưu ý ở đây chúng ta không dùng Component AvatarGroup của MUI bởi nó không hỗ trợ tốt trong việc chúng ta cần custom & trigger xử lý phần tử tính toán cuối, đơn giản là cứ dùng Box và CSS - Style đám Avatar cho chuẩn kết hợp tính toán một chút thôi.
   return (
     <Box sx={{ display: 'flex', gap: '4px' }}>
       {/* Hiển thị giới hạn số lượng user theo số limit */}
-      {memberBoardBar.length > 0 && memberBoardBar?.map((user, index) => {
-        if (index < limit) {
-          return (
-            <Tooltip title={user?.displayName || user?.email} key={index}>
-              <Avatar
-                sx={{
-                  width: 34,
-                  height: 34,
-                  cursor: 'pointer',
-                  ...(avatarColor && {
-                    borderColor: '#00fc2f',
-                    borderWidth: '2px',
-                    borderStyle: 'solid',
-                    borderRadius: '50%'
-                  })
-                }}
-                alt={user?.username || user?.displayName}
-                src={imageAvatar(user)}
-              />
-            </Tooltip>
-          )
-        }
-      })}
+      {memberBoardBar.length > 0 &&
+        memberBoardBar?.map((user, index) => {
+          if (index < limit) {
+            return (
+              <Tooltip title={user?.displayName || user?.email} key={index}>
+                <Avatar
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    cursor: 'pointer'
+                  }}
+                  alt={user?.username || user?.displayName}
+                  src={imageAvatar(user)}
+                />
+              </Tooltip>
+            )
+          }
+        })}
 
       {/* Nếu số lượng users nhiều hơn limit thì hiện thêm +number */}
       {memberBoardBar?.length > limit && (
@@ -85,7 +80,11 @@ function BoardUserGroup({ limit = 4, avatarColor = false }) {
         <Box sx={{ p: 2, maxWidth: '235px', display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           {memberBoardBar?.map((user, index) => (
             <Tooltip title={user?.name || user?.email} key={index}>
-              <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user?.name || user?.email} src={user?.avatar} />
+              <Avatar
+                sx={{ width: 34, height: 34, cursor: 'pointer' }}
+                alt={user?.name || user?.email}
+                src={user?.avatar}
+              />
             </Tooltip>
           ))}
         </Box>

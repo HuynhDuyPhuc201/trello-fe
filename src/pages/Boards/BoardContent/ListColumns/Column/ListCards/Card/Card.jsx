@@ -14,7 +14,9 @@ import { useDispatch } from 'react-redux'
 import { showModalActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { useUser } from '~/redux/user/userSlice'
-import { API_ROOT, imageCards } from '~/config/constants'
+import { imageCards } from '~/config/constants'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth' // icon lịch
+import dayjs from 'dayjs'
 
 function Card({ card }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -25,6 +27,30 @@ function Card({ card }) {
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
   const dispatch = useDispatch()
+
+  const formatDate = (date) => dayjs(date).format('DD/MM')
+
+  const endTime = card?.date?.endTime
+  const startDate = card?.date?.startDate
+  const endDate = card?.date?.endDate
+  const hasStart = !!startDate
+  const hasEnd = !!endDate
+  const displayText =
+    hasStart && hasEnd
+      ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+      : hasEnd
+        ? `${formatDate(endDate)}`
+        : hasStart
+          ? `${formatDate(startDate)}`
+          : ''
+  const getEndDateTime = () => {
+    if (endTime) return dayjs(endTime)
+    if (endDate) return dayjs(endDate)
+    return null
+  }
+
+  const endDateTime = getEndDateTime()
+  const isOverdue = endDateTime && dayjs().isAfter(endDateTime)
 
   const dndKitCardStyles = {
     // touchAction: 'none', // dành cho sensor default dạng PointerSensor
@@ -89,8 +115,8 @@ function Card({ card }) {
           </Box>
         </CardContent>
         {shouldShowCardActions() && (
-          <CardActions sx={{ p: '0 4px 8px 4px' }}>
-            {board?.ownerIds?.[0] !== currentUser._id && !!card?.memberIds?.length && (
+          <CardActions sx={{ p: '0 4px 8px 4px', position: 'relative' }}>
+            {board?.ownerIds?.[0] !== currentUser?._id && !!card?.memberIds?.length && (
               <Button size="small" startIcon={<GroupIcon />}>
                 {card?.memberIds?.length}
               </Button>
@@ -103,6 +129,25 @@ function Card({ card }) {
             {!!card?.fileAttach?.length && (
               <Button size="small" startIcon={<AttachmentIcon />}>
                 {card?.fileAttach?.length}
+              </Button>
+            )}
+            {(hasStart || hasEnd) && (
+              <Button
+                sx={{
+                  position: 'absolute',
+                  right: 10,
+                  color: isOverdue ? 'error.main' : 'inherit',
+                  borderColor: isOverdue ? 'error.main' : 'rgba(0, 0, 0, 0.23)',
+                  '&:hover': {
+                    borderColor: isOverdue ? 'error.dark' : 'black',
+                    backgroundColor: isOverdue ? 'rgba(255,0,0,0.04)' : 'inherit'
+                  }
+                }}
+                size="small"
+                startIcon={<CalendarMonthIcon fontSize="small" />}
+                variant="outlined"
+              >
+                {displayText}
               </Button>
             )}
           </CardActions>

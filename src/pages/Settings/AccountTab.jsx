@@ -37,11 +37,10 @@ function AccountTab() {
   const { currentUser } = useUser()
   const dispatch = useDispatch()
 
-  // Những thông tin của user để init vào form (key tương ứng với register phía dưới Field)
   const initialGeneralForm = {
     displayName: currentUser?.displayName
   }
-  // Sử dụng defaultValues để set giá trị mặc định cho các field cần thiết
+
   const {
     register,
     handleSubmit,
@@ -59,7 +58,6 @@ function AccountTab() {
 
   const uploadAvatar = (e) => {
     const file = e.target?.files?.[0]
-    console.log('file', file)
     const error = singleFileValidator(file)
     if (error) {
       toast.error(error)
@@ -77,7 +75,6 @@ function AccountTab() {
     dispatch(updateUserAPI(formData)).unwrap()
     e.target.value = ''
   }
-  console.log('currentUser', `http://localhost:8017/uploads/attachs/${currentUser?.avatar.filename}`)
 
   return (
     <Box

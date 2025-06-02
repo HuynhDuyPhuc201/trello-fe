@@ -1,21 +1,21 @@
-import { useEffect } from 'react';
-import { loadFull } from 'tsparticles';
-import { tsParticles } from 'tsparticles-engine';
-import particles404Config from './tsParticles.js';
-import planet from '../../assets/planet.svg';
-import astronaut from '../../assets/astronaut.svg';
-import { Link } from 'react-router-dom';
-import './style.css'; // Không import bundle js
+import { useEffect } from 'react'
+import { loadFull } from 'tsparticles'
+import { tsParticles } from 'tsparticles-engine'
+import particles404Config from './tsParticles.js'
+import planet from '../../assets/planet.svg'
+import astronaut from '../../assets/astronaut.svg'
+import { Link } from 'react-router-dom'
+import './style.css' // Không import bundle js
 
 const NotFoundPage = () => {
   useEffect(() => {
     const initParticles = async () => {
-      await loadFull(tsParticles);
-      await tsParticles.load('tsparticles', particles404Config);
-    };
+      await loadFull(tsParticles)
+      await tsParticles.load('tsparticles', particles404Config)
+    }
 
-    initParticles();
-  }, []);
+    initParticles()
+  }, [])
 
   return (
     <div className="permission_denied">
@@ -32,7 +32,7 @@ const NotFoundPage = () => {
         </Link>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NotFoundPage;
+export default NotFoundPage

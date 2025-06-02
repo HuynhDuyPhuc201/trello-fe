@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 
 // Một Trick xử lý css khá hay trong việc làm UI UX khi cần ẩn hiện một cái input: Hiểu đơn giản là thay vì phải tạo biến State để chuyển đổi qua lại giữa thẻ Input và Text thông thường thì chúng ta sẽ CSS lại cho cái thẻ Input trông như text bình thường, chỉ khi click và focus vào nó thì style lại trở về như cái input ban đầu.
 // Controlled Input trong MUI: https://mui.com/material-ui/react-text-field/#uncontrolled-vs-controlled
-function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...props }) {
+function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', fontWeight='bold', ...props }) {
   const [inputValue, setInputValue] = useState(value)
   const isDraggingRef = useRef(false)
   const mouseDownTimeRef = useRef(0)
@@ -77,7 +77,7 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
         sx={{
           cursor: 'pointer',
           '& label': {},
-          '& input': { fontSize: inputFontSize, fontWeight: 'bold' },
+          '& input': { fontSize: inputFontSize, fontWeight: fontWeight },
           '& .MuiOutlinedInput-root': {
             backgroundColor: 'transparent',
             '& fieldset': { borderColor: 'transparent' }
@@ -94,7 +94,7 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
           '& .MuiOutlinedInput-input': {
             px: '6px',
             // cursor: 'pointer',
-            width: '100%' ,
+            width: '100%',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis'

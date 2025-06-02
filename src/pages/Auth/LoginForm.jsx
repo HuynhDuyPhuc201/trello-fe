@@ -22,6 +22,8 @@ import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
 import { path } from '~/config/path'
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
+import { userService } from '~/services/user.service'
 
 function LoginForm() {
   const {
@@ -38,17 +40,34 @@ function LoginForm() {
 
   const submitLogIn = async (data) => {
     try {
-      const res = await dispatch(loginUserAPI(data))
-
-      if (res.meta?.requestStatus === 'fulfilled') {
-        navigate(path.Board.index)
-      } else {
-        // Hiển thị lỗi từ backend
-        toast.error(res.payload?.message || 'Login failed!')
-      }
+      const res = await dispatch(loginUserAPI(data)).unwrap()
+      if (res) navigate(path.Board.index)
     } catch (error) {
-      console.error('Unexpected error:', error)
-      toast.error('Unexpected error occurred!')
+      toast.error(error)
+    }
+  }
+
+  //google
+  const handleLoginGoogle = async (credentialResponse) => {
+    const token = credentialResponse.credential
+    try {
+      const data = await userService?.loginGoogle({ token })
+      // if (data.success) {
+      //   if (data.token) {
+      //     const { token, ...userData } = data
+      //     setUser(userData)
+      //     setToken(token)
+      //   } else {
+      //     setUser(data)
+      //   }
+      //   message.success(data.message)
+      //   navigate(path.Home)
+      //   if (data.isAdmin) {
+      //     navigate(path.Admin)
+      //   }
+      // }
+    } catch (error) {
+      toast.error(error)
     }
   }
 
@@ -148,6 +167,27 @@ function LoginForm() {
               Login
             </Button>
           </CardActions>
+
+          <Box
+            sx={{
+              mt: '30px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 3
+            }}
+          >
+            <GoogleOAuthProvider clientId="119448505566-72peltvkmj8bi0cfn1l5hqm0fmf85jci.apps.googleusercontent.com">
+              <GoogleLogin
+                onSuccess={handleLoginGoogle}
+                onError={() => console.log('Login Failed')}
+                theme="outline"
+                size="large"
+                cookiePolicy="single_host_origin"
+              />
+            </GoogleOAuthProvider>
+          </Box>
+
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>New to Trello?</Typography>
             <Link to="/register" style={{ textDecoration: 'none' }}>

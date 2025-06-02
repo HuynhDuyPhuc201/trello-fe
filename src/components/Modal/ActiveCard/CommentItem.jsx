@@ -7,8 +7,8 @@ const CommentItem = memo(({ comment, onDelete, onEdit }) => {
   const valueRef = useRef(comment.content)
 
   const handleEdit = async () => {
-    if (!valueRef.current.trim()) return
-    const result = await onEdit(comment._id, valueRef.current)
+    if (!valueRef?.current.trim()) return
+    const result = await onEdit(comment._id, valueRef?.current)
     if (result?.success) setIsEditing(false)
   }
 

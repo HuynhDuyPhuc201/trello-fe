@@ -1,20 +1,16 @@
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Box from '@mui/material/Box'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import Cloud from '@mui/icons-material/Cloud'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import ContentCopy from '@mui/icons-material/ContentCopy'
 import ContentCut from '@mui/icons-material/ContentCut'
-import ContentPaste from '@mui/icons-material/ContentPaste'
 import AddCardIcon from '@mui/icons-material/AddCard'
 import Divider from '@mui/material/Divider'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
-import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import ListCards from './ListCards/ListCards'
@@ -126,7 +122,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const confirmDeleteColumn = useConfirm()
 
   const handleDeleteColumn = async () => {
-    const owner = board && board.ownerIds[0] === currentUser._id
+    const owner = board && board.ownerIds[0] === currentUser?._id
     try {
       if (!owner) return toast.warning("You can't delete this column")
       await confirmDeleteColumn({
@@ -168,7 +164,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const [showModalMove, setShowModalMove] = useState(false)
   const [selectedBoardId, setSelectedBoardId] = useState(false)
   const handleMoveCard = () => {
-    const owner = board && board.ownerIds[0] === currentUser._id
+    const owner = board && board.ownerIds[0] === currentUser?._id
     if (!owner) return toast.warning("You can't move this column")
     setShowModalMove(true)
   }

@@ -54,10 +54,10 @@ export const deleteBoard = createAsyncThunk('boards/deleteBoard', async (boardId
   }
 })
 
-export const updateBoard = createAsyncThunk('boards/updateBoard', async (data, thunkAPI) => {
-  const { boardId, title } = data
+export const updateBoard = createAsyncThunk('boards/updateBoard', async (updateData, thunkAPI) => {
+  const { boardId } = updateData
   try {
-    const deletedBoard = await boardService.update(boardId, { title })
+    const deletedBoard = await boardService.update(boardId, updateData)
     return deletedBoard
   } catch (error) {
     return thunkAPI.rejectWithValue(error?.response?.data || 'Fetch board failed')

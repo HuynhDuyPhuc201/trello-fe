@@ -3,20 +3,13 @@ import ModeSelect from '../ModeSelect/ModeSelect'
 import AppsIcon from '@mui/icons-material/Apps'
 import { ReactComponent as trelloIcon } from '~/assets/trello.svg'
 import SvgIcon from '@mui/material/SvgIcon'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import Workspaces from './Menus/Workspaces'
-import Recent from './Menus/Recent'
-import Starred from './Menus/Starred'
 import Templates from './Menus/Templates'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import Profiles from './Menus/Profiles'
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
-import InputAdornment from '@mui/material/InputAdornment'
-import SearchIcon from '@mui/icons-material/Search'
-import CloseIcon from '@mui/icons-material/Close'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { path } from '~/config/path'
@@ -84,9 +77,6 @@ function AppBar({ colorConfigs }) {
         </Link>
         {/* responsive */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-          <Workspaces colorConfigs={colorConfigs} />
-          <Recent colorConfigs={colorConfigs} />
-          <Starred colorConfigs={colorConfigs} />
           <Templates colorConfigs={colorConfigs} />
           <Button
             startIcon={<LibraryAddIcon />}

@@ -7,9 +7,9 @@ import AddIcon from '@mui/icons-material/Add'
 import Badge from '@mui/material/Badge'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
-import { CARD_MEMBER_ACTION } from '~/config/constants'
+import { CARD_MEMBER_ACTION, imageAvatar } from '~/config/constants'
 
-function CardUserGroup({ cardMemberIds = [], onUpdateCardMembers }) {
+function CardUserGroup({ cardMemberIds = [], handleUpdateMember }) {
   /**
    * Xử lý Popover để ẩn hoặc hiện toàn bộ user trên một cái popup, tương tự docs để tham khảo ở đây:
    * https://mui.com/material-ui/react-popover/
@@ -22,7 +22,6 @@ function CardUserGroup({ cardMemberIds = [], onUpdateCardMembers }) {
     else setAnchorPopoverElement(null)
   }
 
-
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
   const cardMembers = board.allUsers.filter((user) => cardMemberIds.includes(user._id))
@@ -32,16 +31,16 @@ function CardUserGroup({ cardMemberIds = [], onUpdateCardMembers }) {
       userId: user._id,
       action: cardMemberIds.includes(user._id) ? CARD_MEMBER_ACTION.REMOVE : CARD_MEMBER_ACTION.ADD
     }
-    onUpdateCardMembers(inComingMemberInfor)
+    handleUpdateMember(inComingMemberInfor)
   }
-  
+
   // Lưu ý ở đây chúng ta không dùng Component AvatarGroup của MUI bởi nó không hỗ trợ tốt trong việc chúng ta cần custom & trigger xử lý phần tử tính toán cuối, đơn giản là cứ dùng Box và CSS - Style đám Avatar cho chuẩn kết hợp tính toán một chút thôi.
   return (
-    <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+    <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', paddingLeft: 5, mt:2 }}>
       {/* Hiển thị các user là thành viên của card */}
       {cardMembers?.map((user, index) => (
         <Tooltip title={user?.displayName} key={index}>
-          <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user?.displayName} src={user?.avatar} />
+          <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user?.displayName} src={imageAvatar(user)} />
         </Tooltip>
       ))}
 
@@ -93,7 +92,7 @@ function CardUserGroup({ cardMemberIds = [], onUpdateCardMembers }) {
                 }
                 onClick={() => handleUpdateCardMembers(user)}
               >
-                <Avatar sx={{ width: 34, height: 34 }} alt={user.displayName} src={user.avatar} />
+                <Avatar sx={{ width: 34, height: 34 }} alt={user.displayName} src={imageAvatar(user)} />
               </Badge>
             </Tooltip>
           ))}

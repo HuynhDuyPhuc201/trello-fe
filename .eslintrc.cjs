@@ -8,7 +8,7 @@ module.exports = {
   ],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   settings: { react: { version: '18.2' } },
-  plugins: ['react', 'react-hooks', 'react-refresh'],
+  plugins: ['react', 'react-hooks', 'react-refresh', 'unused-imports'],
   rules: {
     // React
     'react-refresh/only-export-components': 'warn',
@@ -43,6 +43,18 @@ module.exports = {
     'keyword-spacing': 1,
     'comma-dangle': 0,
     'comma-spacing': 1,
-    'arrow-spacing': 1
+    'arrow-spacing': 1,
+
+    'unused-imports/no-unused-imports': 'error',
+    // Tùy chọn: tự động xóa cả biến không dùng
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_'
+      }
+    ]
   }
 }

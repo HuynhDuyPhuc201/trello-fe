@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { API_ROOT } from '~/config/constants'
-import { logoutUserAPI, updateUserAPI, useUser } from '~/redux/user/userSlice'
+import { logoutUserAPI } from '~/redux/user/userSlice'
 import { userService } from '~/services/user.service'
 import { interceptorLoadingElements } from '~/utils/formatters'
 

@@ -18,7 +18,7 @@ function ListColumns({ columns }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
   const [openNewCardColumnId, setOpenNewCardColumnId] = useState(null)
-  
+
   const dispatch = useDispatch()
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
@@ -62,7 +62,7 @@ function ListColumns({ columns }) {
       toast.error('Something went wrong while adding column')
     }
   }
- 
+
 
   return (
     <SortableContext items={columns?.map((c) => c._id)} strategy={horizontalListSortingStrategy}>

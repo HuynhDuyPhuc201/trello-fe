@@ -11,12 +11,13 @@ import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { activeCardReducer } from './activeCard/activeCardSlice'
 import { notificationReducer } from './notifications/notificationsSlice'
+import { joinRequestReducer } from './request/joinRequestSlice'
 
 
 const persistConfig = {
   key: 'root', // key cái persist do chúng ta chỉ định, mặc định là root
   storage, // storage là cái storage do chúng ta sử dụng, mặc định là localStorage
-  whitelist: ['user'] // định nghĩa các các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần F5 trình duyệt
+  whitelist: ['user', 'notifications'] // định nghĩa các các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần F5 trình duyệt
   // blacklist: ['user'] // định nghĩa các các slice dữ liệu KHÔNG ĐƯỢC PHÉP duy trì qua mỗi lần F5 trình duyệt
 }
 
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   activeCard: activeCardReducer,
   user: userReducer,
   notifications: notificationReducer,
+  joinRequest: joinRequestReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

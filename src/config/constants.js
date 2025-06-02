@@ -1,18 +1,13 @@
 export const API_ROOT =
   import.meta.env.VITE_BUILD_MODE === 'dev' ? 'http://localhost:8017' : 'https://trello-be-5eyb.onrender.com'
 
+export const API_ROOT_FE =
+  import.meta.env.VITE_BUILD_MODE === 'dev' ? 'http://localhost:3000' : 'https://hdphuc-trello.vercel.app'
+
 export const DEFAULT_PAGE = 1
 export const DEFAULT_ITEMS_PER_PAGE = 12
 
 export const COLORS = ['#4CCB9E', '#F1C94C', '#F5A25D', '#F06A65', '#A293F1', '#A3C943', '#DC84C5', '#8A94A6 ']
-
-import unsplash_1 from '../assets/images/unsplash_1.jpg'
-import unsplash_2 from '../assets/images/unsplash_2.jpg'
-import unsplash_3 from '../assets/images/unsplash_3.jpg'
-import unsplash_4 from '../assets/images/unsplash_4.jpg'
-import unsplash_5 from '../assets/images/unsplash_5.jpg'
-import unsplash_6 from '../assets/images/unsplash_6.jpg'
-import unsplash_7 from '../assets/images/unsplash_7.jpg'
 
 export const unsplashSamples = [
   'https://images.unsplash.com/photo-1506765515384-028b60a970df',
@@ -24,6 +19,10 @@ export const BOARD_INVITATION_STATUS = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
   REJECTED: 'REJECTED'
+}
+export const INVITATION_TYPES = {
+  BOARD_INVITATION: 'BOARD_INVITATION',
+  BOARD_REQUEST_JOIN: 'BOARD_REQUEST_JOIN'
 }
 
 export const CARD_MEMBER_ACTION = {
@@ -42,12 +41,12 @@ export const USER_ROLES = {
 }
 
 export const imageAvatar = (user) => {
-  return `${API_ROOT}/uploads/avatar/${user?.avatar.filename}`
+  return `${API_ROOT}/uploads/avatar/${user?.avatar?.filename}`
 }
 export const imageAttach = (file) => {
   return `${API_ROOT}/uploads/attachs/${file?.filename}`
 }
 
 export const imageCards = (file) => {
-  return `${API_ROOT}/uploads/cards/${file?.cover.filename}`
+  return `${API_ROOT}/uploads/cards/${file?.cover?.filename}`
 }

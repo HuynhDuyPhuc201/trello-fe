@@ -2,7 +2,7 @@ import Container from '@mui/material/Container'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import AppBar from '~/components/AppBar/AppBar'
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { boardService } from '~/services/board.service'
 import { columnService } from '~/services/column.service'
 import { useDispatch } from 'react-redux'
@@ -15,28 +15,40 @@ import {
   useActiveBoard
 } from '~/redux/activeBoard/activeBoardSlice'
 import LoadingSpiner from '~/components/Loading/Loading'
-import { useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
 import { useActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { generateColorConfigs } from '~/utils/getTextColor'
 import socket from '~/sockets'
 import { useUser } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
+import PrivateBoardDialog from '~/components/PrivateBoardDialog'
+import { createJoinRequest, getJoinRequests } from '~/redux/request/joinRequestSlice'
 
 function Board() {
   const dispatch = useDispatch()
   const { currentActiveBoard } = useActiveBoard()
   const { isShowModalActiveCard } = useActiveCard()
   const { currentUser } = useUser()
-
+  const [errorAccrss, setErrorAccess] = useState('')
   const board = currentActiveBoard
   const { boardId } = useParams()
 
   // Lấy thông tin board + tất cả board
+
+  const fetchDetailBoard = async () => {
+    try {
+      const res = await dispatch(getBoardDetail(boardId))
+      if (res.payload.message) setErrorAccess(res.payload.message)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
   useEffect(() => {
     if (!boardId) return
-    dispatch(getBoardDetail(boardId))
+    fetchDetailBoard()
     dispatch(getBoardAll())
+    dispatch(getJoinRequests(boardId))
 
     return () => {
       if (boardId && currentUser) {
@@ -45,7 +57,6 @@ function Board() {
       dispatch(clearCurrentActiveBoard())
     }
   }, [dispatch, boardId, currentUser])
-
   // Khi board và currentUser có mặt => emit user_join_board
   useEffect(() => {
     if (!board?._id || !currentUser) return
@@ -158,9 +169,44 @@ function Board() {
     },
     [board, dispatch]
   )
+  const [open, setOpen] = useState(true)
+  const [openSendit, setOpenSendit] = useState(false)
+
+  const onRequestAccess = async () => {
+    if (!boardId || !currentUser) {
+      return <Navigate to={'/'} />
+    }
+    try {
+      const res = await dispatch(
+        createJoinRequest({
+          boardId,
+          approvedUserId: currentUser?._id
+        })
+      ).unwrap()
+      if (res) {
+        dispatch(getJoinRequests({ boardId: res.boardJoinRequest.boardId }))
+        socket.emit('request_join_board', { newRequest: res, user: currentUser })
+        setOpenSendit(true)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
 
   if (!board) {
-    return <LoadingSpiner caption="Loading board..." />
+    if (errorAccrss === 'This is private board') {
+      return (
+        <PrivateBoardDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          onRequestAccess={onRequestAccess}
+          user={currentUser}
+          openSendit={openSendit}
+        />
+      )
+    } else {
+      return <LoadingSpiner caption="Loading board..." />
+    }
   }
 
   return (

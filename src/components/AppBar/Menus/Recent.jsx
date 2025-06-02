@@ -23,9 +23,9 @@ function Recent({ colorConfigs }) {
   return (
     <Box>
       <Button
-          sx={{
-            color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000')
-          }}
+        sx={{
+          color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000')
+        }}
         id="basic-button-recent"
         aria-controls={open ? 'basic-menu-recent' : undefined}
         aria-haspopup="true"

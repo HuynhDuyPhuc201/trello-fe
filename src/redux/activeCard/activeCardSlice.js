@@ -1,10 +1,21 @@
 import { useSelector } from 'react-redux'
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { cardService } from '~/services/card.service'
+
 const initialState = {
   currentActiveCard: null,
   isShowModalActiveCard: false,
   error: null
 }
+
+export const deleteCard = createAsyncThunk('activeCard/deleteCard', async (cardId, thunkAPI) => {
+  try {
+    const result = await cardService.delete(cardId)
+    return result
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Delete card failed')
+  }
+})
 
 export const activeCardSlice = createSlice({
   name: 'activeCard',
@@ -14,7 +25,7 @@ export const activeCardSlice = createSlice({
       state.isShowModalActiveCard = action.payload
     },
 
-    clearAndHideCurrentActiveCard: (state, action) => {
+    clearAndHideCurrentActiveCard: (state) => {
       state.currentActiveCard = null
       state.isShowModalActiveCard = false
     },
@@ -22,17 +33,32 @@ export const activeCardSlice = createSlice({
     updateCurrentActiveCard: (state, action) => {
       state.currentActiveCard = action.payload
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(deleteCard.pending, (state) => {
+        state.error = null
+      })
+      .addCase(deleteCard.fulfilled, (state, action) => {
+        // Xoá xong thì clear
+        state.currentActiveCard = null
+        state.isShowModalActiveCard = false
+        state.error = null
+      })
+      .addCase(deleteCard.rejected, (state, action) => {
+        state.error = action.payload
+      })
   }
 })
 
 export const { showModalActiveCard, clearAndHideCurrentActiveCard, updateCurrentActiveCard } = activeCardSlice.actions
+
 export const useActiveCard = () => useSelector((state) => state.activeCard)
-// ✅ Custom hook để lấy comments của Card
-// Trong slice hoặc selector file
-export const useCardTitle = () => useSelector((state) => state.activeCard.currentActiveCard.title)
 
-export const useCardDescription = () => useSelector((state) => state.activeCard.currentActiveCard.description)
+export const useCardTitle = () => useSelector((state) => state.activeCard.currentActiveCard?.title)
 
-export const useCardComment = () => useSelector((state) => state.activeCard.currentActiveCard.comments)
+export const useCardDescription = () => useSelector((state) => state.activeCard.currentActiveCard?.description)
+
+export const useCardComment = () => useSelector((state) => state.activeCard.currentActiveCard?.comments)
 
 export const activeCardReducer = activeCardSlice.reducer

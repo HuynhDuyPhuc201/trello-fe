@@ -11,7 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Divider from '@mui/material/Divider'
 import Check from '@mui/icons-material/Check'
 
-function Templates({colorConfigs}) {
+function Templates({ colorConfigs }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => {

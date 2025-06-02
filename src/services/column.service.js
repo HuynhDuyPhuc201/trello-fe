@@ -14,6 +14,6 @@ export const columnService = {
   },
 
   async moveColumn (columnId, newBoardId) {
-    return api.put(`${ENDPOINT}/move/${columnId}`, { boardId: newBoardId });
+    return api.put(`${ENDPOINT}/move/${columnId}`, { boardId: newBoardId })
   }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
@@ -9,6 +9,9 @@ import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
 import { Scrollbar } from 'react-scrollbars-custom'
 import { imageAvatar } from '~/config/constants'
+import { useDispatch } from 'react-redux'
+import { updateMemberBoardBar, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import socket from '~/sockets'
 
 function Members({ board }) {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -18,7 +21,19 @@ function Members({ board }) {
   const handleTogglePopover = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget)
   }
+  const { memberBoardBar } = useActiveBoard()
+  const dispatch = useDispatch()
 
+  useEffect(() => {
+    const handleUserJoin = (newUser) => {
+      dispatch(updateMemberBoardBar({ user: newUser, type: 'join' }))
+    }
+    socket.on('user_join_board', handleUserJoin)
+
+    return () => {
+      socket.off('user_join_board', handleUserJoin)
+    }
+  }, [dispatch])
   return (
     <Box>
       <Tooltip title="View members of this board">
@@ -72,15 +87,11 @@ function Members({ board }) {
                   }
                 }}
               >
-                <Avatar
-                  alt={member.name}
-                  src={imageAvatar(member)}
-                  sx={{ width: 32, height: 32 }}
-                />
+                <Avatar alt={member.name} src={imageAvatar(member)} sx={{ width: 32, height: 32 }} />
                 <Box>
                   <Typography variant="body1">{member.displayName || 'No Name'}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {member.email}
+                    {member?.email} • {member?.role}
                   </Typography>
                 </Box>
               </Box>

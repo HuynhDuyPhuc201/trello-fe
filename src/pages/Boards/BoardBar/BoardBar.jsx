@@ -1,15 +1,14 @@
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
+import { useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { updateBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { Box, Chip, TextField, Tooltip } from '@mui/material'
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import VpnLockIcon from '@mui/icons-material/VpnLock'
 import AddToDriveIcon from '@mui/icons-material/AddToDrive'
 import BoltIcon from '@mui/icons-material/Bolt'
 import FilterListIcon from '@mui/icons-material/FilterList'
-import Tooltip from '@mui/material/Tooltip'
-import { capitalizeFirstLetter } from '~/utils/formatters'
 import BoardUserGroup from './BoardUserGroup'
 import InviteBoardUser from './InviteBoardUser'
-import Members from './Members'
+import BoardTypePopover from '~/components/BoardBar/BoardTypePopover'
 
 const MENU_STYLES = {
   color: 'white',
@@ -24,7 +23,27 @@ const MENU_STYLES = {
     bgcolor: 'primary.50'
   }
 }
-function BoardBar({ board, colorConfigs}) {
+
+function BoardBar({ board, colorConfigs }) {
+  const valueRename = useRef(board?.title)
+  const dispatch = useDispatch()
+  const [openInput, setOpenInput] = useState(false)
+
+  const handleSubmit = async () => {
+    const newTitle = valueRename.current?.trim()
+    if (newTitle && newTitle !== board?.title) {
+      await dispatch(updateBoard({ boardId: board._id, title: newTitle }))
+    }
+    setOpenInput(false)
+  }
+
+  const handleKeyDown = async (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      await handleSubmit()
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -44,17 +63,56 @@ function BoardBar({ board, colorConfigs}) {
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Tooltip title={board?.description}>
-          <Chip sx={MENU_STYLES} icon={<DashboardIcon />} label={board?.title} clickable />
+        <Tooltip title={board?.title}>
+          {openInput ? (
+            <TextField
+              autoFocus
+              defaultValue={board?.title}
+              size="small"
+              onKeyDown={handleKeyDown}
+              onBlur={handleSubmit}
+              onChange={(e) => (valueRename.current = e.target.value)}
+              sx={{
+                color: '#fff',
+                width: '60%',
+                '& .MuiInputBase-root': {
+                  borderColor: '#fff'
+                },
+                '& .MuiITextField-root': {
+                  color: '#fff'
+                },
+                '& .MuiInputBase-input': {
+                  color: '#fff'
+                },
+                '& .MuiOutlinedInput-root.Mui-focused': {
+                  '& fieldset': {
+                    borderColor: 'white',
+                    color: '#fff'
+                  }
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'white'
+                }
+              }}
+            />
+          ) : (
+            <Chip sx={MENU_STYLES} icon={<DashboardIcon />} label={board?.title} onClick={() => setOpenInput(true)} />
+          )}
         </Tooltip>
-        <Chip sx={MENU_STYLES} icon={<VpnLockIcon />} label={capitalizeFirstLetter(board?.type)} clickable />
+        <BoardTypePopover
+          board={board}
+          onUpdateType={(newType) => {
+            dispatch(updateBoard({ boardId: board._id, type: newType }))
+          }}
+        />
+
         <Chip sx={MENU_STYLES} icon={<AddToDriveIcon />} label="Add To Google Drive" clickable />
         <Chip sx={MENU_STYLES} icon={<BoltIcon />} label="Automation" clickable />
         <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label="Filters" clickable />
       </Box>
+
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <InviteBoardUser board={board} />
-        <Members board={board} />
         <BoardUserGroup boardUsers={board?.allUsers} />
       </Box>
     </Box>

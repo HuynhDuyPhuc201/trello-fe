@@ -19,8 +19,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import { cloneDeep, isEmpty } from 'lodash'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { TouchSensor, MouseSensor } from '~/libs/DndKitSensors'
-import { IconButton, Menu, MenuItem, Typography, Tooltip, Card, Pagination, CardMedia, TextField } from '@mui/material'
-import { boardService } from '~/services/board.service'
+import { IconButton, Menu, MenuItem, Typography, Pagination, CardMedia } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { path } from '~/config/path'
 // import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
@@ -28,10 +27,11 @@ import AddIcon from '@mui/icons-material/Add'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import Column from './ListColumns/Column/Column'
 import { useDispatch } from 'react-redux'
-import { deleteBoard, updateBoard, updateBoards } from '~/redux/activeBoard/activeBoardSlice'
+import { deleteBoard, updateBoards } from '~/redux/activeBoard/activeBoardSlice'
 import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { toast } from 'react-toastify'
 import CreateBoardModal from '~/components/Modal/Board/CreateBoardModal'
+import Card from './ListColumns/Column/ListCards/Card/Card'
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
@@ -66,7 +66,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
 
   useEffect(() => {
     // Columns đã được sx ở component cha cao nhất (board/_id.jsx) (video 71 đã giải thích lí do)
-    setOrderedColumns(board.columns)
+    setOrderedColumns(board?.columns)
   }, [board])
 
   const findColumnByCardId = (cardId) => {
@@ -378,7 +378,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
   )
 
   const renderBackgroud = (cover, type = false) => {
-    const isColor = cover.charAt(0) === 'l'
+    const isColor = cover?.charAt(0) === 'l'
     if (!cover) {
       return { background: '#bdbdbd' }
     }
@@ -409,11 +409,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
   const [open, setOpen] = useState(false)
   const [boardMenuAnchor, setBoardMenuAnchor] = useState(null)
   const [selectedBoardId, setSelectedBoardId] = useState(null)
-  const valueRename = useRef(null)
-  const [openInput, setOpenInput] = useState({
-    boardId: '',
-    isOpen: false
-  })
+
   const { boards } = useActiveBoard()
   const handleMainMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -430,39 +426,11 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     setBoardMenuAnchor(null)
     setSelectedBoardId(null)
   }
-
-
-  const onChangeRenameBoard = async (event) => {
-    const value = event.target.value || valueRename.current
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault() // Thêm dòng này để khi Enter không bị nhảy dòng
-      if (!value) return
-
-      // dùng await để chờ update hoàn thành thì mới setOpenInput tránh tình trạng "giật UI"
-      const res = await dispatch(updateBoard({ boardId: openInput.boardId, title: value.trim() }))
-      if (res) {
-        setOpenInput({
-          boardId: '',
-          isOpen: false
-        })
-      }
+  const handleEventBoardItem = (boardId) => {
+    if (boardId === board._id) {
+      return toast.warning("Can't delete this board")
     }
-  }
-  const handleEventBoardItem = (boardId, type) => {
-    if (type === 'delete') {
-      if (boardId === board._id) {
-        return toast.warning("Can't delete this board")
-      }
-      dispatch(deleteBoard(boardId))
-    }
-
-    if (type === 'rename') {
-      setOpenInput({
-        boardId,
-        isOpen: true
-      })
-    }
-
+    dispatch(deleteBoard(boardId))
     handleBoardMenuClose()
   }
 
@@ -575,26 +543,14 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
               onClick={() => navigation(path.Board.detail.replace(':boardId', item._id))}
             >
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                <Typography variant="body2" noWrap>
+                <Box>
                   {item.cover.startsWith('h') ? (
                     <CardMedia component="img" height="30" width="30" sx={{ width: '30px' }} image={item.cover} />
                   ) : (
                     <Box sx={{ width: 30, height: 30, background: item.cover || '#bdbdbd', borderRadius: '4px' }}></Box>
                   )}
-                </Typography>
-                {openInput.isOpen && openInput.boardId === item._id ? (
-                  <TextField
-                    defaultValue={item?.title}
-                    size="small"
-                    sx={{ width: '60%' }}
-                    onKeyDown={onChangeRenameBoard}
-                    onChange={(event) => (valueRename.current = event.target.value)}
-                  />
-                ) : (
-                  <Typography variant="body2" noWrap>
-                    {item?.title || ''}
-                  </Typography>
-                )}
+                </Box>
+                <Typography variant="body2">{item?.title || ''}</Typography>
               </Box>
               <IconButton
                 size="small"
@@ -616,8 +572,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
 
           {/* Menu cho từng board */}
           <Menu anchorEl={boardMenuAnchor} open={Boolean(boardMenuAnchor)} onClose={handleBoardMenuClose}>
-            <MenuItem onClick={() => handleEventBoardItem(selectedBoardId, 'delete')}>Delete</MenuItem>
-            <MenuItem onClick={() => handleEventBoardItem(selectedBoardId, 'rename')}>Rename</MenuItem>
+            <MenuItem onClick={() => handleEventBoardItem(selectedBoardId)}>Delete</MenuItem>
           </Menu>
           {totalPages > 1 && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, position: 'absolute', bottom: '10px' }}>
