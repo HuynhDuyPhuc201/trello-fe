@@ -19,6 +19,16 @@ export const loginUserAPI = createAsyncThunk('user/loginUserAPI', async (data, t
   }
 })
 
+export const loginGoogle = createAsyncThunk('user/loginGoogle', async (token, thunkAPI) => {
+  try {
+    const response = await userService.loginGoogle(token)
+    return response
+  } catch (error) {
+    // Trả về lỗi từ backend
+    return thunkAPI.rejectWithValue(error?.response?.data || 'Login failed')
+  }
+})
+
 export const logoutUserAPI = createAsyncThunk('user/logoutUserAPI', async (showMessage = true, thunkAPI) => {
   try {
     const res = await userService.logout()
@@ -52,6 +62,13 @@ export const userSlice = createSlice({
         state.currentUser = action.payload
       })
       .addCase(loginUserAPI.rejected, (state, action) => {
+        state.error = action.payload
+      })
+
+      .addCase(loginGoogle.fulfilled, (state, action) => {
+        state.currentUser = action.payload
+      })
+      .addCase(loginGoogle.rejected, (state, action) => {
         state.error = action.payload
       })
       .addCase(logoutUserAPI.fulfilled, (state) => {

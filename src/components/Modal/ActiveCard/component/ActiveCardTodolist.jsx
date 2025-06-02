@@ -67,11 +67,12 @@ const ActiveCardTodolist = () => {
     const percent = total ? Math.round((100 / total) * done) : 0
     return percent
   }
+  const todoListRevese = [...todoList]
   return (
     <Box>
-      {todoList && todoList.length > 0 && (
+      {todoListRevese && todoListRevese.length > 0 && (
         <Box sx={{ mb: 3 }}>
-          {todoList.map((todo, index) => (
+          {todoListRevese.reverse().map((todo, index) => (
             <Box key={todo._id || index}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, gap: 2 }}>
                 <Box

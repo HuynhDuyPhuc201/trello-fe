@@ -19,11 +19,10 @@ import {
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 import { useDispatch } from 'react-redux'
-import { loginUserAPI } from '~/redux/user/userSlice'
+import { loginGoogle, loginUserAPI } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
 import { path } from '~/config/path'
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
-import { userService } from '~/services/user.service'
 
 function LoginForm() {
   const {
@@ -51,21 +50,8 @@ function LoginForm() {
   const handleLoginGoogle = async (credentialResponse) => {
     const token = credentialResponse.credential
     try {
-      const data = await userService?.loginGoogle({ token })
-      // if (data.success) {
-      //   if (data.token) {
-      //     const { token, ...userData } = data
-      //     setUser(userData)
-      //     setToken(token)
-      //   } else {
-      //     setUser(data)
-      //   }
-      //   message.success(data.message)
-      //   navigate(path.Home)
-      //   if (data.isAdmin) {
-      //     navigate(path.Admin)
-      //   }
-      // }
+      const res = await dispatch(loginGoogle({ token })).unwrap()
+      if (res) navigate(path.Board.index)
     } catch (error) {
       toast.error(error)
     }
@@ -170,14 +156,16 @@ function LoginForm() {
 
           <Box
             sx={{
-              mt: '30px',
+              // mt: '30px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              gap: 3
+              gap: 3,
+              padding: '0 1em 1em 1em',
+              width: '100%'
             }}
           >
-            <GoogleOAuthProvider clientId="119448505566-72peltvkmj8bi0cfn1l5hqm0fmf85jci.apps.googleusercontent.com">
+            <GoogleOAuthProvider clientId="864578907923-1d5tlb21b4j69p82t3cmciq4h45b2g42.apps.googleusercontent.com">
               <GoogleLogin
                 onSuccess={handleLoginGoogle}
                 onError={() => console.log('Login Failed')}

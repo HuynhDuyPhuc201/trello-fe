@@ -35,3 +35,5 @@ dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()
 
 <!-- cũng có thể kiểm tra và lấy giá trị trả về (res), nhưng phải kèm await + unwrap() -->
  const res = await dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()
+
+<!--  khi upload len vercel, them vercel.json để load lại không bị 404 vì không có nó sẽ không biết đó là route của react -->
