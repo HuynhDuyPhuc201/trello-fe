@@ -5,17 +5,20 @@ import { getBoardDetail } from '~/redux/activeBoard/activeBoardSlice'
 import { updateCurrentActiveCard, useActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { cardService } from '~/services/card.service'
 
-export const useFetchUpdateCard = () => {
+// Thêm ={} làm mặc định cho params truyền vào hook:
+export const useFetchUpdateCard = ({ fetchDetail = true } = {}) => {
   const dispatch = useDispatch()
   const { currentActiveCard } = useActiveCard()
-
   const fetchUpdateCard = useCallback(
     async (updateData) => {
       try {
         const updatedCard = await cardService.update(currentActiveCard._id, updateData)
         if (updatedCard) {
           dispatch(updateCurrentActiveCard(updatedCard))
-          dispatch(getBoardDetail(updatedCard.boardId))
+          // phòng 1 vài TH không cần fetch lại detail
+          if (fetchDetail) {
+            dispatch(getBoardDetail(updatedCard.boardId))
+          }
         }
         return { success: true, updatedCard }
       } catch (error) {
@@ -23,7 +26,7 @@ export const useFetchUpdateCard = () => {
         return { success: false, error }
       }
     },
-    [currentActiveCard._id, dispatch]
+    [currentActiveCard._id, dispatch, fetchDetail]
   )
 
   return { fetchUpdateCard }

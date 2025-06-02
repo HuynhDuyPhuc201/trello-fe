@@ -10,7 +10,7 @@ const ActiveCardTodolist = () => {
   const [newItemTitle, setNewItemTitle] = useState('')
   const focustInput = useRef(false)
   const { currentActiveCard } = useActiveCard()
-  const todoList = currentActiveCard?.todoList
+  const todoList = currentActiveCard?.todoList || []
   const { fetchUpdateCard } = useFetchUpdateCard()
 
   const handleDeleteItemTodo = async (todoId, itemId) => {
@@ -58,7 +58,7 @@ const ActiveCardTodolist = () => {
     return onCancel()
   }
   const onToggleCheckbox = (todoId, itemId, currentValue) => {
-    handleToggleCheckbox(todoList, todoId, itemId, !currentValue)
+    handleToggleCheckbox(todoId, itemId, !currentValue)
   }
 
   const calculateProgress = (todolist) => {
@@ -67,7 +67,7 @@ const ActiveCardTodolist = () => {
     const percent = total ? Math.round((100 / total) * done) : 0
     return percent
   }
-  const todoListRevese = [...todoList]
+  const todoListRevese = todoList ? [...todoList] : todoList
   return (
     <Box>
       {todoListRevese && todoListRevese.length > 0 && (

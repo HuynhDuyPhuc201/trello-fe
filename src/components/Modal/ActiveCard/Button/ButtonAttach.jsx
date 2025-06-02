@@ -73,44 +73,50 @@ const ButtonAttach = (propsAttach) => {
             sx={{
               '& .MuiPaper-rounded': {
                 width: '300px',
-                padding: '8px',
                 marginTop: '10px'
               }
             }}
           >
-            <ClickAwayListener onClickAway={() => setOpenAttach(false)}>
-              <Stack spacing={2}>
-                {/* Upload File */}
-                <Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-                    Upload a file
-                  </Typography>
-                  <Button variant="outlined" component="label" fullWidth>
-                    Choose file
-                    <input hidden type="file" name="files" onChange={hanldeUploadFileAttach} multiple />
-                  </Button>
-                </Box>
+            <Box sx={{ p: 2.5 }}>
+              <ClickAwayListener onClickAway={() => setOpenAttach(false)}>
+                <Stack spacing={2}>
+                  {/* Upload File */}
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
+                      Upload a file
+                    </Typography>
+                    <Button variant="outlined" component="label" fullWidth>
+                      Choose file
+                      <input hidden type="file" name="files" onChange={hanldeUploadFileAttach} multiple />
+                    </Button>
+                  </Box>
 
-                <Divider />
+                  <Divider />
 
-                {/* Nhập link */}
-                <Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-                    Link
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Copy link here..."
-                    value={attachmentUrl}
-                    onChange={(e) => setAttachmentUrl(e.target.value)}
-                  />
-                  <Button variant="contained" fullWidth sx={{ mt: 1 }} onClick={() => handleLinkFileAttach(attachmentUrl)}>
-                    Add
-                  </Button>
-                </Box>
-              </Stack>
-            </ClickAwayListener>
+                  {/* Nhập link */}
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
+                      Link
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="Copy link here..."
+                      value={attachmentUrl}
+                      onChange={(e) => setAttachmentUrl(e.target.value)}
+                    />
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      sx={{ mt: 1 }}
+                      onClick={() => handleLinkFileAttach(attachmentUrl)}
+                    >
+                      Add
+                    </Button>
+                  </Box>
+                </Stack>
+              </ClickAwayListener>
+            </Box>
           </Popover>
         </Box>
       </Box>

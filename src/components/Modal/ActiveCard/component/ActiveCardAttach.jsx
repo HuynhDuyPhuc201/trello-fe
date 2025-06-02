@@ -158,7 +158,7 @@ const ActiveCardAttach = () => {
             </Menu>
           </Box>
           <Dialog open={previewOpen} onClose={() => setPreviewOpen(false)} maxWidth="md" fullWidth>
-            <Box p={2}>
+            <Box p={2.5}>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                 <Box fontWeight="bold">{previewFile?.originalname}</Box>
                 <IconButton onClick={() => setPreviewOpen(false)}>

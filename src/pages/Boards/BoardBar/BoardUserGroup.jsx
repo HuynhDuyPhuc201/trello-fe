@@ -83,7 +83,7 @@ function BoardUserGroup() {
               <Avatar
                 sx={{ width: 34, height: 34, cursor: 'pointer' }}
                 alt={user?.name || user?.email}
-                src={user?.avatar}
+                src={imageAvatar(user)}
               />
             </Tooltip>
           ))}

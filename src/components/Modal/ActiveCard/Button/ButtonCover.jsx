@@ -40,12 +40,11 @@ const ButtonCover = (propsCover) => {
           sx={{
             '& .MuiPaper-rounded': {
               width: '300px',
-              padding: '8px',
               marginTop: '10px'
             }
           }}
         >
-          <Box>
+          <Box sx={{ p: 2.5 }}>
             <Box>
               <Typography sx={{ py: 1, fontSize: '12px' }}>Color</Typography>
               <Grid container spacing={1}>

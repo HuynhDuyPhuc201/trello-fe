@@ -31,7 +31,7 @@ export default function ButtonMember() {
   const [openCoverPopover, setOpenCoverPopover] = useState(false)
   const memberButtonRef = useRef()
   const board = currentActiveBoard
-  const cardMembers = board.allUsers.filter((user) => currentActiveCard?.memberIds.includes(user._id))
+  const cardMembers = board.allUsers.filter((user) => currentActiveCard?.memberIds?.includes(user._id))
   return (
     <>
       <SidebarItem

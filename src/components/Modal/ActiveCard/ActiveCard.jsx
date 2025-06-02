@@ -10,7 +10,6 @@ import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
 import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -44,6 +43,7 @@ import ButtonMember from './Button/ButtonMember'
 import { useUser } from '~/redux/user/userSlice'
 import ButtonDate from './Button/ButtonDate'
 import ActiveCardDate from './component/ActiveCardDate'
+import ButtonMoveCard from './Button/ButtonMoveCard'
 
 function ActiveCard() {
   const [openCoverPopover, setOpenCoverPopover] = useState(false)
@@ -324,10 +324,8 @@ function ActiveCard() {
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction="column" spacing={1}>
-              <SidebarItem>
-                <ArrowForwardOutlinedIcon fontSize="small" />
-                Move
-              </SidebarItem>
+             
+              <ButtonMoveCard />
               <SidebarItem onClick={handleCreateTemplate}>
                 <AutoAwesomeOutlinedIcon fontSize="small" />
                 Make Template

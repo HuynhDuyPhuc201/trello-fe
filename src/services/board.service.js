@@ -4,7 +4,7 @@ import api from '~/apis/api'
 const ENDPOINT = '/v1/boards'
 export const boardService = {
   async create(data) {
-    const res = await api.post(`${ENDPOINT}`, data)
+    const res = await api.post(`${ENDPOINT}/create`, data)
     toast.success('Create board successfully!')
     return res
   },
@@ -14,15 +14,15 @@ export const boardService = {
   },
 
   async getDetails(boardId) {
-    return await api.get(`${ENDPOINT}/${boardId}`)
+    return await api.get(`${ENDPOINT}/detail/${boardId}`)
   },
 
   async update(boardId, updateData) {
-    return await api.put(`${ENDPOINT}/${boardId}`, updateData)
+    return await api.put(`${ENDPOINT}/update/${boardId}`, updateData)
   },
 
   async deleteBoard(boardId) {
-    return await api.delete(`${ENDPOINT}/${boardId}`)
+    return await api.delete(`${ENDPOINT}/delete/${boardId}`)
   },
 
   async moveCardToDifferentColumn(updateData) {
