@@ -21,7 +21,7 @@ import { toast } from 'react-toastify'
 import ActiveCardDescription from './component/ActiveCardDescription'
 import ActiveCardComment from './component/ActiveCardComment'
 
-import { clearAndHideCurrentActiveCard, deleteCard, useActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { clearAndHideCurrentActiveCard, deleteCard, updateCurrentActiveCard, useActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { useDispatch } from 'react-redux'
 import { getBoardDetail } from '~/redux/activeBoard/activeBoardSlice'
 import { Button, Checkbox, ClickAwayListener, Popover, TextField, Tooltip } from '@mui/material'
@@ -44,6 +44,7 @@ import { useUser } from '~/redux/user/userSlice'
 import ButtonDate from './Button/ButtonDate'
 import ActiveCardDate from './component/ActiveCardDate'
 import ButtonMoveCard from './Button/ButtonMoveCard'
+import socket from '~/sockets'
 
 function ActiveCard() {
   const [openCoverPopover, setOpenCoverPopover] = useState(false)
@@ -74,6 +75,16 @@ function ActiveCard() {
       console.error('Copy failed:', error)
     }
   }
+
+  useEffect(() => {
+    const handleActiveCard = (updateCard) => {
+      dispatch(updateCurrentActiveCard(updateCard))
+    }
+    socket.on('update_activeCard', handleActiveCard)
+    return () => {
+      socket.off('update_activeCard', handleActiveCard)
+    }
+  }, [dispatch])
 
   const handleCloseModal = () => {
     dispatch(clearAndHideCurrentActiveCard())
@@ -131,7 +142,11 @@ function ActiveCard() {
         cancellationText: 'Cancel'
       })
       dispatch(deleteCard(activeCard._id)).unwrap()
-      dispatch(getBoardDetail(boardId))
+      const res = await dispatch(getBoardDetail(boardId)).unwrap()
+      if (res) {
+        // socket.emit('update_activeCard', updatedCard)
+        socket.emit('delete_card', res.boardId)
+      }
     } catch (error) {
       console.log('error', error)
     }
@@ -324,7 +339,6 @@ function ActiveCard() {
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction="column" spacing={1}>
-             
               <ButtonMoveCard />
               <SidebarItem onClick={handleCreateTemplate}>
                 <AutoAwesomeOutlinedIcon fontSize="small" />

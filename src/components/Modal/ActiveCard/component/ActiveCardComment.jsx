@@ -41,11 +41,15 @@ const ActiveCardComment = memo(() => {
     [fetchUpdateCard, currentActiveCard?.comments]
   )
   const handleDeleteComment = (comment) => {
-    const commentToAdd = {
-      ...comment,
-      action: 'remove'
+    if (comment.createdBy === currentUser._id) {
+      const commentToAdd = {
+        ...comment,
+        action: 'remove'
+      }
+      return fetchUpdateCard({ commentToAdd })
+    } else {
+      toast.warning("You can't delete this comment")
     }
-    return fetchUpdateCard({ commentToAdd })
   }
   const handleAddCardComment = async (event) => {
     // Bắt hành động người dùng nhấn phím Enter && không phải hành động Shift + Enter
@@ -54,7 +58,7 @@ const ActiveCardComment = memo(() => {
       if (!event.target?.value) return // Nếu không có giá trị gì thì return không làm gì cả
 
       const commentToAdd = {
-        createdBy: currentUser?._id,
+        user: currentUser,
         content: event.target.value.trim(),
         action: 'add'
       }
@@ -91,13 +95,23 @@ const ActiveCardComment = memo(() => {
   const handleEditCardComment = async () => {
     const value = valueEditComment.current
     if (!value) return
-
     // tương tự comment trên
     const result = await handleEditComment(idComment, value)
     if (result?.success) {
       setIdComment(null)
     }
   }
+  // const { currentActiveBoard } = useActiveBoard()
+  // const board = currentActiveBoard
+  // const cardMembers = board.allUsers.filter((user) => currentActiveCard.memberIds.includes(user._id))
+
+  // const filterComment = cardComments.map((comment) => {
+  //   const user = cardMembers.find((member) => member._id === comment.createdBy)
+  //   return {
+  //     ...comment,
+  //     user: user || undefined
+  //   }
+  // })
 
   const [currentPage, setCurrentPage] = useState(1)
   const COMMENTS_PER_PAGE = 5
@@ -135,16 +149,16 @@ const ActiveCardComment = memo(() => {
 
           {paginatedComments?.map((comment, index) => (
             <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5, paddingLeft: 5 }} key={index}>
-              <Tooltip title={currentUser?.displayName}>
+              <Tooltip title={comment.user?.displayName}>
                 <Avatar
                   sx={{ width: 36, height: 36, cursor: 'pointer', borderRadius: '50%' }}
-                  alt={currentUser?.displayName}
-                  src={imageAvatar(currentUser)}
+                  alt={comment.user?.displayName}
+                  src={imageAvatar(comment.user)}
                 />
               </Tooltip>
               <Box sx={{ width: 'inherit' }}>
                 <Typography variant="span" sx={{ fontWeight: '600', mr: 1 }}>
-                  {currentUser?.displayName}
+                  {comment.user?.displayName}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   {moment(comment?.commentedAt).format('llll')}
@@ -189,7 +203,13 @@ const ActiveCardComment = memo(() => {
                     <Typography
                       variant="span"
                       sx={{ fontSize: '12px', cursor: 'pointer' }}
-                      onClick={() => setIdComment(comment?._id)}
+                      onClick={() => {
+                        if (comment.createdBy === currentUser._id) {
+                          setIdComment(comment?._id)
+                        } else {
+                          toast.warning("You can't edit this comment")
+                        }
+                      }}
                     >
                       Edit
                     </Typography>

@@ -11,6 +11,7 @@ import {
 } from '~/redux/activeCard/activeCardSlice'
 import { useDispatch } from 'react-redux'
 import { cardService } from '~/services/card.service'
+import socket from '~/sockets'
 
 const ButtonMoveCard = () => {
   const { boards, currentActiveBoard } = useActiveBoard()
@@ -52,7 +53,8 @@ const ButtonMoveCard = () => {
       console.log('error', error)
     }
     dispatch(getBoardDetail(currentActiveBoard.boardId)).unwrap()
-    dispatch(clearAndHideCurrentActiveCard()).unwrap()
+    dispatch(clearAndHideCurrentActiveCard())
+    socket.emit('delete_card', currentActiveBoard.boardId)
     handleClose()
   }
 
@@ -80,6 +82,8 @@ const ButtonMoveCard = () => {
     const IndexCard = boardDetail.columns.filter((col) => col._id === toColumnId)
     setIndexCard(IndexCard)
   }, [toColumnId, boardDetail])
+
+  const newBoard = boards.filter((item) => item._id !== currentActiveBoard.boardId)
   return (
     <>
       <SidebarItem ref={buttonMoveRef} onClick={() => setOpen(!open)}>
@@ -112,7 +116,7 @@ const ButtonMoveCard = () => {
           <FormControl fullWidth size="small">
             <InputLabel>Board</InputLabel>
             <Select value={boardId} onChange={(e) => setBoardId(e.target.value)} label="Board">
-              {boards?.map((item) => (
+              {newBoard?.map((item) => (
                 <MenuItem key={item._id} value={item._id}>
                   {item.title}
                 </MenuItem>

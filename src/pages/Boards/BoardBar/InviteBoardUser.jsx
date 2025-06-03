@@ -133,6 +133,7 @@ function InviteBoardUser({ board }) {
     setCurrentPage(value)
   }
 
+  const compare = currentUser._id === board.ownerIds[0]
   return (
     <Box>
       <Badge
@@ -199,11 +200,8 @@ function InviteBoardUser({ board }) {
         <Box sx={{ mt: 2, px: 2 }}>
           <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Tabs for members and requests">
             <Tab label={`Members (${board?.allUsers.length})`} />
-            {currentUser._id === board.ownerIds?.[0] && currentUser.role === 'admin' && (
-              <Tab label={`Request to join (${joinRequests.length})`} />
-            )}
+            {compare && <Tab label={`Request to join (${joinRequests.length})`} />}
           </Tabs>
-
           <Divider sx={{ mb: 1 }} />
 
           {/* Tab 1: Thành viên */}
@@ -221,7 +219,7 @@ function InviteBoardUser({ board }) {
           )}
 
           {/* Tab 2: Yêu cầu tham gia */}
-          {currentUser._id === board.ownerIds?.[0] && currentUser.role === 'admin' && tabIndex === 1 && (
+          {tabIndex === 1 && (
             <>
               <List dense>
                 {paginatedJoinRequest?.map((request, index) => (
@@ -280,6 +278,7 @@ function InviteBoardUser({ board }) {
               )}
             </>
           )}
+          {tabIndex === 1 && !paginatedJoinRequest?.length && <Box sx={{ mb:5 }}>No request</Box>}
         </Box>
       </Popover>
     </Box>

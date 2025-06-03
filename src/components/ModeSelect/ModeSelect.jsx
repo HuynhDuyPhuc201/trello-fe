@@ -29,6 +29,7 @@ function ModeSelect({ colorConfigs }) {
         Mode
       </InputLabel>
       <Select
+        name="mode"
         labelId="label-select-dark-light-mode"
         id="select-dark-light-mode"
         value={mode}

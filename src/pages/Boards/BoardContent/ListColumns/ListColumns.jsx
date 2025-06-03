@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux'
 import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { columnService } from '~/services/column.service'
 import { generatePlaceholderCard } from '~/utils/formatters'
+import socket from '~/sockets'
 
 function ListColumns({ columns }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
@@ -38,6 +39,8 @@ function ListColumns({ columns }) {
       }
 
       const createdColumn = await columnService.create(newColumnData)
+
+      socket.emit('create_column', newColumnData)
 
       // Thêm placeholder nếu column rỗng
       const placeholder = generatePlaceholderCard(createdColumn)
@@ -122,7 +125,7 @@ function ListColumns({ columns }) {
               p: 1,
               borderRadius: '6px',
               height: 'fit-content',
-              bgcolor: (theme) => theme.palette.mode === 'dark' ? '#34495e' : '#ffffff3d',
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#34495e' : '#ffffff3d'),
               display: 'flex',
               flexDirection: 'column',
               gap: 1

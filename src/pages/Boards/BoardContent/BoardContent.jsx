@@ -211,15 +211,12 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
 
   // Trigger khi kết thúc hành động kéo (drag) 1 phần tử => hành động thả (drog)
   const handleDragEnd = (event) => {
-    // console.log('handleDragEnd', event)
     const { active, over } = event
-
     // nếu không tồn tại active hoặc over (khi kéo ra khỏi phạm vi container) thì không làm gì (tránh crash trang)
     if (!active || !over) return
 
     // xử lí kéo thả cards
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
-      // console.log('hành động kéo thả card - tạm thời kh làm gì cả')
 
       // activeDraggingCardId: là cái card đang được kéo
       const {
@@ -243,7 +240,6 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
       //là state của card đã bị cập nhật một lần rồi
 
       if (oldColumnWhenDraggingCard._id !== overColumn._id) {
-        // console.log(' hành động kéo thả card giữa 2 column khác nhau')
         moveCardBetweenDifferentColumns(
           overCardId,
           overColumn,
@@ -256,7 +252,6 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
         )
       } else {
         // hành động kéo thả card trong cùng 1 cái column
-
         // lấy vị trí cũ từ thg oldColumnWhenDraggingCard
         const oldCardIndex = oldColumnWhenDraggingCard?.cards?.findIndex((c) => c._id === activeDragItemId)
         // lấy vị trí mới từ thg overColumn

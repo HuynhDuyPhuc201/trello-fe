@@ -6,6 +6,9 @@ export const columnService = {
   async create(newColumnData) {
     return await api.post(ENDPOINT, newColumnData)
   },
+  // async get(column) {
+  //   return await api.get(ENDPOINT, column)
+  // },
   async update(columnId, updateData) {
     return await api.put(`${ENDPOINT}/${columnId}`, updateData)
   },
@@ -13,7 +16,7 @@ export const columnService = {
     return await api.delete(`${ENDPOINT}/${columnId}`)
   },
 
-  async moveColumn (columnId, newBoardId) {
+  async moveColumn(columnId, newBoardId) {
     return api.put(`${ENDPOINT}/move/${columnId}`, { boardId: newBoardId })
   }
 }

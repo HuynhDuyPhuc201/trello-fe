@@ -115,42 +115,44 @@ function Card({ card }) {
           </Box>
         </CardContent>
         {shouldShowCardActions() && (
-          <CardActions sx={{ p: '0 4px 8px 4px', position: 'relative' }}>
-            {board?.ownerIds?.[0] !== currentUser?._id && !!card?.memberIds?.length && (
-              <Button size="small" startIcon={<GroupIcon />}>
-                {card?.memberIds?.length}
-              </Button>
-            )}
-            {!!card?.comments?.length && (
-              <Button size="small" startIcon={<CommentIcon />}>
-                {card?.comments?.length}
-              </Button>
-            )}
-            {!!card?.fileAttach?.length && (
-              <Button size="small" startIcon={<AttachmentIcon />}>
-                {card?.fileAttach?.length}
-              </Button>
-            )}
+          <>
+            <CardActions sx={{ p: '0 4px 8px 4px', position: 'relative', display: 'flex', justifyContent: 'start' }}>
+              {board?.ownerIds?.[0] !== currentUser?._id && !!card?.memberIds?.length && (
+                <Button size="small" startIcon={<GroupIcon />}>
+                  {card?.memberIds?.length}
+                </Button>
+              )}
+              {!!card?.comments?.length && (
+                <Button size="small" startIcon={<CommentIcon />}>
+                  {card?.comments?.length}
+                </Button>
+              )}
+              {!!card?.fileAttach?.length && (
+                <Button size="small" startIcon={<AttachmentIcon />}>
+                  {card?.fileAttach?.length}
+                </Button>
+              )}
+            </CardActions>
             {(hasStart || hasEnd) && (
-              <Button
-                sx={{
-                  position: 'absolute',
-                  right: 10,
-                  color: isOverdue ? 'error.main' : 'inherit',
-                  borderColor: isOverdue ? 'error.main' : 'rgba(0, 0, 0, 0.23)',
-                  '&:hover': {
-                    borderColor: isOverdue ? 'error.dark' : 'black',
-                    backgroundColor: isOverdue ? 'rgba(255,0,0,0.04)' : 'inherit'
-                  }
-                }}
-                size="small"
-                startIcon={<CalendarMonthIcon fontSize="small" />}
-                variant="outlined"
-              >
-                {displayText}
-              </Button>
+              <CardActions sx={{ p: '0 4px 8px 16px', position: 'relative', display: 'flex', justifyContent: 'start' }}>
+                <Button
+                  sx={{
+                    color: isOverdue ? 'error.main' : 'inherit',
+                    borderColor: isOverdue ? 'error.main' : 'rgba(0, 0, 0, 0.23)',
+                    '&:hover': {
+                      borderColor: isOverdue ? 'error.dark' : 'black',
+                      backgroundColor: isOverdue ? 'rgba(255,0,0,0.04)' : 'inherit'
+                    }
+                  }}
+                  size="small"
+                  startIcon={<CalendarMonthIcon fontSize="small" />}
+                  variant="outlined"
+                >
+                  {displayText}
+                </Button>
+              </CardActions>
             )}
-          </CardActions>
+          </>
         )}
       </MuiCard>
     </>

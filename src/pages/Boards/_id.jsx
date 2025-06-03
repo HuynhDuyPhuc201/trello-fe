@@ -11,7 +11,6 @@ import {
   getBoardAll,
   getBoardDetail,
   updateCurrentActiveBoard,
-  updateMemberBoardBar,
   useActiveBoard
 } from '~/redux/activeBoard/activeBoardSlice'
 import LoadingSpiner from '~/components/Loading/Loading'
@@ -24,6 +23,7 @@ import { useUser } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
 import PrivateBoardDialog from '~/components/PrivateBoardDialog'
 import { createJoinRequest, getJoinRequests } from '~/redux/request/joinRequestSlice'
+import useBoardSocketEvents from '~/hooks/useBoardSocketEvents'
 
 function Board() {
   const dispatch = useDispatch()
@@ -34,6 +34,7 @@ function Board() {
   const board = currentActiveBoard
   const { boardId } = useParams()
 
+  useBoardSocketEvents(socket)
   // Lấy thông tin board + tất cả board
 
   const fetchDetailBoard = async () => {
@@ -67,28 +68,6 @@ function Board() {
     })
   }, [board?._id, currentUser])
 
-  // Lắng nghe người mới join
-  useEffect(() => {
-    const handleUserJoin = (newUser) => {
-      dispatch(updateMemberBoardBar({ user: newUser, type: 'join' }))
-    }
-    const boardMemeber = ({ members }) => {
-      dispatch(updateMemberBoardBar({ members, type: 'set' }))
-    }
-    const handleUserLeave = (leftUser) => {
-      dispatch(updateMemberBoardBar({ user: leftUser, type: 'leave' }))
-    }
-    socket.on('user_join_board', handleUserJoin)
-    socket.on('current_board_members', boardMemeber)
-    socket.on('user_leave_board', handleUserLeave)
-
-    return () => {
-      socket.off('user_join_board', handleUserJoin)
-      socket.off('current_board_members', boardMemeber)
-      socket.off('user_leave_board', handleUserLeave)
-    }
-  }, [dispatch, currentUser])
-
   const renderColor = generateColorConfigs()
   const findColor = renderColor.find((item) => item.background === board?.cover)
 
@@ -107,6 +86,9 @@ function Board() {
       boardService
         .update(newBoard._id, {
           columnOrderIds: dndOrderedColumnIds
+        })
+        .then((data) => {
+          socket.emit('update_column', data.boardId)
         })
         .catch((err) => {
           toast.error('Cập nhật thứ tự thất bại!', err)
@@ -132,9 +114,14 @@ function Board() {
 
       dispatch(updateCurrentActiveBoard(newBoard))
 
-      columnService.update(columnId, { cardOrderIds: dndOrderedCardIds }).catch((err) => {
-        console.error('❌ Failed to update card order:', err)
-      })
+      columnService
+        .update(columnId, { cardOrderIds: dndOrderedCardIds })
+        .then((data) => {
+          socket.emit('update_column', data.boardId)
+        })
+        .catch((err) => {
+          console.error('❌ Failed to update card order:', err)
+        })
     },
     [board, dispatch]
   )
@@ -162,6 +149,9 @@ function Board() {
           prevCardOrderIds,
           nextColumnId,
           nextCardOrderIds: dndOrderedColumns.find((col) => col._id === nextColumnId)?.cardOrderIds
+        })
+        .then((data) => {
+          socket.emit('update_column', data.boardId)
         })
         .catch((err) => {
           console.error('❌ Failed to move card:', err)

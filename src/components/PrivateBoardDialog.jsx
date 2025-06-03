@@ -30,8 +30,7 @@ const PrivateBoardDialog = ({ open, onClose, onRequestAccess, user, openSendit }
         {!openSendit && (
           <>
             <Typography variant="body2" color="textSecondary" style={{ marginTop: 8 }}>
-              Submit a request to this board administrator for access. If you are approved to join, you will receive an
-              email.
+              Submit a request to this board administrator for access. You will receive notification
             </Typography>
 
             <Box mt={3} display="flex" alignItems="center" justifyContent="start" gap={2}>

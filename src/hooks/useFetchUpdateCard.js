@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import { getBoardDetail } from '~/redux/activeBoard/activeBoardSlice'
 import { updateCurrentActiveCard, useActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { cardService } from '~/services/card.service'
+import socket from '~/sockets'
 
 // Thêm ={} làm mặc định cho params truyền vào hook:
 export const useFetchUpdateCard = ({ fetchDetail = true } = {}) => {
@@ -15,10 +16,12 @@ export const useFetchUpdateCard = ({ fetchDetail = true } = {}) => {
         const updatedCard = await cardService.update(currentActiveCard._id, updateData)
         if (updatedCard) {
           dispatch(updateCurrentActiveCard(updatedCard))
+          socket.emit('update_activeCard', updatedCard)
           // phòng 1 vài TH không cần fetch lại detail
           if (fetchDetail) {
-            dispatch(getBoardDetail(updatedCard.boardId))
+            dispatch(getBoardDetail(updatedCard.boardId)).unwrap()
           }
+          socket.emit('update_card', updatedCard.boardId)
         }
         return { success: true, updatedCard }
       } catch (error) {

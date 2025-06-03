@@ -28,6 +28,7 @@ import { columnService } from '~/services/column.service'
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select } from '@mui/material'
 import { useUser } from '~/redux/user/userSlice'
+import socket from '~/sockets'
 
 function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -110,6 +111,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
       }
 
       dispatch(updateCurrentActiveBoard(newBoard))
+      socket.emit('create_card', newBoard._id)
       onCloseForm()
       setNewCardTitle('')
     } catch (err) {
@@ -138,12 +140,11 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
         columns: board.columns.filter((col) => col._id !== column._id),
         columnOrderIds: board.columnOrderIds.filter((id) => id !== column._id)
       }
-
       dispatch(updateCurrentActiveBoard(newBoard))
 
       try {
-        const res = await columnService.delete(column._id)
-        toast.success(res?.deleteResult || 'Deleted successfully!')
+        await columnService.delete(column._id)
+        socket.emit('delete_column', newBoard._id)
       } catch (err) {
         console.error('Failed to delete column:', err)
         toast.error('Failed to delete column from server.')
@@ -181,6 +182,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
       const res = await columnService.moveColumn(column._id, selectedBoardId)
       if (res) {
         setShowModalMove(false)
+        socket.emit('update_column', newBoard.boardId)
       }
     } catch (error) {
       toast.error('Failed to move column!')
@@ -258,14 +260,6 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                 </ListItemIcon>
                 <ListItemText>Move</ListItemText>
               </MenuItem>
-              {showModalMove && (
-                <MenuItem onClick={handleMoveCard}>
-                  <ListItemIcon>
-                    <ContentCut fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Chinh3</ListItemText>
-                </MenuItem>
-              )}
               <Divider />
               <MenuItem
                 onClick={handleDeleteColumn}
