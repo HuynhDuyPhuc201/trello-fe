@@ -14,6 +14,7 @@ import { updateCurrentActiveBoard, useActiveBoard } from '~/redux/activeBoard/ac
 import { columnService } from '~/services/column.service'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import socket from '~/sockets'
+import { useBoardMember } from '~/hooks/useBoardMember'
 
 function ListColumns({ columns }) {
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
@@ -24,7 +25,28 @@ function ListColumns({ columns }) {
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
 
-  const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
+  const { isMember } = useBoardMember()
+
+  const toggleOpenNewColumnForm = () => {
+    if (!isMember) {
+      return toast.warning('You are not a member of this board')
+    }
+    setOpenNewColumnForm(!openNewColumnForm)
+  }
+
+  const onOpenForm = (column) => {
+    if (!isMember) {
+      return toast.warning('You are not a member of this board')
+    }
+    setOpenNewCardColumnId(column._id)
+  }
+
+  const onCloseForm = () => {
+    if (!isMember) {
+      return toast.warning('You are not a member of this board')
+    }
+    setOpenNewCardColumnId(null)
+  }
 
   const addNewColumn = async () => {
     if (!newColumnTitle.trim()) {
@@ -66,7 +88,6 @@ function ListColumns({ columns }) {
     }
   }
 
-
   return (
     <SortableContext items={columns?.map((c) => c._id)} strategy={horizontalListSortingStrategy}>
       <Box
@@ -83,8 +104,8 @@ function ListColumns({ columns }) {
         {columns?.map((column) => (
           <Column
             isOpen={openNewCardColumnId === column._id}
-            onOpenForm={() => setOpenNewCardColumnId(column._id)}
-            onCloseForm={() => setOpenNewCardColumnId(null)}
+            onOpenForm={() => onOpenForm(column)}
+            onCloseForm={onCloseForm}
             key={column._id}
             column={column}
           />
@@ -172,6 +193,7 @@ function ListColumns({ columns }) {
                 color="success"
                 size="small"
                 onClick={addNewColumn}
+                disabled={!isMember}
                 sx={{
                   boxShadow: 'none',
                   border: '0.5px solid',

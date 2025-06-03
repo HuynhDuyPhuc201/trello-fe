@@ -38,7 +38,8 @@ const ActiveCardAttach = () => {
   }
 
   const handleDelete = () => {
-    if (typeof onDeleteAttach === 'function' && selectedFile) {
+    console.log('click')
+    if (selectedFile) {
       const updatedFileAttach = (currentActiveCard?.fileAttach || []).filter((c) => c._id !== selectedFile._id)
       fetchUpdateCard({ fileAttach: updatedFileAttach })
     }

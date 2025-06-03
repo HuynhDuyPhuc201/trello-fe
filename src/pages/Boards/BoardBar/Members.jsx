@@ -10,7 +10,7 @@ import Divider from '@mui/material/Divider'
 import { Scrollbar } from 'react-scrollbars-custom'
 import { imageAvatar } from '~/config/constants'
 import { useDispatch } from 'react-redux'
-import { updateMemberBoardBar, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { updateMemberBoardBar } from '~/redux/activeBoard/activeBoardSlice'
 import socket from '~/sockets'
 
 function Members({ board }) {
@@ -21,7 +21,6 @@ function Members({ board }) {
   const handleTogglePopover = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget)
   }
-  const { memberBoardBar } = useActiveBoard()
   const dispatch = useDispatch()
 
   useEffect(() => {

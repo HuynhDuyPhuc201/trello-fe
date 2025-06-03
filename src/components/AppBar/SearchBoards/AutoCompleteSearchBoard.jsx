@@ -90,7 +90,22 @@ function AutoCompleteSearchBoard({ colorConfigs }) {
           {...params}
           label="Type to search..."
           size="small"
-          sx={{ color: textColor }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: (theme) =>
+                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              },
+              '&:hover fieldset': {
+                borderColor: (theme) =>
+                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: (theme) =>
+                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              }
+            }
+          }}
           InputProps={{
             ...params.InputProps,
             startAdornment: (

@@ -17,12 +17,16 @@ import { useUser } from '~/redux/user/userSlice'
 import { imageCards } from '~/config/constants'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth' // icon lịch
 import dayjs from 'dayjs'
+import { toast } from 'react-toastify'
+import { useBoardMember } from '~/hooks/useBoardMember'
 
 function Card({ card }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card?._id,
     data: { ...card }
   })
+  const { isMember } = useBoardMember()
+
   const { currentUser } = useUser()
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
@@ -39,10 +43,10 @@ function Card({ card }) {
     hasStart && hasEnd
       ? `${formatDate(startDate)} - ${formatDate(endDate)}`
       : hasEnd
-        ? `${formatDate(endDate)}`
-        : hasStart
-          ? `${formatDate(startDate)}`
-          : ''
+      ? `${formatDate(endDate)}`
+      : hasStart
+      ? `${formatDate(startDate)}`
+      : ''
   const getEndDateTime = () => {
     if (endTime) return dayjs(endTime)
     if (endDate) return dayjs(endDate)
@@ -68,6 +72,10 @@ function Card({ card }) {
   }
 
   const setActiveCard = () => {
+    if (!isMember) {
+      toast.warning('You are not a member of this board')
+      return event.preventDefault()
+    }
     dispatch(updateCurrentActiveCard(card))
     dispatch(showModalActiveCard(true))
   }

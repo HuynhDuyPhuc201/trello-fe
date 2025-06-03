@@ -4,21 +4,15 @@ import AppsIcon from '@mui/icons-material/Apps'
 import { ReactComponent as trelloIcon } from '~/assets/trello.svg'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
-import Templates from './Menus/Templates'
-import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import Profiles from './Menus/Profiles'
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { path } from '~/config/path'
 import Notifications from './Notifications/Notifications'
 import AutoCompleteSearchBoard from './SearchBoards/AutoCompleteSearchBoard'
 
 function AppBar({ colorConfigs }) {
-  const [searchValue, setSearchValue] = useState()
-
   return (
     <Box
       sx={{
@@ -76,7 +70,7 @@ function AppBar({ colorConfigs }) {
           </Box>
         </Link>
         {/* responsive */}
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+        {/* <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
           <Templates colorConfigs={colorConfigs} />
           <Button
             startIcon={<LibraryAddIcon />}
@@ -87,7 +81,7 @@ function AppBar({ colorConfigs }) {
           >
             Create
           </Button>
-        </Box>
+        </Box> */}
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <AutoCompleteSearchBoard colorConfigs={colorConfigs}/>

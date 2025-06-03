@@ -24,6 +24,7 @@ import { toast } from 'react-toastify'
 import PrivateBoardDialog from '~/components/PrivateBoardDialog'
 import { createJoinRequest, getJoinRequests } from '~/redux/request/joinRequestSlice'
 import useBoardSocketEvents from '~/hooks/useBoardSocketEvents'
+import { useBoardMember } from '~/hooks/useBoardMember'
 
 function Board() {
   const dispatch = useDispatch()
@@ -33,9 +34,9 @@ function Board() {
   const [errorAccrss, setErrorAccess] = useState('')
   const board = currentActiveBoard
   const { boardId } = useParams()
+  const { isMember } = useBoardMember()
 
   useBoardSocketEvents(socket)
-  // Lấy thông tin board + tất cả board
 
   const fetchDetailBoard = async () => {
     try {

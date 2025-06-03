@@ -71,6 +71,8 @@ function InviteBoardUser({ board }) {
     }
   }
 
+  
+
   useEffect(() => {
     dispatch(getJoinRequests(board._id))
     if (!currentUser?._id) return

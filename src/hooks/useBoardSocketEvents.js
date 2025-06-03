@@ -10,7 +10,10 @@ const useBoardSocketEvents = (socket) => {
     () => ({
       current_board_members: ({ members }) => dispatch(updateMemberBoardBar({ members, type: 'set' })),
 
-      user_join_board: (newUser) => dispatch(updateMemberBoardBar({ user: newUser, type: 'join' })),
+      user_join_board: ({ boardId, user }) => {
+        dispatch(updateMemberBoardBar({ user, type: 'join' }))
+        dispatch(getBoardDetail(boardId))
+      },
 
       user_leave_board: (leftUser) => dispatch(updateMemberBoardBar({ user: leftUser, type: 'leave' })),
 

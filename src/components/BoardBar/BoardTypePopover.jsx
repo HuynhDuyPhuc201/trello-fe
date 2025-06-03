@@ -1,5 +1,15 @@
 import { useState } from 'react'
-import { Chip, Popover, Typography, Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
+import {
+  Chip,
+  Popover,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton
+} from '@mui/material'
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
@@ -50,6 +60,7 @@ function BoardTypePopover({ board, onUpdateType }) {
     onUpdateType(type)
     handleClose()
   }
+  console.log('typeOptions', typeOptions)
 
   const labelType = board?.type.charAt(0).toUpperCase() + board?.type.slice(1)
   return (
@@ -71,15 +82,12 @@ function BoardTypePopover({ board, onUpdateType }) {
             Board Visibility
           </Typography>
           <List>
-            {typeOptions.map((option) => (
-              <ListItem
-                button
-                key={option.value}
-                onClick={() => handleSelectType(option.value)}
-                selected={board?.type === option.value}
-              >
-                <ListItemIcon>{option.icon}</ListItemIcon>
-                <ListItemText primary={option.label} secondary={option.description} />
+            {typeOptions?.map(({ value, icon, label, description }) => (
+              <ListItem key={value} disablePadding>
+                <ListItemButton selected={board?.type === value} onClick={() => handleSelectType(value)}>
+                  <ListItemIcon>{icon}</ListItemIcon>
+                  <ListItemText primary={label} secondary={description} />
+                </ListItemButton>
               </ListItem>
             ))}
           </List>

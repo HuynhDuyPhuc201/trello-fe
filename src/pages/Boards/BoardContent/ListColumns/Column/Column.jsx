@@ -29,6 +29,7 @@ import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select } from '@mui/material'
 import { useUser } from '~/redux/user/userSlice'
 import socket from '~/sockets'
+import { useBoardMember } from '~/hooks/useBoardMember'
 
 function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -40,7 +41,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const { currentUser } = useUser()
   const { currentActiveBoard, boards } = useActiveBoard()
   const board = currentActiveBoard
-
+  const { isMember } = useBoardMember()
   // fix bug Transform -> Translate
   const dndKitColumnStyles = {
     // https://docs.dndkit.com/api-documentation/sensors/pointer
@@ -57,9 +58,15 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (e) => {
+    if (!isMember) {
+      return toast.warning('You are not a member of this board')
+    }
     setAnchorEl(e.currentTarget)
   }
   const handleClose = () => {
+    if (!isMember) {
+      return toast.warning('You are not a member of this board')
+    }
     setAnchorEl(null)
   }
 
@@ -155,6 +162,9 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
   }
 
   const handleUpdateColumnTitle = async (newTitle) => {
+    if (!isMember) {
+      return toast.warning('You are not a member of this board')
+    }
     try {
       await columnService.update(column._id, { title: newTitle })
     } catch (err) {
@@ -380,6 +390,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                   size="small"
                   data-no-dnd="true"
                   onClick={addNewCard}
+                  disable={!isMember}
                   sx={{
                     boxShadow: 'none',
                     border: '0.5px solid',

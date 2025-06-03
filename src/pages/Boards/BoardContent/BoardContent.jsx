@@ -32,13 +32,14 @@ import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { toast } from 'react-toastify'
 import CreateBoardModal from '~/components/Modal/Board/CreateBoardModal'
 import Card from './ListColumns/Column/ListCards/Card/Card'
+import { useBoardMember } from '~/hooks/useBoardMember'
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToDifferentColumn }) {
   const navigation = useNavigate()
-
+  const { isMember } = useBoardMember()
   //https://docs.dndkit.com/api-documentation/sensors
   // nếu dùng PointerSensor mặc định thì phải kết hợp vs thuộc tính css touch-action: none ở những phần tử kéo thả - nhưng mà còn bug
   // const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
@@ -152,6 +153,10 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
 
   // Trigger khi bắt đầu kéo (drag) 1 phần tử
   const handleDragStart = (event) => {
+    if (!isMember) {
+      toast.warning('You are not a member of this board')
+      return event.preventDefault()
+    }
     setActiveDragItemId(event?.active?.id)
     setActiveDragItemType(
       event?.active?.data?.current?.columnId ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.COLUMN
@@ -217,7 +222,6 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
 
     // xử lí kéo thả cards
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
-
       // activeDraggingCardId: là cái card đang được kéo
       const {
         id: activeDraggingCardId,
