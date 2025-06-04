@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { updateBoard } from '~/redux/activeBoard/activeBoardSlice'
-import { Box, Chip, TextField, Tooltip } from '@mui/material'
+import { updateBoard, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { Box, Chip, IconButton, TextField, Tooltip } from '@mui/material'
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import AddToDriveIcon from '@mui/icons-material/AddToDrive'
-import BoltIcon from '@mui/icons-material/Bolt'
-import FilterListIcon from '@mui/icons-material/FilterList'
 import BoardUserGroup from './BoardUserGroup'
 import InviteBoardUser from './InviteBoardUser'
 import BoardTypePopover from '~/components/BoardBar/BoardTypePopover'
+import RenderColor from '~/components/renderColor'
+import FilterListIcon from '@mui/icons-material/FilterList'
+import MenuIcon from '@mui/icons-material/Menu' // Nếu chưa import
 
 const MENU_STYLES = {
   color: 'white',
@@ -24,10 +24,14 @@ const MENU_STYLES = {
   }
 }
 
-function BoardBar({ board, colorConfigs }) {
-  const valueRename = useRef(board?.title)
+function BoardBar({ setSidebarOpen, sidebarOpen }) {
   const dispatch = useDispatch()
   const [openInput, setOpenInput] = useState(false)
+  const { currentActiveBoard } = useActiveBoard()
+  const board = currentActiveBoard
+  const valueRename = useRef(board?.title)
+
+  const { findColor } = RenderColor()
 
   const handleSubmit = async () => {
     const newTitle = valueRename.current?.trim()
@@ -54,15 +58,42 @@ function BoardBar({ board, colorConfigs }) {
         justifyContent: 'space-between',
         gap: 2,
         paddingX: 2,
+        paddingLeft: {
+          xs: 0, // Mobile
+          sm: '280px' // Desktop
+        },
         overflowX: 'auto',
         bgcolor: (theme) =>
-          colorConfigs?.boardBarBg ? colorConfigs?.boardBarBg : theme.palette.mode === 'dark' ? '#34495e' : '#001f4d',
+          findColor?.boardBarBg ? findColor?.boardBarBg : theme.palette.mode === 'dark' ? '#34495e' : '#001f4d',
+        '&::-webkit-scrollbar': {
+          height: '4px' // 👈 thanh scroll mỏng hơn
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#888',
+          borderRadius: '4px'
+        },
         '&::-webkit-scrollbar-track': {
-          m: 2
+          backgroundColor: 'transparent',
+          height: '2px' // 👈 chiều cao track nhỏ hơn nếu cần
         }
       }}
     >
+      {/* ===== Left side ===== */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        {/* Hamburger button chỉ hiện khi mobile */}
+        <IconButton
+          onClick={() => setSidebarOpen(!sidebarOpen)} // TODO: Em tự định nghĩa hàm này nhé
+          sx={{
+            display: {
+              xs: 'inline-flex',
+              sm: 'none'
+            },
+            color: 'white'
+          }}
+        >
+          <MenuIcon size="large" />
+        </IconButton>
+
         <Tooltip title={board?.title}>
           {openInput ? (
             <TextField
@@ -99,19 +130,18 @@ function BoardBar({ board, colorConfigs }) {
             <Chip sx={MENU_STYLES} icon={<DashboardIcon />} label={board?.title} onClick={() => setOpenInput(true)} />
           )}
         </Tooltip>
+
         <BoardTypePopover
           board={board}
           onUpdateType={(newType) => {
             dispatch(updateBoard({ boardId: board._id, type: newType }))
           }}
         />
-
-        <Chip sx={MENU_STYLES} icon={<AddToDriveIcon />} label="Add To Google Drive" clickable />
-        <Chip sx={MENU_STYLES} icon={<BoltIcon />} label="Automation" clickable />
-        <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label="Filters" clickable />
       </Box>
 
+      {/* ===== Right side ===== */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label="Filters" clickable />
         <InviteBoardUser board={board} />
         <BoardUserGroup boardUsers={board?.allUsers} />
       </Box>

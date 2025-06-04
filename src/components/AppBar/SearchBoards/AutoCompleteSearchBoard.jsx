@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -9,8 +9,9 @@ import { boardService } from '~/services/board.service'
 import { path } from '~/config/path'
 import { useDebounce } from '~/hooks/useDebounce'
 import { Box } from '@mui/material'
+import RenderColor from '~/components/renderColor'
 
-function AutoCompleteSearchBoard({ colorConfigs }) {
+function AutoCompleteSearchBoard() {
   const navigate = useNavigate()
 
   const [open, setOpen] = useState(false)
@@ -19,11 +20,7 @@ function AutoCompleteSearchBoard({ colorConfigs }) {
   const [searchValue, setSearchValue] = useState(false)
 
   const debouncedValue = useDebounce(searchValue, 500)
-
-  const textColor = useMemo(
-    () => (theme) => colorConfigs?.text ? colorConfigs.text : theme.palette.mode === 'dark' ? '#fff' : '#000',
-    [colorConfigs]
-  )
+  const { findColor } = RenderColor()
 
   useEffect(() => {
     if (!open) setBoards(null)
@@ -59,7 +56,12 @@ function AutoCompleteSearchBoard({ colorConfigs }) {
 
   return (
     <Autocomplete
-      sx={{ width: 220, borderColor: textColor, color: textColor }}
+      sx={{
+        width: 220,
+        borderColor: (theme) =>
+          findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c',
+        color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
+      }}
       id="asynchronous-search-board"
       noOptionsText={!boards ? 'Type to search board...' : 'No board found!'}
       open={open}
@@ -91,18 +93,30 @@ function AutoCompleteSearchBoard({ colorConfigs }) {
           label="Type to search..."
           size="small"
           sx={{
+            '& .MuiInputLabel-root': {
+              color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
+              borderColor: (theme) =>
+                findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
+            },
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
+                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                 borderColor: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+                  findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
               },
               '&:hover fieldset': {
+                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                 borderColor: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+                  findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
               },
               '&.Mui-focused fieldset': {
+                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                 borderColor: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+                  findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
+              },
+              '.MuiSvgIcon-root': {
+                color: (theme) =>
+                  findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
               }
             }
           }}
@@ -111,13 +125,26 @@ function AutoCompleteSearchBoard({ colorConfigs }) {
             startAdornment: (
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: textColor }} />
+                  <SearchIcon
+                    sx={{
+                      color: (theme) =>
+                        findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
+                    }}
+                  />
                 </InputAdornment>
               </Box>
             ),
             endAdornment: (
               <>
-                {loading && <CircularProgress sx={{ color: textColor }} size={20} />}
+                {loading && (
+                  <CircularProgress
+                    sx={{
+                      color: (theme) =>
+                        findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
+                    }}
+                    size={20}
+                  />
+                )}
                 {params.InputProps.endAdornment}
               </>
             )

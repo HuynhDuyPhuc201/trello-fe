@@ -21,7 +21,12 @@ import { toast } from 'react-toastify'
 import ActiveCardDescription from './component/ActiveCardDescription'
 import ActiveCardComment from './component/ActiveCardComment'
 
-import { clearAndHideCurrentActiveCard, deleteCard, updateCurrentActiveCard, useActiveCard } from '~/redux/activeCard/activeCardSlice'
+import {
+  clearAndHideCurrentActiveCard,
+  deleteCard,
+  updateCurrentActiveCard,
+  useActiveCard
+} from '~/redux/activeCard/activeCardSlice'
 import { useDispatch } from 'react-redux'
 import { getBoardDetail } from '~/redux/activeBoard/activeBoardSlice'
 import { Button, Checkbox, ClickAwayListener, Popover, TextField, Tooltip } from '@mui/material'
@@ -108,7 +113,7 @@ function ActiveCard() {
       return
     }
 
-    return fetchUpdateCard({ done })
+    fetchUpdateCard({ done })
   }, [done, fetchUpdateCard])
 
   //------------------------------handle cover----------------------------
@@ -120,7 +125,7 @@ function ActiveCard() {
       return
     }
     let formData = new FormData()
-    formData.append('cover', file) // 👈 key phải trùng với backend
+    formData.append('cover', file)
 
     toast.promise(fetchUpdateCard(formData), { pending: 'Updating...' }).then(() => {
       event.target.value = ''
@@ -144,7 +149,6 @@ function ActiveCard() {
       dispatch(deleteCard(activeCard._id)).unwrap()
       const res = await dispatch(getBoardDetail(boardId)).unwrap()
       if (res) {
-        // socket.emit('update_activeCard', updatedCard)
         socket.emit('delete_card', res.boardId)
       }
     } catch (error) {
@@ -158,7 +162,6 @@ function ActiveCard() {
       const createdCard = await cardService.template(res)
       if (createdCard) {
         dispatch(getBoardDetail(createdCard.boardId))
-        // dispatch(showModalActiveCard(false))
       }
     } catch (error) {
       console.log('error', error)
@@ -176,7 +179,11 @@ function ActiveCard() {
           border: 'none',
           outline: 0,
           padding: '40px 20px 20px',
-          margin: '50px auto',
+          margin: {
+            xs: '50px 20px',
+            sm: '50px 20px',
+            md: '50px auto'
+          },
           backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1A2027' : '#fafafa')
         }}
       >
@@ -199,7 +206,12 @@ function ActiveCard() {
                   mb: 4,
                   backgroundColor: colorActiveCard ? activeCard?.cover : 'transparent',
                   width: '100%',
-                  height: '200px'
+                  height: {
+                    xs: '150px',
+                    sm: '150px',
+                    md: '200px'
+                  },
+                  borderRadius: '6px'
                 }}
               >
                 {!colorActiveCard && (
@@ -321,18 +333,18 @@ function ActiveCard() {
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
             <Stack direction="column" spacing={1}>
-              <SidebarItem>
+              {/* <SidebarItem>
                 <AspectRatioOutlinedIcon fontSize="small" />
                 Card Size
-              </SidebarItem>
+              </SidebarItem> */}
               <SidebarItem>
                 <AddToDriveOutlinedIcon fontSize="small" />
                 Google Drive
               </SidebarItem>
-              <SidebarItem>
+              {/* <SidebarItem>
                 <AddOutlinedIcon fontSize="small" />
                 Add Power-Ups
-              </SidebarItem>
+              </SidebarItem> */}
             </Stack>
 
             <Divider sx={{ my: 2 }} />
@@ -359,7 +371,7 @@ function ActiveCard() {
                   <Popover
                     open={shareLink}
                     anchorEl={shareLinkRef?.current}
-                    onClose={() => setShareLink(false)} // bắt buộc vẫn phải có onClose
+                    onClose={() => setShareLink(false)}
                     anchorOrigin={{
                       vertical: 'top',
                       horizontal: 'left'

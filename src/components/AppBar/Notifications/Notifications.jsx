@@ -8,11 +8,15 @@ import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Divider from '@mui/material/Divider'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import DoneIcon from '@mui/icons-material/Done'
 import NotInterestedIcon from '@mui/icons-material/NotInterested'
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep'
+import NotificationsIcon from '@mui/icons-material/Notifications'
+import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
+import Avatar from '@mui/material/Avatar'
+import { styled } from '@mui/material/styles'
 import {
   addNotification,
   clearNotification,
@@ -27,12 +31,44 @@ import { getBoardAll } from '~/redux/activeBoard/activeBoardSlice'
 import { inviteService } from '~/services/invite.service'
 import { toast } from 'react-toastify'
 import { path } from '~/config/path'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import socket from '~/sockets'
+import RenderColor from '~/components/renderColor'
 
-function Notifications({ colorConfigs }) {
+const StyledMenu = styled(Menu)(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 8,
+    minWidth: 320,
+    maxWidth: 400,
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+    border: `1px solid ${theme.palette.divider}`,
+    marginTop: theme.spacing(1)
+  }
+}))
+
+const NotificationItem = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  margin: theme.spacing(1),
+  borderRadius: 8,
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  transition: 'all 0.2s ease-in-out',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+    transform: 'translateY(-1px)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+  }
+}))
+
+const EmptyState = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(4),
+  textAlign: 'center',
+  color: theme.palette.text.secondary
+}))
+
+function Notifications() {
   const dispatch = useDispatch()
-
+  const { findColor } = RenderColor()
   const { currentNotification } = useNotification()
   const { currentUser } = useUser()
   const [anchorEl, setAnchorEl] = useState(null)
@@ -50,7 +86,6 @@ function Notifications({ colorConfigs }) {
         dispatch(getInvite())
         dispatch(clearNotification())
       }
-      // handleClose()
     } catch (error) {
       toast.error('Failed to delete all board. Please try again.', error)
     }
@@ -81,12 +116,10 @@ function Notifications({ colorConfigs }) {
       const updatedInvite = await dispatch(updateInvite({ status, invitationId })).unwrap()
       await dispatch(getInvite())
       await dispatch(getBoardAll())
-      // check status sau khi update, nếu accept -> derect sang board đó
       const checkStatus = updatedInvite.boardInvitation.status === BOARD_INVITATION_STATUS.ACCEPTED
       if (checkStatus) {
         const boardId = updatedInvite?.boardInvitation.boardId
         if (!boardId || !currentUser) return
-        // lấy realtime để check hiển thị member khi user vào board
         socket.emit('user_join_board', {
           boardId: boardId,
           user: currentUser
@@ -103,17 +136,12 @@ function Notifications({ colorConfigs }) {
 
   const [unreadCountRequest, setUnreadCountRequest] = useState(0)
 
-  // Cập nhật khi currentNotification thay đổi
   useEffect(() => {
     if (!currentNotification) return
-
-    // Đếm số lượng request join board
     const count = currentNotification.filter((n) => n.type === INVITATION_TYPES.BOARD_REQUEST_JOIN).length
-
     setUnreadCountRequest(count)
   }, [currentNotification])
 
-  // Lọc lời mời
   const notificationOfInvitee =
     currentNotification?.filter(
       (invite) =>
@@ -121,157 +149,213 @@ function Notifications({ colorConfigs }) {
         invite?.invitee?._id === currentUser?._id
     ) || []
 
-  // Đếm số lượng chưa đọc của lời mời (status === PENDING)
   const unreadCountInvite = notificationOfInvitee.filter(
     (n) => n.boardInvitation?.status === BOARD_INVITATION_STATUS.PENDING
   ).length
 
-  // Khi bấm icon -> giảm count request đi 1 (nếu > 0)
   const handleClickNotificationIcon = (event) => {
     setAnchorEl(event.currentTarget)
     setUnreadCountRequest((prev) => Math.max(prev - 1, 0))
   }
 
-  // Tổng số chưa đọc
   const unreadCount = unreadCountInvite + unreadCountRequest
+
   return (
     <Box>
-      <Tooltip title="Notifications">
-        <Badge
-          color="warning"
-          badgeContent={unreadCount}
-          invisible={unreadCount === 0}
-          sx={{ cursor: 'pointer' }}
-          id="basic-button-open-notification"
-          aria-controls={open ? 'basic-notification-drop-down' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
+      <Tooltip title="Notifications" arrow>
+        <IconButton
           onClick={handleClickNotificationIcon}
+          sx={{
+            color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+            }
+          }}
         >
-          <NotificationsNoneIcon
+          <Badge
+            color="error"
+            badgeContent={unreadCount}
+            invisible={unreadCount === 0}
             sx={{
-              color: (theme) =>
-                colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              '& .MuiBadge-badge': {
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                minWidth: '18px',
+                height: '18px'
+              }
             }}
-          />
-        </Badge>
+          >
+            <NotificationsNoneIcon />
+          </Badge>
+        </IconButton>
       </Tooltip>
 
-      <Menu
-        sx={{ mt: 2 }}
-        id="basic-notification-drop-down"
+      <StyledMenu
+        id="notifications-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{ 'aria-labelledby': 'basic-button-open-notification' }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
       >
-        {(!currentNotification || currentNotification.length === 0) && (
-          <MenuItem sx={{ minWidth: 200 }}>You do not have any new notifications.</MenuItem>
-        )}
-        {currentNotification &&
-          currentNotification?.map((nofitication, index) => (
-            <Box key={index}>
-              <MenuItem
-                sx={{
-                  minWidth: 200,
-                  maxWidth: 360,
-                  overflowY: 'auto'
-                }}
-              >
-                <Box
-                  sx={{
-                    maxWidth: '100%',
-                    wordBreak: 'break-word',
-                    whiteSpace: 'pre-wrap',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
-                    {nofitication.type === INVITATION_TYPES.BOARD_REQUEST_JOIN && nofitication?.message}
-                    {nofitication.type === INVITATION_TYPES.BOARD_INVITATION && (
-                      <>
-                        <Box>
-                          <GroupAddIcon fontSize="small" />
-                        </Box>
-                        <Box>
-                          {nofitication?.boardInvitation?.status === BOARD_INVITATION_STATUS?.PENDING ? (
-                            <>
-                              <strong>{nofitication?.inviter?.displayName} </strong>had invited you to join the board{' '}
-                              <strong>{nofitication?.board?.title}</strong>
-                            </>
-                          ) : nofitication?.boardInvitation?.status === BOARD_INVITATION_STATUS?.ACCEPTED ? (
-                            <>
-                              You have accepted the invitation <strong>{nofitication?.board?.title}</strong>
-                            </>
-                          ) : (
-                            <>
-                              You have rejected the invitation <strong>{nofitication?.board?.title}</strong>
-                            </>
-                          )}
-                        </Box>
-                      </>
-                    )}
-                  </Box>
+        <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+          {(!currentNotification || currentNotification.length === 0) && (
+            <EmptyState>
+              <NotificationsIcon sx={{ fontSize: 48, mb: 2, opacity: 0.5 }} />
+              <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                No new notifications
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                You are all caught up!
+              </Typography>
+            </EmptyState>
+          )}
 
-                  {nofitication?.boardInvitation?.status === BOARD_INVITATION_STATUS?.PENDING && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
-                      <Button
-                        className="interceptor-loading"
-                        type="submit"
-                        variant="contained"
-                        color="success"
-                        size="small"
-                        onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.ACCEPTED, nofitication?._id)}
-                      >
-                        Accept
-                      </Button>
-                      <Button
-                        className="interceptor-loading"
-                        type="submit"
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.REJECTED, nofitication?._id)}
-                      >
-                        Reject
-                      </Button>
-                    </Box>
+          {currentNotification &&
+            currentNotification?.map((notification, index) => (
+              <NotificationItem key={index} elevation={0}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                  {notification.type === INVITATION_TYPES.BOARD_INVITATION && (
+                    <Avatar
+                      sx={{
+                        width: 35,
+                        height: 35
+                      }}
+                    >
+                      <GroupAddIcon />
+                    </Avatar>
                   )}
 
-                  {/* Khi Status của thông báo này là ACCEPTED hoặc REJECTED thì sẽ hiện thông tin đó lên */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
-                    {nofitication?.boardInvitation?.status === BOARD_INVITATION_STATUS?.ACCEPTED && (
-                      <Chip icon={<DoneIcon />} label="Accepted" color="success" size="small" />
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    {notification.type === INVITATION_TYPES.BOARD_REQUEST_JOIN && (
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        {notification.message.includes('approved') ? (
+                          <>
+                            Your request to join has been approved.
+                            {/* <Link
+                              to={path.Board.detail.replace(':boardId', notification.boardId)}
+                              underline="hover"
+                              color="primary"
+                              fontWeight="bold"
+                              sx={{
+                                 textDecoration: 'underline',
+                                '&:hover': {
+                                  color: 'secondary.main',
+                                  textDecoration: 'underline'
+                                },
+                                transition: 'all 0.2s ease-in-out'
+                              }}
+                            >
+                              Join Board
+                            </Link> */}
+                          </>
+                        ) : (
+                          notification.message
+                        )}
+                      </Typography>
                     )}
-                    {nofitication?.boardInvitation?.status === BOARD_INVITATION_STATUS?.REJECTED && (
-                      <Chip icon={<NotInterestedIcon />} label="Rejected" size="small" />
+                    {notification.type === INVITATION_TYPES.BOARD_INVITATION && (
+                      <Box>
+                        {notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.PENDING ? (
+                          <Typography variant="body2" sx={{ mb: 1, lineHeight: 1.4 }}>
+                            <strong>{notification?.inviter?.displayName}</strong> invited you to join{' '}
+                            <strong>{notification?.board?.title}</strong>
+                          </Typography>
+                        ) : notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.ACCEPTED ? (
+                          <Typography variant="body2" sx={{ mb: 1, lineHeight: 1.4 }}>
+                            You accepted the invitation to <strong>{notification?.board?.title}</strong>
+                          </Typography>
+                        ) : (
+                          <Typography variant="body2" sx={{ mb: 1, lineHeight: 1.4 }}>
+                            You rejected the invitation to <strong>{notification?.board?.title}</strong>
+                          </Typography>
+                        )}
+                      </Box>
                     )}
-                  </Box>
 
-                  {/* Thời gian của thông báo */}
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography variant="span" sx={{ fontSize: '13px' }}>
-                      {moment(nofitication.createdAt).format('llll')}
-                    </Typography>
+                    {notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.PENDING && (
+                      <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          startIcon={<DoneIcon />}
+                          onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.ACCEPTED, notification?._id)}
+                          sx={{ borderRadius: 1, textTransform: 'none' }}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          startIcon={<NotInterestedIcon />}
+                          onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.REJECTED, notification?._id)}
+                          sx={{ borderRadius: 1, textTransform: 'none' }}
+                        >
+                          Decline
+                        </Button>
+                      </Box>
+                    )}
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {moment(notification.createdAt).fromNow()}
+                      </Typography>
+
+                      {notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.ACCEPTED && (
+                        <Chip
+                          icon={<DoneIcon />}
+                          label="Accepted"
+                          color="success"
+                          size="small"
+                          sx={{ borderRadius: 1 }}
+                        />
+                      )}
+                      {notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.REJECTED && (
+                        <Chip
+                          icon={<NotInterestedIcon />}
+                          label="Declined"
+                          color="error"
+                          size="small"
+                          sx={{ borderRadius: 1 }}
+                        />
+                      )}
+                    </Box>
                   </Box>
                 </Box>
-              </MenuItem>
-              {/* Cái đường kẻ Divider sẽ không cho hiện nếu là phần tử cuối */}
-              {index !== currentNotification?.length - 1 && <Divider />}
-            </Box>
-          ))}
+              </NotificationItem>
+            ))}
+        </Box>
 
         {currentNotification && currentNotification.length > 0 && (
-          <Box
-            sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'end' }}
-            onClick={handleDeleteAll}
-          >
-            {<Button>Delete all</Button>}
+          <Box sx={{ p: 2, borderTop: `1px solid ${(theme) => theme.palette.divider}` }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<DeleteSweepIcon />}
+              onClick={handleDeleteAll}
+              sx={{
+                borderRadius: 1,
+                textTransform: 'none',
+                color: 'text.secondary',
+                borderColor: 'divider',
+                '&:hover': {
+                  backgroundColor: 'action.hover'
+                }
+              }}
+            >
+              Clear all notifications
+            </Button>
           </Box>
         )}
-      </Menu>
+      </StyledMenu>
     </Box>
   )
 }

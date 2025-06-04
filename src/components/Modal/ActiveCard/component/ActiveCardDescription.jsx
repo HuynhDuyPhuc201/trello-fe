@@ -34,7 +34,7 @@ function ActiveCardDescription({ onUpdateCard }) {
       <TitleActiveCard icon={<SubjectIcon />} text="Description" />
       <Box sx={{ mt: -4 }}>
         {markdownEditMode ? (
-          <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 1, paddingLeft: 5 }}>
+          <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 1, paddingLeft: { xs: 0, sm: 0, md: 5 } }}>
             <Box data-color-mode={mode}>
               <MDEditor
                 value={cardDescription}

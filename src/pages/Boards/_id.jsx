@@ -1,5 +1,4 @@
 import Container from '@mui/material/Container'
-import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
 import AppBar from '~/components/AppBar/AppBar'
 import { useEffect, useCallback, useState } from 'react'
@@ -17,14 +16,12 @@ import LoadingSpiner from '~/components/Loading/Loading'
 import { Navigate, useParams } from 'react-router-dom'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
 import { useActiveCard } from '~/redux/activeCard/activeCardSlice'
-import { generateColorConfigs } from '~/utils/getTextColor'
 import socket from '~/sockets'
 import { useUser } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
 import PrivateBoardDialog from '~/components/PrivateBoardDialog'
 import { createJoinRequest, getJoinRequests } from '~/redux/request/joinRequestSlice'
 import useBoardSocketEvents from '~/hooks/useBoardSocketEvents'
-import { useBoardMember } from '~/hooks/useBoardMember'
 
 function Board() {
   const dispatch = useDispatch()
@@ -34,7 +31,6 @@ function Board() {
   const [errorAccrss, setErrorAccess] = useState('')
   const board = currentActiveBoard
   const { boardId } = useParams()
-  const { isMember } = useBoardMember()
 
   useBoardSocketEvents(socket)
 
@@ -68,9 +64,6 @@ function Board() {
       user: currentUser
     })
   }, [board?._id, currentUser])
-
-  const renderColor = generateColorConfigs()
-  const findColor = renderColor.find((item) => item.background === board?.cover)
 
   const moveColumns = useCallback(
     (dndOrderedColumns) => {
@@ -203,10 +196,9 @@ function Board() {
   return (
     <Container disableGutters sx={{ height: '100vh' }} maxWidth={false}>
       {isShowModalActiveCard && <ActiveCard />}
-      <AppBar colorConfigs={findColor} />
-      <BoardBar board={board} colorConfigs={findColor} />
+      <AppBar />
+      {/* <BoardBar board={board} colorConfigs={findColor} /> */}
       <BoardContent
-        colorConfigs={findColor}
         board={board}
         moveColumns={moveColumns}
         moveCardInTheSameColumn={moveCardInTheSameColumn}

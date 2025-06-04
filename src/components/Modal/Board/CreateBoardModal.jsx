@@ -87,7 +87,11 @@ const CreateBoardModal = ({ isOpen, handleClose, directPage = false }) => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 600,
+          width: {
+            xs: '95%',
+            sm: '90%',
+            md: 600
+          },
           bgcolor: 'white',
           boxShadow: 24,
           borderRadius: '8px',
@@ -95,8 +99,8 @@ const CreateBoardModal = ({ isOpen, handleClose, directPage = false }) => {
           backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1A2027' : 'white')
         }}
       >
-        <Box sx={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer', }} onClick={handleCloseModal}>
-          <CancelIcon width='30' color="success" sx={{ '&:hover': { color: '#808080' } }} />
+        <Box sx={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }} onClick={handleCloseModal}>
+          <CancelIcon width="30" color="success" sx={{ '&:hover': { color: '#808080' } }} />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <LibraryAddIcon />
@@ -166,7 +170,7 @@ const CreateBoardModal = ({ isOpen, handleClose, directPage = false }) => {
                           cursor: 'pointer',
                           border: (theme) =>
                             cover === color.background
-                              ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`
+                              ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'}`
                               : 'none'
                         }}
                         onClick={() => setCover(color.background)}
@@ -196,7 +200,7 @@ const CreateBoardModal = ({ isOpen, handleClose, directPage = false }) => {
                               opacity: 0.8
                             },
                             border:
-                              cover === item ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}` : 'none'
+                              cover === item ? `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'}` : 'none'
                           })}
                         />
                       </Grid>

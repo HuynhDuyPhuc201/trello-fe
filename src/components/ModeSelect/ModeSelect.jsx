@@ -7,10 +7,11 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import Box from '@mui/material/Box'
+import RenderColor from '../renderColor'
 
-function ModeSelect({ colorConfigs }) {
+function ModeSelect() {
   const { mode, setMode } = useColorScheme()
-
+  const { findColor } = RenderColor()
   const handleChange = (event) => {
     setMode(event.target.value)
   }
@@ -19,10 +20,9 @@ function ModeSelect({ colorConfigs }) {
       <InputLabel
         id="label-select-dark-light-mode"
         sx={{
-          color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'),
+          color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
           '&.Mui-focused': {
-            color: (theme) =>
-              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+            color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
           }
         }}
       >
@@ -36,22 +36,22 @@ function ModeSelect({ colorConfigs }) {
         label="Mode"
         onChange={handleChange}
         sx={{
-          color: (theme) => (colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'),
+          color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
           '.MuiOutlinedInput-notchedOutline': {
             borderColor: (theme) =>
-              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: (theme) =>
-              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
             borderColor: (theme) =>
-              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
           },
           '.MuiSvgIcon-root': {
             color: (theme) =>
-              colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
           }
         }}
       >

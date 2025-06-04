@@ -83,21 +83,33 @@ function AccountTab() {
         height: '100%',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        padding: 2 // Cho có khoảng cách padding ở mobile
       }}
     >
       <Box
-        sx={{
+        sx={(theme) => ({
           maxWidth: '1200px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 3
-        }}
+          gap: 3,
+        })}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box>
+        <Box
+          sx={(theme) => ({
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            flexDirection: 'row',
+            [theme.breakpoints.down('sm')]: {
+              flexDirection: 'column',
+              textAlign: 'center'
+            }
+          })}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Avatar
               sx={{ width: 84, height: 84, mb: 1 }}
               alt={currentUser?.displayName}
@@ -116,70 +128,72 @@ function AccountTab() {
           </Box>
         </Box>
 
-        <form onSubmit={handleSubmit(submitChangeGeneralInformation)}>
-          <Box sx={{ width: '400px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box>
-              <TextField
-                disabled
-                defaultValue={currentUser?.email}
-                fullWidth
-                label="Your Email"
-                type="text"
-                variant="filled"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <MailIcon fontSize="small" />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Box>
+        <form onSubmit={handleSubmit(submitChangeGeneralInformation)} style={{ width: '100%' }}>
+          <Box
+            sx={(theme) => ({
+              width: '400px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              [theme.breakpoints.down('sm')]: {
+                width: '100%'
+              }
+            })}
+          >
+            <TextField
+              disabled
+              defaultValue={currentUser?.email}
+              fullWidth
+              label="Your Email"
+              type="text"
+              variant="filled"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }}
+            />
 
-            <Box>
-              <TextField
-                disabled
-                defaultValue={currentUser?.username}
-                fullWidth
-                label="Your Username"
-                type="text"
-                variant="filled"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountBoxIcon fontSize="small" />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Box>
+            <TextField
+              disabled
+              defaultValue={currentUser?.username}
+              fullWidth
+              label="Your Username"
+              type="text"
+              variant="filled"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountBoxIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }}
+            />
 
-            <Box>
-              <TextField
-                fullWidth
-                label="Your Display Name"
-                type="text"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AssignmentIndIcon fontSize="small" />
-                    </InputAdornment>
-                  )
-                }}
-                {...register('displayName', {
-                  required: FIELD_REQUIRED_MESSAGE
-                })}
-                error={!!errors['displayName']}
-              />
-              <FieldErrorAlert errors={errors} fieldName={'displayName'} />
-            </Box>
+            <TextField
+              fullWidth
+              label="Your Display Name"
+              type="text"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AssignmentIndIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }}
+              {...register('displayName', {
+                required: FIELD_REQUIRED_MESSAGE
+              })}
+              error={!!errors['displayName']}
+            />
+            <FieldErrorAlert errors={errors} fieldName={'displayName'} />
 
-            <Box>
-              <Button className="interceptor-loading" type="submit" variant="contained" color="primary" fullWidth>
-                Update
-              </Button>
-            </Box>
+            <Button className="interceptor-loading" type="submit" variant="contained" color="primary" fullWidth>
+              Update
+            </Button>
           </Box>
         </form>
       </Box>

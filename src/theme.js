@@ -15,8 +15,19 @@ const theme = extendTheme({
     columnFooterHeight: COLUMN_FOOTER_HEIGHT
   },
   colorSchemes: {
-    light: {},
-    dark: {}
+    light: {
+      palette: {
+        mode: 'light'
+      }
+    },
+    dark: {
+      palette: {
+        mode: 'dark',
+        background: {
+          default: '#1c1c1c',
+        },
+      }
+    }
   },
   // override css nguyên app
   components: {

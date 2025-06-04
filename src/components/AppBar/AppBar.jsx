@@ -11,11 +11,14 @@ import { Link } from 'react-router-dom'
 import { path } from '~/config/path'
 import Notifications from './Notifications/Notifications'
 import AutoCompleteSearchBoard from './SearchBoards/AutoCompleteSearchBoard'
+import RenderColor from '../renderColor'
 
-function AppBar({ colorConfigs }) {
+function AppBar() {
+  const { findColor } = RenderColor()
+
   return (
     <Box
-      sx={{
+      sx={(theme) => ({
         width: '100%',
         height: (theme) => theme.trello.appBarHeight,
         display: 'flex',
@@ -25,13 +28,27 @@ function AppBar({ colorConfigs }) {
         paddingX: 2,
         overflowX: 'auto',
         borderBottom: (theme) =>
-          `1px solid ${colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'}`,
+          `1px solid ${findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'}`,
         bgcolor: (theme) =>
-          colorConfigs?.headerBg ? colorConfigs?.headerBg : theme.palette.mode === 'dark' ? '#000' : '#e6f0ff',
+          findColor?.headerBg ? findColor?.headerBg : theme.palette.mode === 'dark' ? '#1c1c1c' : '#e6f0ff',
+        '&::-webkit-scrollbar': {
+          height: '4px'
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#888',
+          borderRadius: '4px'
+        },
         '&::-webkit-scrollbar-track': {
-          m: 2
+          backgroundColor: 'transparent',
+          height: '2px'
+        },
+        [theme.breakpoints.down('sm')]: {
+          height: '80px'
+        },
+        [theme.breakpoints.down('sm')]: {
+          height: '80px'
         }
-      }}
+      })}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Link to={path.Board.index}>
@@ -39,8 +56,7 @@ function AppBar({ colorConfigs }) {
             <AppsIcon
               sx={{
                 fontSize: '2rem',
-                color: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000',
+                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                 verticalAlign: 'middle'
               }}
             />
@@ -52,8 +68,7 @@ function AppBar({ colorConfigs }) {
               component={trelloIcon}
               inheritViewBox
               sx={{
-                color: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
               }}
             />
             <Typography
@@ -61,8 +76,7 @@ function AppBar({ colorConfigs }) {
               sx={{
                 fontSize: '1.2rem',
                 fontWeight: 'bold',
-                color: (theme) =>
-                  colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
               }}
             >
               Trello
@@ -71,12 +85,12 @@ function AppBar({ colorConfigs }) {
         </Link>
         {/* responsive */}
         {/* <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-          <Templates colorConfigs={colorConfigs} />
+          <Templates findColor={findColor} />
           <Button
             startIcon={<LibraryAddIcon />}
             sx={{
               color: (theme) =>
-                colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+                findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
             }}
           >
             Create
@@ -84,18 +98,17 @@ function AppBar({ colorConfigs }) {
         </Box> */}
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <AutoCompleteSearchBoard colorConfigs={colorConfigs}/>
-        <ModeSelect colorConfigs={colorConfigs} />
+        <AutoCompleteSearchBoard />
+        <ModeSelect />
 
         {/* Notifications */}
-        <Notifications colorConfigs={colorConfigs}/>
+        <Notifications />
 
         <Tooltip title="HelpOutlineIcon">
           <HelpOutlineIcon
             sx={{
               cursor: 'pointer',
-              color: (theme) =>
-                colorConfigs?.text ? colorConfigs?.text : theme.palette.mode === 'dark' ? '#fff' : '#000'
+              color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
             }}
           />
         </Tooltip>

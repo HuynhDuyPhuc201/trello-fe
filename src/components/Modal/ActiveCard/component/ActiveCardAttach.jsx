@@ -38,7 +38,6 @@ const ActiveCardAttach = () => {
   }
 
   const handleDelete = () => {
-    console.log('click')
     if (selectedFile) {
       const updatedFileAttach = (currentActiveCard?.fileAttach || []).filter((c) => c._id !== selectedFile._id)
       fetchUpdateCard({ fileAttach: updatedFileAttach })
@@ -58,8 +57,8 @@ const ActiveCardAttach = () => {
     <>
       {currentActiveCard?.fileAttach && currentActiveCard?.fileAttach.length > 0 && (
         <Box sx={{ mb: 3 }}>
-          <TitleActiveCard icon={<AttachmentIcon />} text='Attachment'/>
-          <Box sx={{ marginTop: 2, paddingLeft: 5 }}>
+          <TitleActiveCard icon={<AttachmentIcon />} text="Attachment" />
+          <Box sx={{ marginTop: 2, paddingLeft: { xs: 0, sm: 0, md: 5 } }}>
             {currentActiveCard?.fileAttach?.length > 0 &&
               currentActiveCard.fileAttach?.map((file, i) => {
                 const isImage = isImageFile(file?.filename)
@@ -74,8 +73,9 @@ const ActiveCardAttach = () => {
                       gap: '10px',
                       paddingBottom: '10px',
                       position: 'relative',
-                      alignItems: 'center',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      flexDirection: { xs: 'column', sm: 'row' }, 
+                      alignItems: { xs: 'flex-start', sm: 'center' }
                     }}
                     onClick={() => handlePreview(file)}
                   >
@@ -122,34 +122,60 @@ const ActiveCardAttach = () => {
 
                     <Box
                       sx={{
-                        fontSize: '14px',
-                        height: '30px',
                         display: 'flex',
-                        alignItems: 'center',
-                        width: '80%',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis' // Hiện dấu "..."
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        position: 'relative'
                       }}
                     >
-                      {file?.originalname}
-                    </Box>
-
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleMenuOpen(e, file)
-                      }}
-                      sx={{ height: '30px', position: 'absolute', right: 10 }}
-                    >
-                      <MoreHorizIcon
+                      <Box
                         sx={{
-                          fontSize: 20,
-                          color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000')
+                          fontSize: '14px',
+                          height: 'auto',
+                          display: 'flex',
+                          alignItems: 'center',
+                          width: '100%',
+                          whiteSpace: {
+                            xs: 'normal',
+                            sm: 'nowrap'
+                          },
+                          overflow: {
+                            xs: 'visible',
+                            sm: 'hidden'
+                          },
+                          textOverflow: {
+                            xs: 'unset',
+                            sm: 'ellipsis'
+                          },
+                          minWidth: 0,
+                          paddingRight: '35px' 
                         }}
-                      />
-                    </IconButton>
+                      >
+                        {file?.originalname}
+                      </Box>
+
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleMenuOpen(e, file)
+                        }}
+                        sx={{
+                          height: '30px',
+                          position: { xs: 'static', sm: 'absolute' },
+                          right: { sm: 10 },
+                          alignSelf: { xs: 'flex-end', sm: 'center' }
+                        }}
+                      >
+                        <MoreHorizIcon
+                          sx={{
+                            fontSize: 20,
+                            color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
+                          }}
+                        />
+                      </IconButton>
+                    </Box>
                   </Box>
                 )
               })}

@@ -6,10 +6,11 @@ import { toast } from 'react-toastify'
 import { useEffect, useState } from 'react'
 import AccessAlarmOutlinedIcon from '@mui/icons-material/AccessAlarmOutlined'
 import TitleActiveCard from './TitleActiveCard'
+import RenderColor from '~/components/renderColor'
 
 const ActiveCardDate = () => {
   const { currentActiveCard } = useActiveCard()
-
+  const { findColor } = RenderColor()
   const { startDate, endDate, endTime, reminder } = currentActiveCard?.date || {}
 
   const formatDate = (date) => dayjs(date).format('DD/MM/YYYY')
@@ -25,9 +26,9 @@ const ActiveCardDate = () => {
   const isOverdue = endDateTime && dayjs().isAfter(endDateTime)
   const isDueSoon = endDateTime && dayjs().add(1, 'day').isAfter(endDateTime) && !isOverdue
   const reminders = [
-    { label: '🔔 About 1 hour left!', timeBefore: 60, key: '60minutest' },
-    { label: '🔔 About 30 minutes left!', timeBefore: 30, key: '30minutest' },
-    { label: '🔔 About 31 minutes left!', timeBefore: 10, key: '10minutest' }
+    { label: 'About 1 hour left!', timeBefore: 60, key: '60minutest' },
+    { label: 'About 30 minutes left!', timeBefore: 30, key: '30minutest' },
+    { label: 'About 31 minutes left!', timeBefore: 10, key: '10minutest' }
   ]
 
   const reminderObj = reminders?.find((item) => item.key === reminder)
@@ -39,16 +40,15 @@ const ActiveCardDate = () => {
     const now = dayjs()
     const diffInMinutes = dayjs(endDateTime).diff(now, 'minute')
 
-    // TH1: Đã quá hạn
     if (diffInMinutes <= 0) {
-      toast.warning(`⏰ Card has expired`)
+      toast.warning(`Card has expired`)
       setHasReminded(true)
       return
     }
 
     // TH2: Gần hết hạn trong khoảng reminder
     if (diffInMinutes <= reminderObj.timeBefore) {
-      toast.info(`⏰ ${reminderObj.label}`)
+      toast.info(`${reminderObj.label}`)
       setHasReminded(true)
     }
   }, [endDateTime, reminderObj, hasReminded])
@@ -60,6 +60,7 @@ const ActiveCardDate = () => {
       elevation={0}
       sx={{
         p: 2.5,
+        color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
         border: statusColor ? `1px solid ${statusColor}` : '1px solid #dfe1e6',
         borderRadius: '8px',
         background: statusColor
@@ -73,7 +74,7 @@ const ActiveCardDate = () => {
         }
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+      <Box sx={{ display: 'flex', alignItems: 'start', gap: 1.5 }}>
         <Box
           sx={{
             width: 8,
@@ -146,7 +147,17 @@ const ActiveCardDate = () => {
     <Box sx={{ mb: 3 }}>
       <TitleActiveCard icon={<AccessAlarmOutlinedIcon />} text="Dates" />
 
-      <Box sx={{ display: 'flex', gap: 2, width: '100%', paddingLeft: 5, mt: 1.5 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          width: '100%',
+          flexDirection: { xs: 'column', sm: 'column', md: 'row' },
+          justifyContent: 'flex-start',
+          paddingLeft: { xs: 0, sm: 0, md: 5 },
+          mt: 1.5
+        }}
+      >
         {startDate && renderDateCard('Start Date', startDate, '#22c55e', startDate)}
 
         {endDate &&

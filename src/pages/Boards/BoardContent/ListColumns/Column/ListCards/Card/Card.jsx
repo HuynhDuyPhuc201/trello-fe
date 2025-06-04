@@ -19,6 +19,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth' // icon lịch
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
 import { useBoardMember } from '~/hooks/useBoardMember'
+import { useTheme } from '@mui/material/styles'
 
 function Card({ card }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -81,6 +82,31 @@ function Card({ card }) {
   }
   const isColor = typeof card?.cover === 'string' && card.cover.startsWith('#')
 
+  const theme = useTheme()
+
+  const darkRed = '#ff6b6b'
+  const darkRedBorder = '#ff8787'
+  const isDarkMode = theme.palette.mode === 'dark'
+
+  const textColor = isOverdue ? (isDarkMode ? darkRed : theme.palette.error.main) : 'inherit'
+
+  const borderColor = isOverdue
+    ? isDarkMode
+      ? darkRedBorder
+      : theme.palette.error.main
+    : isDarkMode
+    ? 'rgba(255, 255, 255, 0.23)'
+    : 'rgba(0, 0, 0, 0.23)'
+
+  const hoverBorderColor = isOverdue
+    ? isDarkMode
+      ? '#ffaaaa'
+      : theme.palette.error.dark
+    : isDarkMode
+    ? '#fff'
+    : '#1c1c1c'
+
+  const hoverBgColor = isOverdue ? (isDarkMode ? 'rgba(255,107,107,0.08)' : 'rgba(255,0,0,0.04)') : 'inherit'
   return (
     <>
       <MuiCard
@@ -113,7 +139,7 @@ function Card({ card }) {
           sx={{
             p: 1.5,
             '&:last-child': {
-              paddingBottom: '12px' // Ghi đè padding mặc định của last-child
+              paddingBottom: '12px'
             }
           }}
         >
@@ -142,14 +168,21 @@ function Card({ card }) {
               )}
             </CardActions>
             {(hasStart || hasEnd) && (
-              <CardActions sx={{ p: '0 4px 8px 16px', position: 'relative', display: 'flex', justifyContent: 'start' }}>
+              <CardActions
+                sx={{
+                  p: '0 4px 8px 16px',
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'start'
+                }}
+              >
                 <Button
                   sx={{
-                    color: isOverdue ? 'error.main' : 'inherit',
-                    borderColor: isOverdue ? 'error.main' : 'rgba(0, 0, 0, 0.23)',
+                    color: textColor,
+                    borderColor: borderColor,
                     '&:hover': {
-                      borderColor: isOverdue ? 'error.dark' : 'black',
-                      backgroundColor: isOverdue ? 'rgba(255,0,0,0.04)' : 'inherit'
+                      borderColor: hoverBorderColor,
+                      backgroundColor: hoverBgColor
                     }
                   }}
                   size="small"

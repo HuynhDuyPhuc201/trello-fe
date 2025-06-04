@@ -20,7 +20,6 @@ const ActiveCardComment = memo(() => {
   const [idComment, setIdComment] = useState(null)
   const valueEditComment = useRef(null)
   const cardComments = useCardComment()
-
   const { currentActiveCard } = useActiveCard()
   const { fetchUpdateCard } = useFetchUpdateCard()
 
@@ -29,7 +28,7 @@ const ActiveCardComment = memo(() => {
       const listCommentEdited = currentActiveCard?.comments.map((comment) => {
         if (comment._id === commentId) {
           return {
-            ...comment, // clone nó ra
+            ...comment,
             content: valueEditComment,
             commentedAt: Date.now()
           }
@@ -41,7 +40,7 @@ const ActiveCardComment = memo(() => {
     [fetchUpdateCard, currentActiveCard?.comments]
   )
   const handleDeleteComment = (comment) => {
-    if (comment.createdBy === currentUser._id) {
+    if (comment.user?._id === currentUser._id) {
       const commentToAdd = {
         ...comment,
         action: 'remove'
@@ -55,7 +54,7 @@ const ActiveCardComment = memo(() => {
     // Bắt hành động người dùng nhấn phím Enter && không phải hành động Shift + Enter
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault() // Thêm dòng này để khi Enter không bị nhảy dòng
-      if (!event.target?.value) return // Nếu không có giá trị gì thì return không làm gì cả
+      if (!event.target?.value) return 
 
       const commentToAdd = {
         user: currentUser,
@@ -101,17 +100,6 @@ const ActiveCardComment = memo(() => {
       setIdComment(null)
     }
   }
-  // const { currentActiveBoard } = useActiveBoard()
-  // const board = currentActiveBoard
-  // const cardMembers = board.allUsers.filter((user) => currentActiveCard.memberIds.includes(user._id))
-
-  // const filterComment = cardComments.map((comment) => {
-  //   const user = cardMembers.find((member) => member._id === comment.createdBy)
-  //   return {
-  //     ...comment,
-  //     user: user || undefined
-  //   }
-  // })
 
   const [currentPage, setCurrentPage] = useState(1)
   const COMMENTS_PER_PAGE = 5
@@ -128,8 +116,7 @@ const ActiveCardComment = memo(() => {
       <Box sx={{ mb: 3 }}>
         <TitleActiveCard icon={<DvrOutlinedIcon />} text="Activity" />
         <Box sx={{ mt: 2 }}>
-          {/* Xử lý thêm comment vào Card */}
-          <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, mb: 2, paddingLeft: 5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'start', gap: 1, mb: 2, paddingLeft: { xs: 0, sm: 0, md: 5 } }}>
             <Avatar
               sx={{ width: 36, height: 36, cursor: 'pointer' }}
               alt={currentUser.displayName}
@@ -143,12 +130,15 @@ const ActiveCardComment = memo(() => {
               onKeyDown={handleAddCardComment}
               variant="outlined"
               size="small"
-              style={{ background: '#fff' }}
+              style={{ background: (theme) => (theme.palette.mode === 'dark' ? '#1c1c1c' : '#fff') }}
             />
           </Box>
 
           {paginatedComments?.map((comment, index) => (
-            <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5, paddingLeft: 5 }} key={index}>
+            <Box
+              sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5, paddingLeft: { xs: 0, sm: 0, md: 5 } }}
+              key={index}
+            >
               <Tooltip title={comment.user?.displayName}>
                 <Avatar
                   sx={{ width: 36, height: 36, cursor: 'pointer', borderRadius: '50%' }}
@@ -166,7 +156,7 @@ const ActiveCardComment = memo(() => {
 
                 {idComment === comment?._id ? (
                   <TextField
-                    style={{ background: '#fff' }}
+                    style={{ background: (theme) => (theme.palette.mode === 'dark' ? '#1c1c1c' : '#fff') }}
                     fullWidth
                     placeholder="Edit comment..."
                     type="text"
@@ -180,12 +170,20 @@ const ActiveCardComment = memo(() => {
                         padding: '8px'
                       },
                       '& .MuiInputBase-input': {
-                        padding: '0px !important' // tránh padding mặc định của MUI
+                        padding: '0px !important'
                       }
                     }}
                   />
                 ) : (
-                  <Box gap={2} p={1} bgcolor="white" border={1} borderColor="grey.300" borderRadius={1} boxShadow={1}>
+                  <Box
+                    gap={2}
+                    p={1}
+                    style={{ background: (theme) => (theme.palette.mode === 'dark' ? '#1c1c1c' : '#fff') }}
+                    border={1}
+                    borderColor="grey.300"
+                    borderRadius={1}
+                    boxShadow={1}
+                  >
                     {comment?.content}
                   </Box>
                 )}
@@ -204,7 +202,7 @@ const ActiveCardComment = memo(() => {
                       variant="span"
                       sx={{ fontSize: '12px', cursor: 'pointer' }}
                       onClick={() => {
-                        if (comment.createdBy === currentUser._id) {
+                        if (comment?.user?._id === currentUser._id) {
                           setIdComment(comment?._id)
                         } else {
                           toast.warning("You can't edit this comment")

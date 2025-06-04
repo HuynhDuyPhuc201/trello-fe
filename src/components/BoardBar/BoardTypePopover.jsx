@@ -60,7 +60,6 @@ function BoardTypePopover({ board, onUpdateType }) {
     onUpdateType(type)
     handleClose()
   }
-  console.log('typeOptions', typeOptions)
 
   const labelType = board?.type.charAt(0).toUpperCase() + board?.type.slice(1)
   return (

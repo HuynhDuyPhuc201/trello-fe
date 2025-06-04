@@ -14,7 +14,7 @@ export const SidebarItem = styled(Box)(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.mode === 'dark' ? '#33485D' : theme.palette.grey[300],
     '&.active': {
-      color: theme.palette.mode === 'dark' ? '#000000de' : '#0c66e4',
+      color: theme.palette.mode === 'dark' ? '#1c1c1c000de' : '#0c66e4',
       backgroundColor: theme.palette.mode === 'dark' ? '#90caf9' : '#e9f2ff'
     }
   }

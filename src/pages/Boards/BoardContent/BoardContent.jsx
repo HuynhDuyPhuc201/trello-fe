@@ -33,11 +33,14 @@ import { toast } from 'react-toastify'
 import CreateBoardModal from '~/components/Modal/Board/CreateBoardModal'
 import Card from './ListColumns/Column/ListCards/Card/Card'
 import { useBoardMember } from '~/hooks/useBoardMember'
+import BoardBar from '../BoardBar/BoardBar'
+import RenderColor from '~/components/renderColor'
+import CloseIcon from '@mui/icons-material/Close'
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
-function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToDifferentColumn }) {
+function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToDifferentColumn, colorConfigs }) {
   const navigation = useNavigate()
   const { isMember } = useBoardMember()
   //https://docs.dndkit.com/api-documentation/sensors
@@ -408,6 +411,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
   const [open, setOpen] = useState(false)
   const [boardMenuAnchor, setBoardMenuAnchor] = useState(null)
   const [selectedBoardId, setSelectedBoardId] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const { boards } = useActiveBoard()
   const handleMainMenuOpen = (event) => {
@@ -464,7 +468,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
   }
 
   return (
-    <>
+    <Box>
       <Box sx={{ position: 'relative' }}>
         {/* Sidebar trái */}
         <Box
@@ -472,10 +476,10 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
             position: 'absolute',
             width: '260px',
             height: '100%',
-            backgroundColor: '#f4f5f7',
             borderRight: '1px solid #ddd',
             display: 'flex',
             flexDirection: 'column',
+            zIndex: 100,
             p: 2,
             overflowY: 'auto',
             ...renderBackgroud(board?.cover, true),
@@ -486,6 +490,10 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
             '&::-webkit-scrollbar-thumb': {
               backgroundColor: '#c1c1c1',
               borderRadius: '3px'
+            },
+            [theme.breakpoints.down('sm')]: {
+              transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+              transition: 'transform 0.3s ease-in-out'
             }
           })}
         >
@@ -495,7 +503,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
               alignItems: 'center',
               justifyContent: 'space-between',
               mb: 2,
-              color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff')
+              color: '#fff'
             }}
           >
             <Typography variant="h6" fontWeight="bold">
@@ -503,10 +511,22 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
             </Typography>
             <Box>
               <IconButton size="small" onClick={handleMainMenuOpen}>
-                <MoreHorizIcon sx={{ color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff') }} />
+                <MoreHorizIcon sx={{ color: '#fff' }} />
               </IconButton>
               <IconButton size="small" onClick={handleCreateBoard}>
-                <AddIcon sx={{ color: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff') }} />
+                <AddIcon sx={{ color: '#fff' }} />
+              </IconButton>
+              <IconButton
+                onClick={() => setSidebarOpen(!sidebarOpen)} // TODO: Em tự định nghĩa hàm này nhé
+                sx={{
+                  display: {
+                    xs: 'inline-flex',
+                    sm: 'none'
+                  },
+                  color: 'white'
+                }}
+              >
+                <CloseIcon />
               </IconButton>
             </Box>
             {/* Menu chính */}
@@ -521,7 +541,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
             <Box
               key={i}
               sx={{
-                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#000' : '#fff'),
+                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#1c1c1c' : '#fff'),
                 borderRadius: 2,
                 boxShadow: 1,
                 p: 1,
@@ -535,9 +555,9 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
                 '&:hover': {
                   backgroundColor: '#f0f0f0',
                   transform: 'scale(1.02)',
-                  color: '#000'
+                  color: '#1c1c1c'
                 },
-                color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000')
+                color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
               }}
               onClick={() => navigation(path.Board.detail.replace(':boardId', item._id))}
             >
@@ -562,7 +582,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
                 <MoreHorizIcon
                   sx={{
                     fontSize: 20,
-                    color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000')
+                    color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
                   }}
                 />
               </IconButton>
@@ -588,6 +608,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
+          <BoardBar setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />
           <Box
             sx={(theme) => ({
               flex: 1,
@@ -596,7 +617,12 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
               overflowX: 'auto',
               display: 'flex',
               gap: 2,
-              paddingLeft: '260px',
+              paddingLeft: {
+                xs: 0, // mobile
+                sm: 0, // tablet nhỏ
+                md: '260px' // mặc định desktop
+              },
+
               ...renderBackgroud(board?.cover)
             })}
           >
@@ -609,7 +635,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
           </Box>
         </DndContext>
       </Box>
-    </>
+    </Box>
   )
 }
 

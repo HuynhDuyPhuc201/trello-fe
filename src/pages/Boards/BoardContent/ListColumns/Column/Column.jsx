@@ -70,7 +70,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
     setAnchorEl(null)
   }
 
-  // Cards đã được sx ở component cha cao nhất (board/_id.jsx) (video 71 đã giải thích lí do)
+  // Cards đã được sx ở component cha cao nhất (board/_id.jsx)
 
   const orderedCards = column.cards
 
@@ -390,7 +390,6 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                   size="small"
                   data-no-dnd="true"
                   onClick={addNewCard}
-                  disable={!isMember}
                   sx={{
                     boxShadow: 'none',
                     border: '0.5px solid',
@@ -405,7 +404,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                 <CloseIcon
                   fontSize="small"
                   sx={{
-                    color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000'),
+                    color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                     cursor: 'pointer',
                     '&:hover': { background: '#d9d6d0' }
                   }}

@@ -34,9 +34,16 @@ function CardUserGroup({ cardMemberIds = [], handleUpdateMember }) {
     handleUpdateMember(inComingMemberInfor)
   }
 
-  // Lưu ý ở đây chúng ta không dùng Component AvatarGroup của MUI bởi nó không hỗ trợ tốt trong việc chúng ta cần custom & trigger xử lý phần tử tính toán cuối, đơn giản là cứ dùng Box và CSS - Style đám Avatar cho chuẩn kết hợp tính toán một chút thôi.
   return (
-    <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', paddingLeft: 5, mt:2 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        gap: '4px',
+        flexWrap: 'wrap',
+        paddingLeft: { xs: 0, sm: 0, md: 5 },
+        mt: 2
+      }}
+    >
       {/* Hiển thị các user là thành viên của card */}
       {cardMembers?.map((user, index) => (
         <Tooltip title={user?.displayName} key={index}>
@@ -62,7 +69,7 @@ function CardUserGroup({ cardMemberIds = [], handleUpdateMember }) {
             color: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#172b4d'),
             bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#2f3542' : theme.palette.grey[200]),
             '&:hover': {
-              color: (theme) => (theme.palette.mode === 'dark' ? '#000000de' : '#0c66e4'),
+              color: (theme) => (theme.palette.mode === 'dark' ? '#1c1c1c000de' : '#0c66e4'),
               bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#90caf9' : '#e9f2ff')
             }
           }}

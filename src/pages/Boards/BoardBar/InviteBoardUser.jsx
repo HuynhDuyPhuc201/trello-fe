@@ -33,6 +33,8 @@ import { toast } from 'react-toastify'
 import { getBoardAll, updateMemberBoardBar } from '~/redux/activeBoard/activeBoardSlice'
 import DoneIcon from '@mui/icons-material/Done'
 import NotInterestedIcon from '@mui/icons-material/NotInterested'
+import { path } from '~/config/path'
+import { Link } from 'react-router-dom'
 function InviteBoardUser({ board }) {
   /**
    * Xử lý Popover để ẩn hoặc hiện một popup nhỏ, tương tự docs để tham khảo ở đây:
@@ -71,8 +73,6 @@ function InviteBoardUser({ board }) {
     }
   }
 
-  
-
   useEffect(() => {
     dispatch(getJoinRequests(board._id))
     if (!currentUser?._id) return
@@ -94,19 +94,24 @@ function InviteBoardUser({ board }) {
 
   const onApproveRejectRequest = async (request, type) => {
     const status = type === 'approve' ? BOARD_INVITATION_STATUS.ACCEPTED : BOARD_INVITATION_STATUS.REJECTED
+
     try {
-      // nếu dùng await không thì sẽ không trả về kết quả
-      // phải
       const res = await dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()
       dispatch(getJoinRequests(board._id))
       await dispatch(getBoardAll())
 
+      const messageText =
+        type === 'approve'
+          ? `Your request to join has been approved. Join in ${board.title}.`
+          : 'Your request to join has been denied.'
+
       socket.emit('response_join_request', {
         userId: res.approvedUserId,
         type: INVITATION_TYPES.BOARD_REQUEST_JOIN,
-        message: type === 'approve' ? 'Your request join has been approved.' : 'Your request join has been denied.',
+        message: messageText,
         boardId: board._id
       })
+
       if (type === 'approve') {
         await dispatch(updateMemberBoardBar({ user: currentUser, type: 'join' }))
         socket.emit('user_join_board', {
@@ -145,8 +150,8 @@ function InviteBoardUser({ board }) {
         slotProps={{
           badge: {
             sx: {
-              top: 6, // Điều chỉnh xuống (giảm số này thì lên, tăng thì xuống)
-              right: 0 // Điều chỉnh sang trái/phải nếu cần
+              top: 6,
+              right: 0
             }
           }
         }}
@@ -164,7 +169,6 @@ function InviteBoardUser({ board }) {
         </Tooltip>
       </Badge>
 
-      {/* Khi Click vào butotn Invite ở trên thì sẽ mở popover */}
       <Popover
         id={popoverId}
         open={isOpenPopover}
@@ -209,14 +213,20 @@ function InviteBoardUser({ board }) {
           {/* Tab 1: Thành viên */}
           {tabIndex === 0 && (
             <List dense>
-              {board?.allUsers?.map((member) => (
-                <ListItem key={member?._id}>
-                  <ListItemAvatar>
-                    <Avatar alt={member?.displayName} src={imageAvatar(member)} sx={{ width: 40, height: 40 }} />
-                  </ListItemAvatar>
-                  <ListItemText primary={member?.displayName} secondary={`${member?.email} • ${member?.role}`} />
-                </ListItem>
-              ))}
+              {board?.allUsers?.map((member) => {
+                const role = board?.ownerIds?.[0] === member._id
+                return (
+                  <ListItem key={member?._id}>
+                    <ListItemAvatar>
+                      <Avatar alt={member?.displayName} src={imageAvatar(member)} sx={{ width: 40, height: 40 }} />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={member?.displayName}
+                      secondary={`${member?.email} • ${role ? 'admin' : 'client'}`}
+                    />
+                  </ListItem>
+                )
+              })}
             </List>
           )}
 
@@ -280,7 +290,7 @@ function InviteBoardUser({ board }) {
               )}
             </>
           )}
-          {tabIndex === 1 && !paginatedJoinRequest?.length && <Box sx={{ mb:5 }}>No request</Box>}
+          {tabIndex === 1 && !paginatedJoinRequest?.length && <Box sx={{ mb: 5 }}>No request</Box>}
         </Box>
       </Popover>
     </Box>

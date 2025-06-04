@@ -8,7 +8,6 @@ import Grid from '@mui/material/Unstable_Grid2'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
-import HomeIcon from '@mui/icons-material/Home'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -87,10 +86,10 @@ function Boards() {
                   <ListAltIcon fontSize="small" />
                   Templates
                 </SidebarItem> */}
-                <SidebarItem>
+                {/* <SidebarItem>
                   <HomeIcon fontSize="small" />
                   Home
-                </SidebarItem>
+                </SidebarItem> */}
               </Stack>
               <Divider sx={{ my: 1 }} />
               <Stack direction="column" spacing={1}>
@@ -103,7 +102,6 @@ function Boards() {
                 YOUR WORKSPACES:
               </Typography>
 
-              {/* Trường hợp gọi API nhưng không tồn tại cái board nào trong Database trả về */}
               {boards?.length === 0 && (
                 <Typography variant="span" sx={{ fontWeight: 'bold', mb: 3 }}>
                   No result found!
@@ -113,8 +111,12 @@ function Boards() {
               {boards && boards?.length > 0 && (
                 <Grid container spacing={2}>
                   {boards?.map((board) => (
-                    <Grid xs={2} sm={3} md={4} key={board._id}>
-                      <Card sx={{ width: '250px' }}>
+                    <Grid xs={4} sm={4} md={4} key={board._id}>
+                      <Card
+                        sx={(theme) => ({
+                          width: '250px'
+                        })}
+                      >
                         {(() => {
                           const cover = board?.cover
                           if (!cover) {
@@ -142,12 +144,22 @@ function Boards() {
                             to={`${path.Board.detail.replace(':boardId', board._id)}`}
                             onClick={() => handleClickToBoard(board._id)}
                             sx={{
-                              mt: 1,
-                              display: 'flex',
+                              mt: 2,
+                              display: 'inline-flex',
                               alignItems: 'center',
-                              justifyContent: 'flex-end',
+                              gap: 0.5,
+                              px: 1.5,
+                              py: 0.75,
+                              fontSize: '0.875rem',
+                              fontWeight: 500,
                               color: 'primary.main',
-                              '&:hover': { color: 'primary.light' }
+                              border: '1px solid',
+                              borderColor: 'divider',
+                              borderRadius: 2,
+                              textDecoration: 'none',
+                              '&:hover': {
+                                backgroundColor: 'action.hover'
+                              }
                             }}
                           >
                             Go to board <ArrowRightIcon fontSize="small" />

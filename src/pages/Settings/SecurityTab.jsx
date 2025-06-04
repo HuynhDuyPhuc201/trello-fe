@@ -66,11 +66,13 @@ function SecurityTab() {
         height: '100%',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        px: 2
       }}
     >
       <Box
         sx={{
+          width: '100%',
           maxWidth: '1200px',
           display: 'flex',
           flexDirection: 'column',
@@ -80,89 +82,96 @@ function SecurityTab() {
         }}
       >
         <Box>
-          <Typography variant="h5">Security Dashboard</Typography>
+          <Typography variant="h5" textAlign="center">
+            Security Dashboard
+          </Typography>
         </Box>
-        <form onSubmit={handleSubmit(submitChangePassword)}>
-          <Box sx={{ width: '400px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box>
-              <TextField
-                fullWidth
-                label="Current Password"
-                type="password"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PasswordIcon fontSize="small" />
-                    </InputAdornment>
-                  )
-                }}
-                {...register('current_password', {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: {
-                    value: PASSWORD_RULE,
-                    message: PASSWORD_RULE_MESSAGE
-                  }
-                })}
-                error={!!errors['current_password']}
-              />
-              <FieldErrorAlert errors={errors} fieldName={'current_password'} />
-            </Box>
 
-            <Box>
-              <TextField
-                fullWidth
-                label="New Password"
-                type="password"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon fontSize="small" />
-                    </InputAdornment>
-                  )
-                }}
-                {...register('new_password', {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: {
-                    value: PASSWORD_RULE,
-                    message: PASSWORD_RULE_MESSAGE
-                  }
-                })}
-                error={!!errors['new_password']}
-              />
-              <FieldErrorAlert errors={errors} fieldName={'new_password'} />
-            </Box>
+        <form onSubmit={handleSubmit(submitChangePassword)} style={{ width: '100%' }}>
+          <Box
+            sx={{
+              width: '100%',
+              maxWidth: {
+                xs: '100%',
+                sm: '400px'
+              },
+              mx: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Current Password"
+              type="password"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }}
+              {...register('current_password', {
+                required: FIELD_REQUIRED_MESSAGE,
+                pattern: {
+                  value: PASSWORD_RULE,
+                  message: PASSWORD_RULE_MESSAGE
+                }
+              })}
+              error={!!errors['current_password']}
+            />
+            <FieldErrorAlert errors={errors} fieldName={'current_password'} />
 
-            <Box>
-              <TextField
-                fullWidth
-                label="New Password Confirmation"
-                type="password"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockResetIcon fontSize="small" />
-                    </InputAdornment>
-                  )
-                }}
-                {...register('new_password_confirmation', {
-                  validate: (value) => {
-                    if (value === watch('new_password')) return true
-                    return 'Password confirmation does not match.'
-                  }
-                })}
-                error={!!errors['new_password_confirmation']}
-              />
-              <FieldErrorAlert errors={errors} fieldName={'new_password_confirmation'} />
-            </Box>
+            <TextField
+              fullWidth
+              label="New Password"
+              type="password"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }}
+              {...register('new_password', {
+                required: FIELD_REQUIRED_MESSAGE,
+                pattern: {
+                  value: PASSWORD_RULE,
+                  message: PASSWORD_RULE_MESSAGE
+                }
+              })}
+              error={!!errors['new_password']}
+            />
+            <FieldErrorAlert errors={errors} fieldName={'new_password'} />
 
-            <Box>
-              <Button className="interceptor-loading" type="submit" variant="contained" color="primary" fullWidth>
-                Change
-              </Button>
-            </Box>
+            <TextField
+              fullWidth
+              label="New Password Confirmation"
+              type="password"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockResetIcon fontSize="small" />
+                  </InputAdornment>
+                )
+              }}
+              {...register('new_password_confirmation', {
+                validate: (value) => {
+                  if (value === watch('new_password')) return true
+                  return 'Password confirmation does not match.'
+                }
+              })}
+              error={!!errors['new_password_confirmation']}
+            />
+            <FieldErrorAlert errors={errors} fieldName={'new_password_confirmation'} />
+
+            <Button className="interceptor-loading" type="submit" variant="contained" color="primary" fullWidth>
+              Change
+            </Button>
           </Box>
         </form>
       </Box>
