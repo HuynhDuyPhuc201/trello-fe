@@ -31,7 +31,7 @@ import { getBoardAll } from '~/redux/activeBoard/activeBoardSlice'
 import { inviteService } from '~/services/invite.service'
 import { toast } from 'react-toastify'
 import { path } from '~/config/path'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import socket from '~/sockets'
 import RenderColor from '~/components/renderColor'
 

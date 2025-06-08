@@ -81,18 +81,20 @@ function Profiles() {
           </MenuItem>
         </Link>
         <Divider />
-        <MenuItem>
+        {/* <MenuItem>
           <ListItemIcon>
             <PersonAdd fontSize="small" />
           </ListItemIcon>
           Add another account
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
+        </MenuItem> */}
+        <Link to={path.Settings.Account} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem>
+            <ListItemIcon>
+              <Settings fontSize="small" />
+            </ListItemIcon>
+            Settings
+          </MenuItem>
+        </Link>
         <MenuItem
           onClick={handleLogout}
           sx={{ '&:hover': { color: 'warning.dark', '& .logout-icon': { color: 'warning.dark' } } }}

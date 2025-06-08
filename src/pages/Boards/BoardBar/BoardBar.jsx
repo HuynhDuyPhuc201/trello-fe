@@ -141,7 +141,7 @@ function BoardBar({ setSidebarOpen, sidebarOpen }) {
 
       {/* ===== Right side ===== */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label="Filters" clickable />
+        {/* <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label="Filters" clickable /> */}
         <InviteBoardUser board={board} />
         <BoardUserGroup boardUsers={board?.allUsers} />
       </Box>

@@ -329,33 +329,32 @@ function ActiveCard() {
               <ButtonDate />
             </Stack>
 
-            <Divider sx={{ my: 2 }} />
 
-            <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
+            {/* <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
             <Stack direction="column" spacing={1}>
-              {/* <SidebarItem>
+              <SidebarItem>
                 <AspectRatioOutlinedIcon fontSize="small" />
                 Card Size
-              </SidebarItem> */}
+              </SidebarItem>
               <SidebarItem>
                 <AddToDriveOutlinedIcon fontSize="small" />
                 Google Drive
               </SidebarItem>
-              {/* <SidebarItem>
+              <SidebarItem>
                 <AddOutlinedIcon fontSize="small" />
                 Add Power-Ups
-              </SidebarItem> */}
-            </Stack>
+              </SidebarItem>
+            </Stack> */}
 
             <Divider sx={{ my: 2 }} />
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction="column" spacing={1}>
               <ButtonMoveCard />
-              <SidebarItem onClick={handleCreateTemplate}>
+              {/* <SidebarItem onClick={handleCreateTemplate}>
                 <AutoAwesomeOutlinedIcon fontSize="small" />
                 Make Template
-              </SidebarItem>
+              </SidebarItem> */}
               <SidebarItem onClick={handleDeleteCard}>
                 <DeleteIcon fontSize="small" />
                 Delete
