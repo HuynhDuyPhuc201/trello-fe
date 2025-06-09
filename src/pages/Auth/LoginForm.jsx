@@ -40,6 +40,7 @@ function LoginForm() {
   const submitLogIn = async (data) => {
     try {
       const res = await dispatch(loginUserAPI(data)).unwrap()
+      console.log('res', res)
       if (res) navigate(path.Board.index)
     } catch (error) {
       toast.error(error)

@@ -16,9 +16,6 @@ const api = axios.create({
   baseURL: API_ROOT,
   timeout: 1000 * 60 * 10,
   withCredentials: true // ✅ Đảm bảo luôn gửi cookie trong request
-  // headers: {
-  //   'Content-Type': 'application/json'
-  // }
 })
 
 api.interceptors.request.use(
@@ -42,6 +39,7 @@ api.interceptors.response.use(
   async (error) => {
     interceptorLoadingElements(false)
 
+    console.log('error', error)
     let errorMessage = error?.message
     if (error.response?.data?.message) {
       errorMessage = error.response?.data?.message
