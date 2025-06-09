@@ -1,39 +1,151 @@
-### Bộ code base để bắt đầu học khóa MERN Stack Pro (HỌC PHẦN FRONT-END: REACTJS - MATERIAL UI - REDUX...vv) - Lập Trình qua dự án thực tế Trello Clone trên YouTube của mình nhé các bạn!
-### Base project for my MERN Stack Pro Course - Build Trello App on YouTube!
+# Trello Clone
 
-- Link Download Full Source Code hoàn chỉnh của bộ này và ủng hộ mình: (Sắp có...)
+A full-stack Trello clone built with modern web technologies, featuring real-time collaboration, drag-and-drop functionality, and a responsive design.
 
-- Link YouTube Playlist: https://www.youtube.com/playlist?list=PLP6tw4Zpj-RJP2-YrhtkWqObMQ-AA4TDy
+## 🚀 Features
 
-### Hướng dẫn clone Repo code này về máy các bạn chuẩn nhất ở đây nhé:
+- 📋 Kanban board management
+- 🎯 Drag-and-drop card organization
+- 👥 Real-time collaboration
+- 🔐 User authentication (Google OAuth)
+- 📱 Responsive design
+- 🎨 Material UI components
+- 📝 Rich text editing
+- 🔔 Real-time notifications
+- 📤 File uploads
+- 🌈 Customizable board themes
 
-- Link: https://youtu.be/lUfsTj45Uys
+## 🛠️ Tech Stack
 
-### Requirements - Thông tin của bộ Code Base này - Chuẩn các phiên bản dưới đây để bắt đầu học: (Semantic Versioning)
+### Frontend
+- React 18
+- Vite
+- Material UI
+- Redux Toolkit
+- React Query
+- Socket.io Client
+- DnD Kit (Drag and Drop)
+- React Router DOM
+- React Hook Form
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Socket.io
+- JWT Authentication
+- Google OAuth
+- Cloudinary (File Storage)
+- Brevo (Email Service)
+
+## 📋 Prerequisites
+
+- Node.js >= 18.x
+- MongoDB
+- Yarn package manager
+
+## 🚀 Getting Started
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+yarn install
+```
+
+3. Start the development server:
+```bash
+yarn dev
+```
+
+The frontend will be available at `http://localhost:3000`
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+```bash
+cd trello-be
+```
+
+2. Install dependencies:
+```bash
+yarn install
+```
+
+3. Create a `.env` file in the root directory with the following variables:
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+BREVO_API_KEY=your_brevo_api_key
+```
+
+4. Start the development server:
+```bash
+yarn dev
+```
+
+The backend will be available at `http://localhost:5000`
+
+## 🏗️ Project Structure
 
 ```
-* nodejs = v18.16.0
-* npm = v9.5.1
-* yarn = v1.22.19
-
-* "react": "^18.2.0"
-* "react-dom": "^18.2.0"
-* "@types/react": "^18.0.28"
-* "@types/react-dom": "^18.0.11"
-
-* "vite": "^4.3.2"
-* "@vitejs/plugin-react-swc": "^3.0.0"
-
-* "eslint": "^8.38.0"
-* "eslint-plugin-react": "^7.32.2"
-* "eslint-plugin-react-hooks": "^4.6.0"
-* "eslint-plugin-react-refresh": "^0.3.4"
+├── frontend/               # React frontend application
+│   ├── src/               # Source files
+│   ├── public/            # Static files
+│   └── package.json       # Frontend dependencies
+│
+└── trello-be/             # Node.js backend application
+    ├── src/               # Source files
+    ├── uploads/           # File uploads directory
+    └── package.json       # Backend dependencies
 ```
 
-<!-- có thể dùng unwrap() cho dispatch để kiểm tra dispatch đó hoàn thành hay chưa, nhưng chỉ với nhung dispatch dung createAsyncThunk -->
-dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()
+## 🔧 Available Scripts
 
-<!-- cũng có thể kiểm tra và lấy giá trị trả về (res), nhưng phải kèm await + unwrap() -->
- const res = await dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()
+### Frontend
+- `yarn dev` - Start development server
+- `yarn build` - Build for production
+- `yarn preview` - Preview production build
+- `yarn lint` - Run ESLint
+- `yarn eslint` - Fix ESLint issues
 
-<!--  khi upload len vercel, them vercel.json để load lại không bị 404 vì không có nó sẽ không biết đó là route của react -->
+### Backend
+- `yarn dev` - Start development server
+- `yarn build` - Build for production
+- `yarn production` - Run production build
+- `yarn lint` - Run ESLint
+- `yarn eslint` - Fix ESLint issues
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Authors
+
+- DuyPhucDev - Initial work
+
+## 🙏 Acknowledgments
+
+- Inspired by Trello
+- Built with modern web technologies
+- Thanks to all contributors 
