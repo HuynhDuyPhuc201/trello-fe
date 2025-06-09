@@ -93,6 +93,7 @@ function RegisterForm() {
                 fullWidth
                 label="Enter Password..."
                 type={showPass ? 'text' : 'password'}
+                autoComplete="current-password"
                 variant="outlined"
                 error={!!errors.password}
                 {...register('password', {

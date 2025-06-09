@@ -50,8 +50,10 @@ function LoginForm() {
   //google
   const handleLoginGoogle = async (credentialResponse) => {
     const token = credentialResponse.credential
+    console.log('token', token)
     try {
       const res = await dispatch(loginGoogle({ token })).unwrap()
+      console.log('res', res)
       if (res) navigate(path.Board.index)
     } catch (error) {
       toast.error(error)
@@ -139,6 +141,7 @@ function LoginForm() {
                 fullWidth
                 label="Enter Password..."
                 type="password"
+                autoComplete="current-password"
                 variant="outlined"
                 error={!!errors.password}
                 {...register('password', {
