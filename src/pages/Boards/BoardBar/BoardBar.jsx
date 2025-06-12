@@ -7,8 +7,10 @@ import BoardUserGroup from './BoardUserGroup'
 import InviteBoardUser from './InviteBoardUser'
 import BoardTypePopover from '~/components/BoardBar/BoardTypePopover'
 import RenderColor from '~/components/renderColor'
-import FilterListIcon from '@mui/icons-material/FilterList'
 import MenuIcon from '@mui/icons-material/Menu' // Nếu chưa import
+import { useUser } from '~/redux/user/userSlice'
+import { toast } from 'react-toastify'
+import socket from '~/sockets'
 
 const MENU_STYLES = {
   color: 'white',
@@ -30,13 +32,18 @@ function BoardBar({ setSidebarOpen, sidebarOpen }) {
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
   const valueRename = useRef(board?.title)
+  const { currentUser } = useUser()
 
   const { findColor } = RenderColor()
 
   const handleSubmit = async () => {
     const newTitle = valueRename.current?.trim()
-    if (newTitle && newTitle !== board?.title) {
-      await dispatch(updateBoard({ boardId: board._id, title: newTitle }))
+
+    if (newTitle && newTitle !== board?.title && board.ownerIds[0] === currentUser._id) {
+      await dispatch(updateBoard({ boardId: board._id, title: newTitle })).unwrap()
+      socket.emit('update_board', board._id)
+    } else {
+      toast.warning("You can't change")
     }
     setOpenInput(false)
   }
@@ -59,14 +66,14 @@ function BoardBar({ setSidebarOpen, sidebarOpen }) {
         gap: 2,
         paddingX: 2,
         paddingLeft: {
-          xs: 0, // Mobile
-          sm: '280px' // Desktop
+          xs: 0,
+          sm: '280px'
         },
         overflowX: 'auto',
         bgcolor: (theme) =>
           findColor?.boardBarBg ? findColor?.boardBarBg : theme.palette.mode === 'dark' ? '#34495e' : '#001f4d',
         '&::-webkit-scrollbar': {
-          height: '4px' // 👈 thanh scroll mỏng hơn
+          height: '4px'
         },
         '&::-webkit-scrollbar-thumb': {
           backgroundColor: '#888',
@@ -74,15 +81,14 @@ function BoardBar({ setSidebarOpen, sidebarOpen }) {
         },
         '&::-webkit-scrollbar-track': {
           backgroundColor: 'transparent',
-          height: '2px' // 👈 chiều cao track nhỏ hơn nếu cần
+          height: '2px'
         }
       }}
     >
       {/* ===== Left side ===== */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        {/* Hamburger button chỉ hiện khi mobile */}
         <IconButton
-          onClick={() => setSidebarOpen(!sidebarOpen)} // TODO: Em tự định nghĩa hàm này nhé
+          onClick={() => setSidebarOpen(!sidebarOpen)}
           sx={{
             display: {
               xs: 'inline-flex',
@@ -141,7 +147,6 @@ function BoardBar({ setSidebarOpen, sidebarOpen }) {
 
       {/* ===== Right side ===== */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        {/* <Chip sx={MENU_STYLES} icon={<FilterListIcon />} label="Filters" clickable /> */}
         <InviteBoardUser board={board} />
         <BoardUserGroup boardUsers={board?.allUsers} />
       </Box>

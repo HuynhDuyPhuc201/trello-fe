@@ -44,7 +44,6 @@ function CardUserGroup({ cardMemberIds = [], handleUpdateMember }) {
         mt: 2
       }}
     >
-      {/* Hiển thị các user là thành viên của card */}
       {cardMembers?.map((user, index) => (
         <Tooltip title={user?.displayName} key={index}>
           <Avatar sx={{ width: 34, height: 34, cursor: 'pointer' }} alt={user?.displayName} src={imageAvatar(user)} />
@@ -87,7 +86,7 @@ function CardUserGroup({ cardMemberIds = [], handleUpdateMember }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box sx={{ p: 2, maxWidth: '260px', display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-          {currentActiveBoard?.allUsers.map((user, index) => (
+          {currentActiveBoard?.allUsers?.map((user, index) => (
             <Tooltip title={user.displayName} key={index}>
               {/* Cách làm Avatar kèm badge icon: https://mui.com/material-ui/react-avatar/#with-badge */}
               <Badge

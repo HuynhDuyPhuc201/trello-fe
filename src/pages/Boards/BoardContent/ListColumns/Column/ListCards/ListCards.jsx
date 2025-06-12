@@ -5,7 +5,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 function ListCards({ cards }) {
   return (
     <>
-      <SortableContext items={cards?.map((c) => c._id)} strategy={verticalListSortingStrategy}>
+      <SortableContext items={cards?.map((c) => c._id) || []} strategy={verticalListSortingStrategy}>
         <Box
           sx={{
             p: '0 5px 5px 5px',

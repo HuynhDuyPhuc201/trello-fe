@@ -7,6 +7,7 @@ import { mapOrder } from '~/utils/sorts'
 const initialState = {
   currentActiveBoard: null,
   error: null,
+  loading: true,
   boards: [],
   memberBoardBar: []
 }
@@ -109,9 +110,18 @@ export const activeBoardSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getBoardDetail.pending, (state, action) => {
+        state.error = action.payload
+        state.loading = true
+      })
       .addCase(getBoardDetail.fulfilled, (state, action) => {
         state.currentActiveBoard = action.payload
+        state.loading = false
         state.currentActiveBoard.allUsers = [...state.currentActiveBoard.owners, ...state.currentActiveBoard.members]
+      })
+      .addCase(getBoardDetail.rejected, (state, action) => {
+        state.error = action.payload
+        state.loading = false
       })
       .addCase(getBoardAll.fulfilled, (state, action) => {
         state.boards = [action.payload.boards].flat()
@@ -121,9 +131,7 @@ export const activeBoardSlice = createSlice({
         state.boards = [action.payload.boards].flat()
         state.totalBoards = state.boards.length
       })
-      .addCase(getBoardDetail.rejected, (state, action) => {
-        state.error = action.payload
-      })
+
       .addCase(updateBoard.fulfilled, (state, action) => {
         const updatedBoard = action.payload
         const index = state.boards.findIndex((b) => b._id === updatedBoard._id)

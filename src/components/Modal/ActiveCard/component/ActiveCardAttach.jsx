@@ -149,7 +149,7 @@ const ActiveCardAttach = () => {
                             sm: 'ellipsis'
                           },
                           minWidth: 0,
-                          paddingRight: '35px' 
+                          paddingRight: '35px'
                         }}
                       >
                         {file?.originalname}

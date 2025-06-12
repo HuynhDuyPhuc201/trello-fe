@@ -6,7 +6,6 @@ const ENDPOINT = '/v1/users'
 export const userService = {
   async login(data) {
     const res = await api.post(`${ENDPOINT}/login`, data)
-    toast.success('Login successfully!')
     return res
   },
 
@@ -19,8 +18,8 @@ export const userService = {
     return await api.delete(`${ENDPOINT}/logout`)
   },
 
-  async refreshToken() {
-    return await api.get(`${ENDPOINT}/refresh-token`)
+  async refreshToken(token) {
+    return await api.get(`${ENDPOINT}/refresh-token`, token)
   },
 
   async register(data) {

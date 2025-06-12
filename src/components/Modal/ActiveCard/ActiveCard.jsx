@@ -7,10 +7,6 @@ import Grid from '@mui/material/Unstable_Grid2'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
-import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
-import AddToDriveOutlinedIcon from '@mui/icons-material/AddToDriveOutlined'
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
-import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
@@ -36,7 +32,6 @@ import ActiveCardAttach from './component/ActiveCardAttach'
 import { useLocation, useParams } from 'react-router-dom'
 import ActiveCardTodolist from './component/ActiveCardTodolist'
 import { useConfirm } from 'material-ui-confirm'
-import { cardService } from '~/services/card.service'
 import ActiveCardMember from './component/ActiveCardMember'
 import { useFetchUpdateCard } from '~/hooks/useFetchUpdateCard'
 import ButtonCover from './Button/ButtonCover'
@@ -129,7 +124,6 @@ function ActiveCard() {
 
     toast.promise(fetchUpdateCard(formData), { pending: 'Updating...' }).then(() => {
       event.target.value = ''
-      toast.success('Update successfully!')
       setOpenCoverPopover(false)
     })
   }
@@ -156,17 +150,6 @@ function ActiveCard() {
     }
   }
 
-  const handleCreateTemplate = async () => {
-    try {
-      const { _id, updatedAt, createdAt, ...res } = activeCard
-      const createdCard = await cardService.template(res)
-      if (createdCard) {
-        dispatch(getBoardDetail(createdCard.boardId))
-      }
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
   return (
     <Modal disableScrollLock open={isShowModalActiveCard} onClose={handleCloseModal} sx={{ overflowY: 'auto' }}>
       <Box
@@ -264,7 +247,7 @@ function ActiveCard() {
                     <Box>
                       <Typography sx={{ py: 1, fontSize: '12px' }}>Color</Typography>
                       <Grid container spacing={1}>
-                        {COLORS.map((color, index) => (
+                        {COLORS?.map((color, index) => (
                           <Grid key={index} xs={4} md={3}>
                             <Box
                               sx={{ height: '30px', backgroundColor: color, borderRadius: '4px', cursor: 'pointer' }}
@@ -329,32 +312,11 @@ function ActiveCard() {
               <ButtonDate />
             </Stack>
 
-
-            {/* <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Power-Ups</Typography>
-            <Stack direction="column" spacing={1}>
-              <SidebarItem>
-                <AspectRatioOutlinedIcon fontSize="small" />
-                Card Size
-              </SidebarItem>
-              <SidebarItem>
-                <AddToDriveOutlinedIcon fontSize="small" />
-                Google Drive
-              </SidebarItem>
-              <SidebarItem>
-                <AddOutlinedIcon fontSize="small" />
-                Add Power-Ups
-              </SidebarItem>
-            </Stack> */}
-
             <Divider sx={{ my: 2 }} />
 
             <Typography sx={{ fontWeight: '600', color: 'primary.main', mb: 1 }}>Actions</Typography>
             <Stack direction="column" spacing={1}>
               <ButtonMoveCard />
-              {/* <SidebarItem onClick={handleCreateTemplate}>
-                <AutoAwesomeOutlinedIcon fontSize="small" />
-                Make Template
-              </SidebarItem> */}
               <SidebarItem onClick={handleDeleteCard}>
                 <DeleteIcon fontSize="small" />
                 Delete

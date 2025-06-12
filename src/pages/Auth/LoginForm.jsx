@@ -23,6 +23,7 @@ import { loginGoogle, loginUserAPI } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
 import { path } from '~/config/path'
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
+import { setToken } from '~/config/token'
 
 function LoginForm() {
   const {
@@ -40,7 +41,10 @@ function LoginForm() {
   const submitLogIn = async (data) => {
     try {
       const res = await dispatch(loginUserAPI(data)).unwrap()
-      console.log('res', res)
+      if (res.token) {
+        setToken(res.token)
+      }
+
       if (res) navigate(path.Board.index)
     } catch (error) {
       toast.error(error)
@@ -50,10 +54,8 @@ function LoginForm() {
   //google
   const handleLoginGoogle = async (credentialResponse) => {
     const token = credentialResponse.credential
-    console.log('token', token)
     try {
       const res = await dispatch(loginGoogle({ token })).unwrap()
-      console.log('res', res)
       if (res) navigate(path.Board.index)
     } catch (error) {
       toast.error(error)

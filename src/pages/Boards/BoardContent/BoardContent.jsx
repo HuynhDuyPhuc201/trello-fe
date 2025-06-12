@@ -34,8 +34,9 @@ import CreateBoardModal from '~/components/Modal/Board/CreateBoardModal'
 import Card from './ListColumns/Column/ListCards/Card/Card'
 import { useBoardMember } from '~/hooks/useBoardMember'
 import BoardBar from '../BoardBar/BoardBar'
-import RenderColor from '~/components/renderColor'
 import CloseIcon from '@mui/icons-material/Close'
+import { useUser } from '~/redux/user/userSlice'
+import socket from '~/sockets'
 const ACTIVE_DRAG_ITEM_TYPE = {
   COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
   CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
@@ -414,6 +415,7 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const { boards } = useActiveBoard()
+  const { currentUser } = useUser()
   const handleMainMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -429,11 +431,14 @@ function BoardContent({ board, moveColumns, moveCardInTheSameColumn, moveCardToD
     setBoardMenuAnchor(null)
     setSelectedBoardId(null)
   }
-  const handleEventBoardItem = (boardId) => {
-    if (boardId === board._id) {
+  const handleEventBoardItem = async (boardId) => {
+    const itemBoard = boards.find((board) => board._id === boardId)
+    const isAdmin = itemBoard.ownerIds?.[0] === currentUser._id
+    if (boardId === board._id || isAdmin === false) {
       return toast.warning("Can't delete this board")
     }
-    dispatch(deleteBoard(boardId))
+    await dispatch(deleteBoard(boardId)).unwrap()
+    socket.emit('update_board', boardId)
     handleBoardMenuClose()
   }
 

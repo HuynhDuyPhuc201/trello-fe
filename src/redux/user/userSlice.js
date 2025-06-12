@@ -11,10 +11,8 @@ const initialState = {
 export const loginUserAPI = createAsyncThunk('user/loginUserAPI', async (data, thunkAPI) => {
   try {
     const response = await userService.login(data)
-    const { accessToken, refreshToken, ...rest } = response
     return response
   } catch (error) {
-    // Trả về lỗi từ backend
     return thunkAPI.rejectWithValue(error?.response?.data || 'Login failed')
   }
 })
@@ -24,7 +22,6 @@ export const loginGoogle = createAsyncThunk('user/loginGoogle', async (token, th
     const response = await userService.loginGoogle(token)
     return response
   } catch (error) {
-    // Trả về lỗi từ backend
     return thunkAPI.rejectWithValue(error?.response?.data || 'Login failed')
   }
 })

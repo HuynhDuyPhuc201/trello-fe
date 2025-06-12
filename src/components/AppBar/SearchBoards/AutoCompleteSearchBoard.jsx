@@ -94,24 +94,23 @@ function AutoCompleteSearchBoard() {
           size="small"
           sx={{
             '& .MuiInputLabel-root': {
-              color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
-              borderColor: (theme) =>
-                findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
+              color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
             },
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
-                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                 borderColor: (theme) =>
                   findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
               },
               '&:hover fieldset': {
-                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                 borderColor: (theme) =>
                   findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
               },
               '&.Mui-focused fieldset': {
-                color: (theme) => (findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'),
                 borderColor: (theme) =>
+                  findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
+              },
+              '& input': {
+                color: (theme) =>
                   findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
               },
               '.MuiSvgIcon-root': {

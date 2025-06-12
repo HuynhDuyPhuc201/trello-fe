@@ -38,7 +38,7 @@ import RenderColor from '~/components/renderColor'
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {
     borderRadius: 8,
-    minWidth: 320,
+    minWidth: 350,
     maxWidth: 400,
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
     border: `1px solid ${theme.palette.divider}`,
@@ -236,25 +236,7 @@ function Notifications() {
                     {notification.type === INVITATION_TYPES.BOARD_REQUEST_JOIN && (
                       <Typography variant="body2" sx={{ mb: 1 }}>
                         {notification.message.includes('approved') ? (
-                          <>
-                            Your request to join has been approved.
-                            {/* <Link
-                              to={path.Board.detail.replace(':boardId', notification.boardId)}
-                              underline="hover"
-                              color="primary"
-                              fontWeight="bold"
-                              sx={{
-                                 textDecoration: 'underline',
-                                '&:hover': {
-                                  color: 'secondary.main',
-                                  textDecoration: 'underline'
-                                },
-                                transition: 'all 0.2s ease-in-out'
-                              }}
-                            >
-                              Join Board
-                            </Link> */}
-                          </>
+                          <>Your request to join has been approved.</>
                         ) : (
                           notification.message
                         )}
@@ -279,36 +261,34 @@ function Notifications() {
                       </Box>
                     )}
 
-                    {notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.PENDING && (
-                      <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="small"
-                          startIcon={<DoneIcon />}
-                          onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.ACCEPTED, notification?._id)}
-                          sx={{ borderRadius: 1, textTransform: 'none' }}
-                        >
-                          Accept
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
-                          startIcon={<NotInterestedIcon />}
-                          onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.REJECTED, notification?._id)}
-                          sx={{ borderRadius: 1, textTransform: 'none' }}
-                        >
-                          Decline
-                        </Button>
-                      </Box>
-                    )}
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2, gap: 1 }}>
                       <Typography variant="caption" color="text.secondary">
                         {moment(notification.createdAt).fromNow()}
                       </Typography>
-
+                      {notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.PENDING && (
+                        <Box sx={{ display: 'flex', gap: 1, mt: 2, justifyContent: 'end' }}>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            size="small"
+                            startIcon={<DoneIcon />}
+                            onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.ACCEPTED, notification?._id)}
+                            sx={{ borderRadius: 1, textTransform: 'none' }}
+                          >
+                            Accept
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            size="small"
+                            startIcon={<NotInterestedIcon />}
+                            onClick={() => updateBoardInvitation(BOARD_INVITATION_STATUS?.REJECTED, notification?._id)}
+                            sx={{ borderRadius: 1, textTransform: 'none' }}
+                          >
+                            Decline
+                          </Button>
+                        </Box>
+                      )}
                       {notification?.boardInvitation?.status === BOARD_INVITATION_STATUS?.ACCEPTED && (
                         <Chip
                           icon={<DoneIcon />}

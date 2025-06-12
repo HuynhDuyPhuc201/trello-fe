@@ -4,6 +4,7 @@ import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 import { useUser } from '~/redux/user/userSlice'
 import { path } from '~/config/path'
+import HelmetComponent from '~/components/Helmet'
 
 function Auth() {
   const { pathname } = useLocation()
@@ -17,23 +18,26 @@ function Auth() {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        background: 'url("src/assets/auth/login-register-bg.jpg")',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)'
-      }}
-    >
-      {isLogin && <LoginForm />}
-      {isRegister && <RegisterForm />}
-    </Box>
+    <>
+      <HelmetComponent title="Home" />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          background: 'url("src/assets/auth/login-register-bg.jpg")',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)'
+        }}
+      >
+        {isLogin && <LoginForm />}
+        {isRegister && <RegisterForm />}
+      </Box>
+    </>
   )
 }
 

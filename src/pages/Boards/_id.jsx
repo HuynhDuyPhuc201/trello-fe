@@ -25,10 +25,10 @@ import useBoardSocketEvents from '~/hooks/useBoardSocketEvents'
 
 function Board() {
   const dispatch = useDispatch()
-  const { currentActiveBoard } = useActiveBoard()
+  const { currentActiveBoard, loading } = useActiveBoard()
   const { isShowModalActiveCard } = useActiveCard()
   const { currentUser } = useUser()
-  const [errorAccrss, setErrorAccess] = useState('')
+  const [errorAccess, setErrorAccess] = useState('')
   const board = currentActiveBoard
   const { boardId } = useParams()
 
@@ -37,7 +37,10 @@ function Board() {
   const fetchDetailBoard = async () => {
     try {
       const res = await dispatch(getBoardDetail(boardId))
-      if (res.payload.message) setErrorAccess(res.payload.message)
+      if (res.payload.message) {
+        <Navigate to="/404" />
+        return setErrorAccess(res.payload.message)
+      }
     } catch (error) {
       console.log('error', error)
     }
@@ -176,20 +179,28 @@ function Board() {
       console.log('error', error)
     }
   }
-
   if (!board) {
-    if (errorAccrss === 'This is private board') {
+    if (errorAccess === 'Board not found') {
+      return <Navigate to="/" />
+    }
+    if (errorAccess === 'This is private board') {
       return (
         <PrivateBoardDialog
           open={open}
-          onClose={() => setOpen(false)}
+          onClose={(event, reason) => {
+            if (reason === 'backdropClick' || reason === 'escapeKeyDown') return
+            setOpen(false)
+          }}
           onRequestAccess={onRequestAccess}
-          user={currentUser}
           openSendit={openSendit}
         />
       )
-    } else {
+    }
+    if (loading) {
       return <LoadingSpiner caption="Loading board..." />
+    }
+    if (errorAccess) {
+      return <Navigate to="/404" />
     }
   }
 

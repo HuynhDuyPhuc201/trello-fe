@@ -15,7 +15,7 @@ import { imageAvatar } from '~/config/constants'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import { Link } from 'react-router-dom'
 
-const PrivateBoardDialog = ({ open, onClose, onRequestAccess, user, openSendit }) => {
+const PrivateBoardDialog = ({ open, onClose, onRequestAccess, openSendit }) => {
   const { currentUser } = useUser()
 
   return (
@@ -40,7 +40,7 @@ const PrivateBoardDialog = ({ open, onClose, onRequestAccess, user, openSendit }
                 </ListItemAvatar>
                 <ListItemText
                   primary={currentUser?.displayName}
-                  secondary={`${currentUser?.email} • ${currentUser?.role}`}
+                  secondary={`${currentUser?.email} • client`}
                 />
               </ListItem>
             </Box>

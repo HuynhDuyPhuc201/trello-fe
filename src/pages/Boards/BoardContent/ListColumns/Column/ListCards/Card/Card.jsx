@@ -1,4 +1,4 @@
-import { Box, Checkbox, Card as MuiCard } from '@mui/material'
+import { Avatar, Box, Checkbox, ListItemAvatar, Card as MuiCard } from '@mui/material'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux'
 import { showModalActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { useUser } from '~/redux/user/userSlice'
-import { imageCards } from '~/config/constants'
+import { imageAvatar, imageCards } from '~/config/constants'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth' // icon lịch
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
@@ -107,6 +107,9 @@ function Card({ card }) {
     : '#1c1c1c'
 
   const hoverBgColor = isOverdue ? (isDarkMode ? 'rgba(255,107,107,0.08)' : 'rgba(255,0,0,0.04)') : 'inherit'
+
+  const memberCard = card?.memberIds && board.allUsers.filter((user) => card?.memberIds.includes(user._id))
+
   return (
     <>
       <MuiCard
@@ -150,30 +153,104 @@ function Card({ card }) {
         </CardContent>
         {shouldShowCardActions() && (
           <>
-            <CardActions sx={{ p: '0 4px 8px 4px', position: 'relative', display: 'flex', justifyContent: 'start' }}>
-              {board?.ownerIds?.[0] !== currentUser?._id && !!card?.memberIds?.length && (
-                <Button size="small" startIcon={<GroupIcon />}>
-                  {card?.memberIds?.length}
-                </Button>
-              )}
-              {!!card?.comments?.length && (
-                <Button size="small" startIcon={<CommentIcon />}>
-                  {card?.comments?.length}
-                </Button>
-              )}
-              {!!card?.fileAttach?.length && (
-                <Button size="small" startIcon={<AttachmentIcon />}>
-                  {card?.fileAttach?.length}
-                </Button>
-              )}
-            </CardActions>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                p: '0 4px 8px 8px'
+              }}
+            >
+              {/* LEFT: Action buttons */}
+              <CardActions
+                sx={{
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'start',
+                  alignItems: 'center',
+                  gap: 1,
+                  p: 0
+                }}
+              >
+                {/* {board?.ownerIds?.[0] !== currentUser?._id && !!card?.memberIds?.length && (
+                  <Button
+                    size="small"
+                    startIcon={<GroupIcon />}
+                    sx={{
+                      minWidth: 0,
+                      p: '4px 6px',
+                      lineHeight: 1,
+                      fontSize: '0.75rem',
+                      textTransform: 'none'
+                    }}
+                  >
+                    {card?.memberIds?.length}
+                  </Button>
+                )} */}
+                {!!card?.comments?.length && (
+                  <Button
+                    size="small"
+                    startIcon={<CommentIcon />}
+                    sx={{
+                      minWidth: 0,
+                      p: '4px 6px',
+                      lineHeight: 1,
+                      fontSize: '0.75rem',
+                      textTransform: 'none'
+                    }}
+                  >
+                    {card?.comments?.length}
+                  </Button>
+                )}
+                {!!card?.fileAttach?.length && (
+                  <Button
+                    size="small"
+                    startIcon={<AttachmentIcon />}
+                    sx={{
+                      minWidth: 0,
+                      p: '4px 6px',
+                      lineHeight: 1,
+                      fontSize: '0.75rem',
+                      textTransform: 'none'
+                    }}
+                  >
+                    {card?.fileAttach?.length}
+                  </Button>
+                )}
+              </CardActions>
+
+              {/* RIGHT: Member Avatars */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  pr: 1
+                }}
+              >
+                {memberCard?.map((member, i) => (
+                  <Avatar
+                    key={i}
+                    alt={member.displayName}
+                    src={imageAvatar(member)}
+                    sx={{
+                      width: 30,
+                      height: 30,
+                      fontSize: '0.75rem'
+                    }}
+                  />
+                ))}
+              </Box>
+            </Box>
+
+            {/* Date actions */}
             {(hasStart || hasEnd) && (
               <CardActions
                 sx={{
                   p: '0 4px 8px 16px',
-                  position: 'relative',
                   display: 'flex',
-                  justifyContent: 'start'
+                  justifyContent: 'start',
+                  alignItems: 'center'
                 }}
               >
                 <Button

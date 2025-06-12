@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Tooltip from '@mui/material/Tooltip'
-import Popover from '@mui/material/Popover'
-import Button from '@mui/material/Button'
+import { Box, IconButton, Typography, Tooltip, Popover, Button, TextField, Menu, MenuItem } from '@mui/material'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 import { EMAIL_RULE, FIELD_REQUIRED_MESSAGE, EMAIL_RULE_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
@@ -30,11 +26,9 @@ import { BOARD_INVITATION_STATUS, imageAvatar, INVITATION_TYPES } from '~/config
 import { addJoinRequest, getJoinRequests, updateJoinRequest, useJoinRequests } from '~/redux/request/joinRequestSlice'
 import { useUser } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
-import { getBoardAll, updateMemberBoardBar } from '~/redux/activeBoard/activeBoardSlice'
+import { getBoardAll, getBoardDetail, updateBoard, updateMemberBoardBar } from '~/redux/activeBoard/activeBoardSlice'
 import DoneIcon from '@mui/icons-material/Done'
 import NotInterestedIcon from '@mui/icons-material/NotInterested'
-import { path } from '~/config/path'
-import { Link } from 'react-router-dom'
 function InviteBoardUser({ board }) {
   /**
    * Xử lý Popover để ẩn hoặc hiện một popup nhỏ, tương tự docs để tham khảo ở đây:
@@ -58,8 +52,13 @@ function InviteBoardUser({ board }) {
   } = useForm()
   const submitInviteUserToBoard = async (data) => {
     const { inviteeEmail } = data
+
+    if (board?.ownerIds?.[0] !== currentUser?._id) {
+      return toast.warning("You're not admin this board")
+    }
+
     try {
-      const res = await inviteService.inviteUserToBoard({ inviteeEmail, boardId: board._id })
+      const res = await inviteService.inviteUserToBoard({ inviteeEmail, boardId: board?._id })
 
       // Clear thẻ input sử dụng react-hook-form bằng setValue
       if (res) {
@@ -74,11 +73,11 @@ function InviteBoardUser({ board }) {
   }
 
   useEffect(() => {
-    dispatch(getJoinRequests(board._id))
+    dispatch(getJoinRequests(board?._id))
     if (!currentUser?._id) return
 
     const handleJoinRequest = (newRequest) => {
-      if (newRequest && newRequest?.boardJoinRequest.boardId === board._id) {
+      if (newRequest && newRequest?.boardJoinRequest.boardId === board?._id) {
         dispatch(addJoinRequest(newRequest))
       }
     }
@@ -86,7 +85,7 @@ function InviteBoardUser({ board }) {
     return () => {
       socket.off('receive_join_request', handleJoinRequest)
     }
-  }, [dispatch, currentUser?._id, board._id])
+  }, [dispatch, currentUser?._id, board?._id])
 
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -96,26 +95,26 @@ function InviteBoardUser({ board }) {
     const status = type === 'approve' ? BOARD_INVITATION_STATUS.ACCEPTED : BOARD_INVITATION_STATUS.REJECTED
 
     try {
-      const res = await dispatch(updateJoinRequest({ requestId: request._id, status })).unwrap()
-      dispatch(getJoinRequests(board._id))
+      const res = await dispatch(updateJoinRequest({ requestId: request?._id, status })).unwrap()
+      dispatch(getJoinRequests(board?._id))
       await dispatch(getBoardAll())
 
       const messageText =
         type === 'approve'
-          ? `Your request to join has been approved. Join in ${board.title}.`
+          ? `Your request to join has been approved. Join in ${board?.title}.`
           : 'Your request to join has been denied.'
 
       socket.emit('response_join_request', {
         userId: res.approvedUserId,
         type: INVITATION_TYPES.BOARD_REQUEST_JOIN,
         message: messageText,
-        boardId: board._id
+        boardId: board?._id
       })
 
       if (type === 'approve') {
         await dispatch(updateMemberBoardBar({ user: currentUser, type: 'join' }))
         socket.emit('user_join_board', {
-          boardId: board._id,
+          boardId: board?._id,
           user: currentUser
         })
       }
@@ -139,8 +138,29 @@ function InviteBoardUser({ board }) {
   const handleChangePage = (event, value) => {
     setCurrentPage(value)
   }
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [selectUserId, setSelectUserId] = useState(null)
+  const handleMenuOpen = (event, userId) => {
+    setAnchorEl(event.currentTarget)
+    setSelectUserId(userId)
+  }
 
-  const compare = currentUser._id === board.ownerIds[0]
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+    setSelectUserId(null)
+  }
+
+  const handleDelete = () => {
+    if (selectUserId) {
+      const memberIds = board?.memberIds.filter((member) => member !== selectUserId)
+      dispatch(updateBoard({ boardId: board?._id, memberIds })).unwrap()
+      dispatch(getBoardDetail(board?._id))
+    }
+    socket.emit('update_board', board?._id)
+    socket.emit('notification', board?._id)
+    handleMenuClose()
+  }
+
   return (
     <Box>
       <Badge
@@ -176,6 +196,7 @@ function InviteBoardUser({ board }) {
         onClose={handleTogglePopover}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{ width: '100%' }}
       >
         <form onSubmit={handleSubmit(submitInviteUserToBoard)}>
           <Box sx={{ p: '15px 20px 20px 20px', display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -206,7 +227,7 @@ function InviteBoardUser({ board }) {
         <Box sx={{ mt: 2, px: 2 }}>
           <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Tabs for members and requests">
             <Tab label={`Members (${board?.allUsers.length})`} />
-            {compare && <Tab label={`Request to join (${joinRequests.length})`} />}
+            {currentUser._id === board?.ownerIds[0] && <Tab label={`Request to join (${joinRequests.length})`} />}
           </Tabs>
           <Divider sx={{ mb: 1 }} />
 
@@ -216,72 +237,96 @@ function InviteBoardUser({ board }) {
               {board?.allUsers?.map((member) => {
                 const role = board?.ownerIds?.[0] === member._id
                 return (
-                  <ListItem key={member?._id}>
-                    <ListItemAvatar>
-                      <Avatar alt={member?.displayName} src={imageAvatar(member)} sx={{ width: 40, height: 40 }} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={member?.displayName}
-                      secondary={`${member?.email} • ${role ? 'admin' : 'client'}`}
-                    />
+                  <ListItem key={member?._id} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
+                      <ListItemAvatar>
+                        <Avatar alt={member?.displayName} src={imageAvatar(member)} sx={{ width: 40, height: 40 }} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={member?.displayName}
+                        secondary={`${member?.email} • ${role ? 'admin' : 'client'}`}
+                      />
+                    </Box>
+                    {board?.ownerIds?.[0] === currentUser._id && !role && (
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleMenuOpen(e, member._id)
+                        }}
+                      >
+                        <MoreHorizIcon
+                          sx={{
+                            fontSize: 20,
+                            color: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c')
+                          }}
+                        />
+                      </IconButton>
+                    )}
                   </ListItem>
                 )
               })}
             </List>
           )}
 
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <MenuItem onClick={handleDelete}>Remove from board </MenuItem>
+          </Menu>
+
           {/* Tab 2: Yêu cầu tham gia */}
           {tabIndex === 1 && (
             <>
               <List dense>
-                {paginatedJoinRequest?.map((request, index) => (
-                  <Box key={index}>
-                    <ListItem key={request._id}>
-                      <ListItemAvatar>
-                        <Avatar
-                          alt={request?.user.displayName}
-                          src={imageAvatar(request?.user) || request?.user.avatar}
-                          sx={{ width: 40, height: 40 }}
+                {paginatedJoinRequest?.map((request, index) => {
+                  return (
+                    <Box key={index}>
+                      <ListItem key={request._id}>
+                        <ListItemAvatar>
+                          <Avatar
+                            alt={request?.user.displayName}
+                            src={imageAvatar(request?.user) || request?.user.avatar}
+                            sx={{ width: 40, height: 40 }}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={request?.user?.displayName}
+                          secondary={`${request?.user?.email} • client`}
                         />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={request?.user?.displayName}
-                        secondary={`${request?.user?.email} • ${request?.user?.role}`}
-                      />
-                    </ListItem>
-                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'end' }}>
-                      {request.boardJoinRequest.status === BOARD_INVITATION_STATUS.PENDING && (
-                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'end' }}>
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color="success"
-                            onClick={() => onApproveRejectRequest(request, 'approve')}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            color="error"
-                            onClick={() => onApproveRejectRequest(request, 'reject')}
-                          >
-                            Reject
-                          </Button>
+                      </ListItem>
+                      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'end' }}>
+                        {request.boardJoinRequest.status === BOARD_INVITATION_STATUS.PENDING && (
+                          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'end' }}>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color="success"
+                              onClick={() => onApproveRejectRequest(request, 'approve')}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              color="error"
+                              onClick={() => onApproveRejectRequest(request, 'reject')}
+                            >
+                              Reject
+                            </Button>
+                          </Box>
+                        )}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
+                          {request?.boardJoinRequest.status === BOARD_INVITATION_STATUS.ACCEPTED && (
+                            <Chip icon={<DoneIcon />} label="Accepted" color="success" size="small" />
+                          )}
+                          {request?.boardJoinRequest.status === BOARD_INVITATION_STATUS.REJECTED && (
+                            <Chip icon={<NotInterestedIcon />} label="Rejected" size="small" />
+                          )}
                         </Box>
-                      )}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
-                        {request?.boardJoinRequest.status === BOARD_INVITATION_STATUS.ACCEPTED && (
-                          <Chip icon={<DoneIcon />} label="Accepted" color="success" size="small" />
-                        )}
-                        {request?.boardJoinRequest.status === BOARD_INVITATION_STATUS.REJECTED && (
-                          <Chip icon={<NotInterestedIcon />} label="Rejected" size="small" />
-                        )}
                       </Box>
+                      {index !== joinRequests?.length - 1 && <Divider sx={{ py: 1 }} />}
                     </Box>
-                    {index !== joinRequests?.length - 1 && <Divider sx={{ py: 1 }} />}
-                  </Box>
-                ))}
+                  )
+                })}
               </List>
               {totalPages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', my: 3 }}>

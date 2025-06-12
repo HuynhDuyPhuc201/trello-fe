@@ -25,6 +25,7 @@ import { useDispatch } from 'react-redux'
 import { getBoardAll, updateMemberBoardBar, useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 import socket from '~/sockets'
 import { useUser } from '~/redux/user/userSlice'
+import HelmetComponent from '~/components/Helmet'
 // Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -63,6 +64,8 @@ function Boards() {
     dispatch(updateMemberBoardBar({ user: currentUser, type: 'join' }))
   }
 
+  const boardInvited = boards.filter((board) => board.ownerIds?.[0] !== currentUser._id)
+
   if (!boards) {
     return <LoadingSpiner caption="Loading Boards..." />
   }
@@ -72,6 +75,7 @@ function Boards() {
 
   return (
     <>
+      <HelmetComponent title="Board" />
       <AppBar />
       <Container disableGutters maxWidth="xl">
         <Box sx={{ paddingX: 2, my: 4 }}>
@@ -82,14 +86,6 @@ function Boards() {
                   <SpaceDashboardIcon fontSize="small" />
                   Boards
                 </SidebarItem>
-                {/* <SidebarItem>
-                  <ListAltIcon fontSize="small" />
-                  Templates
-                </SidebarItem> */}
-                {/* <SidebarItem>
-                  <HomeIcon fontSize="small" />
-                  Home
-                </SidebarItem> */}
               </Stack>
               <Divider sx={{ my: 1 }} />
               <Stack direction="column" spacing={1}>
@@ -110,64 +106,68 @@ function Boards() {
 
               {boards && boards?.length > 0 && (
                 <Grid container spacing={2}>
-                  {boards?.map((board) => (
-                    <Grid xs={4} sm={4} md={4} key={board._id}>
-                      <Card
-                        sx={(theme) => ({
-                          width: '250px'
-                        })}
-                      >
-                        {(() => {
-                          const cover = board?.cover
-                          if (!cover) {
-                            return <Box sx={{ height: '100px', background: '#bdbdbd' }} />
-                          }
-                          if (cover.startsWith('l')) {
-                            return <Box sx={{ height: '100px', background: cover }} />
-                          }
-                          return <CardMedia component="img" height="100" image={cover} />
-                        })()}
-
-                        <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                          <Typography gutterBottom variant="h6" component="div">
-                            {board.title || ''}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                  {boards?.map((board) => {
+                    if (board.ownerIds?.[0] === currentUser._id) {
+                      return (
+                        <Grid xs={4} sm={4} md={4} key={board._id}>
+                          <Card
+                            sx={(theme) => ({
+                              width: '250px'
+                            })}
                           >
-                            {board.description || ''}
-                          </Typography>
-                          <Box
-                            component={Link}
-                            to={`${path.Board.detail.replace(':boardId', board._id)}`}
-                            onClick={() => handleClickToBoard(board._id)}
-                            sx={{
-                              mt: 2,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              px: 1.5,
-                              py: 0.75,
-                              fontSize: '0.875rem',
-                              fontWeight: 500,
-                              color: 'primary.main',
-                              border: '1px solid',
-                              borderColor: 'divider',
-                              borderRadius: 2,
-                              textDecoration: 'none',
-                              '&:hover': {
-                                backgroundColor: 'action.hover'
+                            {(() => {
+                              const cover = board?.cover
+                              if (!cover) {
+                                return <Box sx={{ height: '100px', background: '#bdbdbd' }} />
                               }
-                            }}
-                          >
-                            Go to board <ArrowRightIcon fontSize="small" />
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                              if (cover.startsWith('l')) {
+                                return <Box sx={{ height: '100px', background: cover }} />
+                              }
+                              return <CardMedia component="img" height="100" image={cover} />
+                            })()}
+
+                            <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
+                              <Typography gutterBottom variant="h6" component="div">
+                                {board.title || ''}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                              >
+                                {board.description || ''}
+                              </Typography>
+                              <Box
+                                component={Link}
+                                to={`${path.Board.detail.replace(':boardId', board._id)}`}
+                                onClick={() => handleClickToBoard(board._id)}
+                                sx={{
+                                  mt: 2,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 0.5,
+                                  px: 1.5,
+                                  py: 0.75,
+                                  fontSize: '0.875rem',
+                                  fontWeight: 500,
+                                  color: 'primary.main',
+                                  border: '1px solid',
+                                  borderColor: 'divider',
+                                  borderRadius: 2,
+                                  textDecoration: 'none',
+                                  '&:hover': {
+                                    backgroundColor: 'action.hover'
+                                  }
+                                }}
+                              >
+                                Go to board <ArrowRightIcon fontSize="small" />
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      )
+                    }
+                  })}
                 </Grid>
               )}
               {boards?.totalBoards > 0 && (
@@ -188,6 +188,74 @@ function Boards() {
                     )}
                   />
                 </Box>
+              )}
+
+              {boardInvited && boardInvited.length > 0 && (
+                <>
+                  <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3, mt: 5 }}>
+                    INVITED WORKSPACES:
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {boardInvited?.map((board) => (
+                      <Grid xs={4} sm={4} md={4} key={board._id}>
+                        <Card
+                          sx={(theme) => ({
+                            width: '250px'
+                          })}
+                        >
+                          {(() => {
+                            const cover = board?.cover
+                            if (!cover) {
+                              return <Box sx={{ height: '100px', background: '#bdbdbd' }} />
+                            }
+                            if (cover.startsWith('l')) {
+                              return <Box sx={{ height: '100px', background: cover }} />
+                            }
+                            return <CardMedia component="img" height="100" image={cover} />
+                          })()}
+
+                          <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
+                            <Typography gutterBottom variant="h6" component="div">
+                              {board.title || ''}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                            >
+                              {board.description || ''}
+                            </Typography>
+                            <Box
+                              component={Link}
+                              to={`${path.Board.detail.replace(':boardId', board._id)}`}
+                              onClick={() => handleClickToBoard(board._id)}
+                              sx={{
+                                mt: 2,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                px: 1.5,
+                                py: 0.75,
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                color: 'primary.main',
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                borderRadius: 2,
+                                textDecoration: 'none',
+                                '&:hover': {
+                                  backgroundColor: 'action.hover'
+                                }
+                              }}
+                            >
+                              Go to board <ArrowRightIcon fontSize="small" />
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
               )}
             </Grid>
           </Grid>

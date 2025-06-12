@@ -13,6 +13,9 @@ import {
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
 import VpnLockIcon from '@mui/icons-material/VpnLock'
+import { useUser } from '~/redux/user/userSlice'
+import { toast } from 'react-toastify'
+import socket from '~/sockets'
 
 const MENU_STYLES = {
   color: 'white',
@@ -44,6 +47,7 @@ const typeOptions = [
 
 function BoardTypePopover({ board, onUpdateType }) {
   const [anchorEl, setAnchorEl] = useState(null)
+  const { currentUser } = useUser()
 
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -57,8 +61,13 @@ function BoardTypePopover({ board, onUpdateType }) {
   const id = open ? 'board-type-popover' : undefined
 
   const handleSelectType = (type) => {
-    onUpdateType(type)
-    handleClose()
+    if (board.ownerIds[0] === currentUser._id) {
+      onUpdateType(type)
+      handleClose()
+      socket.emit('update_board', board._id)
+    } else {
+      toast.warning("You can't change")
+    }
   }
 
   const labelType = board?.type.charAt(0).toUpperCase() + board?.type.slice(1)

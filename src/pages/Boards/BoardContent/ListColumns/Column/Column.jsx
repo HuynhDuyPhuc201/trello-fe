@@ -97,7 +97,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
 
       const newBoard = {
         ...board,
-        columns: board.columns.map((col) => {
+        columns: board.columns?.map((col) => {
           if (col._id !== createdCard.columnId) return col
 
           const hasPlaceholder = col.cards.some((card) => card.FE_PlaceholderCard)
@@ -310,8 +310,7 @@ function Column({ column, isOpen, onOpenForm, onCloseForm }) {
                   }}
                 >
                   {boards
-                    .filter((b) => b._id !== board._id)
-                    .map((b) => (
+                    .filter((b) => b._id !== board._id)?.map((b) => (
                       <MenuItem key={b._id} value={b._id}>
                         {b.title}
                       </MenuItem>

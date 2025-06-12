@@ -1,10 +1,13 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { getBoardDetail, updateMemberBoardBar } from '~/redux/activeBoard/activeBoardSlice'
 import { clearAndHideCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 
 const useBoardSocketEvents = (socket) => {
   const dispatch = useDispatch()
+
+  const navigation = useNavigate()
 
   const handlers = useMemo(
     () => ({
@@ -16,6 +19,16 @@ const useBoardSocketEvents = (socket) => {
       },
 
       user_leave_board: (leftUser) => dispatch(updateMemberBoardBar({ user: leftUser, type: 'leave' })),
+
+      update_board: async (boardId) => {
+        try {
+          await dispatch(getBoardDetail(boardId)).unwrap()
+        } catch (error) {
+          if (error.message === 'Board not found') {
+            return navigation('/')
+          }
+        }
+      },
 
       create_column: (column) => dispatch(getBoardDetail(column.boardId)),
 

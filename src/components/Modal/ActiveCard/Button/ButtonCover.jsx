@@ -48,7 +48,7 @@ const ButtonCover = (propsCover) => {
             <Box>
               <Typography sx={{ py: 1, fontSize: '12px' }}>Color</Typography>
               <Grid container spacing={1}>
-                {COLORS.map((color, index) => (
+                {COLORS?.map((color, index) => (
                   <Grid key={index} xs={4} md={3}>
                     <Box
                       sx={{ height: '30px', backgroundColor: color, borderRadius: '4px', cursor: 'pointer' }}

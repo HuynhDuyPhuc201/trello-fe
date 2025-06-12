@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { API_ROOT } from '~/config/constants'
+import { getToken, setToken } from '~/config/token'
 import { logoutUserAPI } from '~/redux/user/userSlice'
 import { userService } from '~/services/user.service'
 import { interceptorLoadingElements } from '~/utils/formatters'
@@ -22,6 +23,10 @@ api.interceptors.request.use(
   (config) => {
     // kỹ thuật chặn spam click
     interceptorLoadingElements(true)
+    const token = getToken()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token.accessToken}`
+    }
     return config
   },
   async (error) => {
@@ -39,7 +44,6 @@ api.interceptors.response.use(
   async (error) => {
     interceptorLoadingElements(false)
 
-    console.log('error', error)
     let errorMessage = error?.message
     if (error.response?.data?.message) {
       errorMessage = error.response?.data?.message
@@ -47,34 +51,57 @@ api.interceptors.response.use(
 
     toast.error(errorMessage)
 
-    const originalRequest = error.config
+    hanldeRefreshToken(error)
 
+    return Promise.reject(error)
+  }
+)
+
+const hanldeRefreshToken = async (error) => {
+  const originalRequest = error.config
+
+  if (!import.meta.env.VITE_COOKIE_MODE) {
+    if (error?.response?.data?.message === 'Token is not valid') {
+      try {
+        // Gọi API refresh token
+        const token = getToken()
+        const newAccessToken = await userService.refreshToken(token.refreshToken)
+
+        // Lưu token mới vào localStorage hoặc cookie
+        setToken(newAccessToken.accessToken)
+
+        // Cập nhật token mới vào headers của axios
+        api.defaults.headers.Authorization = `Bearer ${newAccessToken.accessToken}`
+
+        // Gửi lại request ban đầu với token mới
+        error.config.headers.Authorization = `Bearer ${newAccessToken.accessToken}`
+        return api.request(error.config)
+      } catch (refreshError) {
+        toast.error(refreshError?.response?.data?.message || 'Refresh token failed')
+        reduxStore.dispatch(logoutUserAPI(false))
+      }
+    }
+  } else {
     // https://www.thedutchlab.com/inzichten/using-axios-interceptors-for-refreshing-your-api-token
     if (error.response?.data.statusCode === 410 && !originalRequest._retry) {
       originalRequest._retry = true
       try {
         if (!refreshTokenPromise) {
-          refreshTokenPromise = await userService.refreshToken()
-          // Chờ một chút để cookie cập nhật
-          await new Promise((resolve) => setTimeout(resolve, 200))
+          refreshTokenPromise = userService.refreshToken()
         }
-        // api.defaults.headers.Authorization = `Bearer ${refreshTokenPromise}`
-
+        await refreshTokenPromise
         return api(originalRequest)
       } catch (error) {
-        // bất kỳ lỗi nào liên quan đến việc refresh token thì logout user
         reduxStore.dispatch(logoutUserAPI(false))
       } finally {
         refreshTokenPromise = null
       }
     }
-    // dùng toast để hiển thị thông báo tất cả lỗi trừ lỗi 401 (Unauthorized)
-    // 401 là lỗi không có quyền truy cập, thường là do token hết hạn hoặc không có quyền truy cập vào API đó
+
     if (error.response?.status === 401) {
       reduxStore.dispatch(logoutUserAPI(false))
     }
-    return Promise.reject(error)
   }
-)
+}
 
 export default api

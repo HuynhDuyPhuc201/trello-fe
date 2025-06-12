@@ -25,7 +25,7 @@ const ActiveCardComment = memo(() => {
 
   const handleEditComment = useCallback(
     (commentId, valueEditComment) => {
-      const listCommentEdited = currentActiveCard?.comments.map((comment) => {
+      const listCommentEdited = currentActiveCard?.comments?.map((comment) => {
         if (comment._id === commentId) {
           return {
             ...comment,
