@@ -17,6 +17,7 @@ import { useConfirm } from 'material-ui-confirm'
 import { Link, useNavigate } from 'react-router-dom'
 import { path } from '~/config/path'
 import { imageAvatar } from '~/config/constants'
+import { removeToken, removeUser } from '~/config/token'
 
 function Profiles() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -38,7 +39,8 @@ function Profiles() {
         confirmationText: 'Confirm',
         cancellationText: 'Cancel'
       })
-
+      removeToken()
+      removeUser()
       dispatch(logoutUserAPI())
       navigate('/')
     } catch {

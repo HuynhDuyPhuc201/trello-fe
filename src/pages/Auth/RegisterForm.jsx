@@ -41,7 +41,6 @@ function RegisterForm() {
     const { password_confirmation, ...rest } = data
     try {
       const user = userService.register(rest)
-      console.log('user', user)
       if (user) {
         navigate(`/login?verifiedEmail=${user.email}`)
       }
