@@ -78,9 +78,10 @@ function Boards() {
       <HelmetComponent title="Board" />
       <AppBar />
       <Container disableGutters maxWidth="xl">
-        <Box sx={{ paddingX: 2, my: 4 }}>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, my: 4 }}>
           <Grid container spacing={3}>
-            <Grid xs={12} sm={4} lg={2}>
+            {/* Sidebar */}
+            <Grid item xs={12} sm={4} lg={2}>
               <Stack direction="column" spacing={1}>
                 <SidebarItem className="active">
                   <SpaceDashboardIcon fontSize="small" />
@@ -93,54 +94,53 @@ function Boards() {
               </Stack>
             </Grid>
 
-            <Grid xs={12} sm={8} lg={10}>
+            {/* Main content */}
+            <Grid item xs={12} sm={8} lg={10}>
               <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
                 YOUR WORKSPACES:
               </Typography>
 
               {boards?.length === 0 && (
-                <Typography variant="span" sx={{ fontWeight: 'bold', mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 3 }}>
                   No result found!
                 </Typography>
               )}
 
               {boards && boards?.length > 0 && (
                 <Grid container spacing={2}>
-                  {boards?.map((board) => {
+                  {boards.map((board) => {
                     if (board.ownerIds?.[0] === currentUser?._id) {
                       return (
-                        <Grid xs={4} sm={4} md={4} key={board?._id}>
-                          <Card
-                            sx={(theme) => ({
-                              width: '250px'
-                            })}
-                          >
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={board._id}>
+                          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                            {/* Cover image */}
                             {(() => {
                               const cover = board?.cover
-                              if (!cover) {
-                                return <Box sx={{ height: '100px', background: '#bdbdbd' }} />
-                              }
-                              if (cover.startsWith('l')) {
-                                return <Box sx={{ height: '100px', background: cover }} />
-                              }
+                              if (!cover) return <Box sx={{ height: 100, background: '#bdbdbd' }} />
+                              if (cover.startsWith('l')) return <Box sx={{ height: 100, background: cover }} />
                               return <CardMedia component="img" height="100" image={cover} />
                             })()}
 
+                            {/* Card content */}
                             <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                              <Typography gutterBottom variant="h6" component="div">
-                                {board.title || ''}
+                              <Typography variant="h6" gutterBottom>
+                                {board.title}
                               </Typography>
                               <Typography
                                 variant="body2"
                                 color="text.secondary"
-                                sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                                sx={{
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap',
+                                  textOverflow: 'ellipsis'
+                                }}
                               >
-                                {board.description || ''}
+                                {board.description}
                               </Typography>
                               <Box
                                 component={Link}
                                 to={`${path.Board.detail.replace(':boardId', board?._id)}`}
-                                onClick={() => handleClickToBoard(board?._id)}
+                                onClick={() => handleClickToBoard(board._id)}
                                 sx={{
                                   mt: 2,
                                   display: 'inline-flex',
@@ -170,8 +170,18 @@ function Boards() {
                   })}
                 </Grid>
               )}
+
+              {/* Pagination */}
               {boards?.totalBoards > 0 && (
-                <Box sx={{ my: 3, pr: 5, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                <Box
+                  sx={{
+                    my: 3,
+                    pr: { xs: 0, sm: 2 },
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end'
+                  }}
+                >
                   <Pagination
                     size="large"
                     color="secondary"
@@ -190,32 +200,26 @@ function Boards() {
                 </Box>
               )}
 
+              {/* Invited Boards */}
               {boardInvited && boardInvited.length > 0 && (
                 <>
                   <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3, mt: 5 }}>
                     INVITED WORKSPACES:
                   </Typography>
                   <Grid container spacing={2}>
-                    {boardInvited?.map((board) => (
-                      <Grid xs={4} sm={4} md={4} key={board?._id}>
-                        <Card
-                          sx={(theme) => ({
-                            width: '250px'
-                          })}
-                        >
+                    {boardInvited.map((board) => (
+                      <Grid item xs={12} sm={6} md={4} lg={3} key={board._id}>
+                        <Card sx={{ width: '100%' }}>
+                          {/* Cover image */}
                           {(() => {
                             const cover = board?.cover
-                            if (!cover) {
-                              return <Box sx={{ height: '100px', background: '#bdbdbd' }} />
-                            }
-                            if (cover.startsWith('l')) {
-                              return <Box sx={{ height: '100px', background: cover }} />
-                            }
+                            if (!cover) return <Box sx={{ height: 100, background: '#bdbdbd' }} />
+                            if (cover.startsWith('l')) return <Box sx={{ height: 100, background: cover }} />
                             return <CardMedia component="img" height="100" image={cover} />
                           })()}
 
                           <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                            <Typography gutterBottom variant="h6" component="div">
+                            <Typography gutterBottom variant="h6">
                               {board.title || ''}
                             </Typography>
                             <Typography
@@ -227,8 +231,8 @@ function Boards() {
                             </Typography>
                             <Box
                               component={Link}
-                              to={`${path.Board.detail.replace(':boardId', board?._id)}`}
-                              onClick={() => handleClickToBoard(board?._id)}
+                              to={`${path.Board.detail.replace(':boardId', board._id)}`}
+                              onClick={() => handleClickToBoard(board._id)}
                               sx={{
                                 mt: 2,
                                 display: 'inline-flex',

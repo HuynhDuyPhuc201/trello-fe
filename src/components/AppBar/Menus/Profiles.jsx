@@ -10,7 +10,6 @@ import Avatar from '@mui/material/Avatar'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import Settings from '@mui/icons-material/Settings'
-import PersonAdd from '@mui/icons-material/PersonAdd'
 import Logout from '@mui/icons-material/Logout'
 import { logoutUserAPI, useUser } from '~/redux/user/userSlice'
 import { useDispatch } from 'react-redux'
@@ -47,7 +46,6 @@ function Profiles() {
     }
   }
 
-  console.log('currentUser', currentUser)
   return (
     <Box>
       <Tooltip title="Account settings">

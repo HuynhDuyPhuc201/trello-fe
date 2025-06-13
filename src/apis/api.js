@@ -65,7 +65,9 @@ const hanldeRefreshToken = async (error) => {
       try {
         // Gọi API refresh token
         const token = getToken()
+        console.log('token', token)
         const newAccessToken = await userService.refreshToken(token.refreshToken)
+        console.log('newAccessToken', newAccessToken)
 
         // Lưu token mới vào localStorage hoặc cookie
         setToken(newAccessToken.accessToken)
