@@ -166,7 +166,6 @@ function LoginForm() {
 
           <Box
             sx={{
-              // mt: '30px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -175,17 +174,18 @@ function LoginForm() {
               width: '100%'
             }}
           >
-            <GoogleOAuthProvider clientId="864578907923-1d5tlb21b4j69p82t3cmciq4h45b2g42.apps.googleusercontent.com">
-              <GoogleLogin
-                onSuccess={handleLoginGoogle}
-                onError={() => console.log('Login Failed')}
-                theme="outline"
-                size="large"
-                cookiePolicy="single_host_origin"
-              />
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+              <div style={{ width: '100%' }}>
+                <GoogleLogin
+                  onSuccess={handleLoginGoogle}
+                  onError={() => console.log('Login Failed')}
+                  theme="outline"
+                  size="large"
+                  cookiePolicy="single_host_origin"
+                />
+              </div>
             </GoogleOAuthProvider>
           </Box>
-
           <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
             <Typography>New to Trello?</Typography>
             <Link to="/register" style={{ textDecoration: 'none' }}>

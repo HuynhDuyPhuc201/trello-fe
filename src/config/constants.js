@@ -41,8 +41,8 @@ export const USER_ROLES = {
 }
 
 export const imageAvatar = (user) => {
-  if (typeof user.avatar === 'string') {
-    return user.avatar
+  if (typeof user?.avatar === 'string') {
+    return user?.avatar || ''
   }
   return `${API_ROOT}/uploads/avatar/${user?.avatar?.filename}`
 }

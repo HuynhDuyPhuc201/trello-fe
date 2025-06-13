@@ -4,7 +4,6 @@ import { path } from './config/path'
 import Board from './pages/Boards/_id'
 import withAuth from './components/withAuth'
 const AccountVerification = lazy(() => import('./pages/Auth/AccountVerification'))
-// const Home = lazy(() => import('./pages/Home'))
 const Auth = lazy(() => import('./pages/Auth/Auth'))
 const Settings = lazy(() => import('./pages/Settings/Settings'))
 const NotFoundPage = lazy(() => import('./pages/NotFound/NotFoundPage'))

@@ -89,6 +89,7 @@ export const activeBoardSlice = createSlice({
     clearCurrentActiveBoard: (state) => {
       state.currentActiveBoard = null
       state.memberBoardBar = []
+      state.boards = []
     },
 
     // member

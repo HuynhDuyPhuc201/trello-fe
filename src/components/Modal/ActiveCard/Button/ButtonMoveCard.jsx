@@ -52,9 +52,9 @@ const ButtonMoveCard = () => {
     } catch (error) {
       console.log('error', error)
     }
-    dispatch(getBoardDetail(currentActiveBoard.boardId)).unwrap()
+    dispatch(getBoardDetail(currentActiveBoard._id)).unwrap()
     dispatch(clearAndHideCurrentActiveCard())
-    socket.emit('delete_card', currentActiveBoard.boardId)
+    socket.emit('delete_card', currentActiveBoard._id)
     handleClose()
   }
 
@@ -83,7 +83,7 @@ const ButtonMoveCard = () => {
     setIndexCard(IndexCard)
   }, [toColumnId, boardDetail])
 
-  const newBoard = boards.filter((item) => item._id !== currentActiveBoard.boardId)
+  const newBoard = boards.filter((item) => item._id !== currentActiveBoard._id)
   return (
     <>
       <SidebarItem ref={buttonMoveRef} onClick={() => setOpen(!open)}>

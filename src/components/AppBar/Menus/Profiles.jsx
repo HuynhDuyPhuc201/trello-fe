@@ -1,5 +1,5 @@
 import Menu from '@mui/material/Menu'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import Box from '@mui/material/Box'
 
@@ -18,6 +18,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { path } from '~/config/path'
 import { imageAvatar } from '~/config/constants'
 import { removeToken, removeUser } from '~/config/token'
+import { clearCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 
 function Profiles() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -41,8 +42,9 @@ function Profiles() {
       })
       removeToken()
       removeUser()
-      dispatch(logoutUserAPI())
-      navigate('/')
+      await dispatch(logoutUserAPI()).unwrap()
+      dispatch(clearCurrentActiveBoard())
+      navigate(path.Home)
     } catch {
       // null
     }
@@ -82,12 +84,6 @@ function Profiles() {
           </MenuItem>
         </Link>
         <Divider />
-        {/* <MenuItem>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem> */}
         <Link to={path.Settings.Account} style={{ textDecoration: 'none', color: 'inherit' }}>
           <MenuItem>
             <ListItemIcon>

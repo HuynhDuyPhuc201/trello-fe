@@ -77,11 +77,11 @@ function Boards() {
     <>
       <HelmetComponent title="Board" />
       <AppBar />
-      <Container disableGutters maxWidth="xl">
+      <Container disableGutters maxWidth="lg">
         <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, my: 4 }}>
           <Grid container spacing={3}>
             {/* Sidebar */}
-            <Grid item xs={12} sm={4} lg={2}>
+            <Grid item xs={12} sm={4} lg={3}>
               <Stack direction="column" spacing={1}>
                 <SidebarItem className="active">
                   <SpaceDashboardIcon fontSize="small" />
@@ -95,7 +95,7 @@ function Boards() {
             </Grid>
 
             {/* Main content */}
-            <Grid item xs={12} sm={8} lg={10}>
+            <Grid item xs={12} sm={8} lg={9}>
               <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
                 YOUR WORKSPACES:
               </Typography>
@@ -107,68 +107,76 @@ function Boards() {
               )}
 
               {boards && boards?.length > 0 && (
-                <Grid container spacing={2}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: {
+                      xs: '1fr',
+                      sm: 'repeat(2, 1fr)',
+                      md: 'repeat(3, 1fr)'
+                    },
+                    gap: 2
+                  }}
+                >
                   {boards.map((board) => {
                     if (board.ownerIds?.[0] === currentUser?._id) {
                       return (
-                        <Grid item xs={12} sm={6} md={4} lg={3} key={board._id}>
-                          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            {/* Cover image */}
-                            {(() => {
-                              const cover = board?.cover
-                              if (!cover) return <Box sx={{ height: 100, background: '#bdbdbd' }} />
-                              if (cover.startsWith('l')) return <Box sx={{ height: 100, background: cover }} />
-                              return <CardMedia component="img" height="100" image={cover} />
-                            })()}
+                        <Card sx={{ width: '100%' }} key={board._id}>
+                          {/* Cover image */}
+                          {(() => {
+                            const cover = board?.cover
+                            if (!cover) return <Box sx={{ height: 100, background: '#bdbdbd' }} />
+                            if (cover.startsWith('l')) return <Box sx={{ height: 100, background: cover }} />
+                            return <CardMedia component="img" height="100" image={cover} />
+                          })()}
 
-                            {/* Card content */}
-                            <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                              <Typography variant="h6" gutterBottom>
-                                {board.title}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{
-                                  overflow: 'hidden',
-                                  whiteSpace: 'nowrap',
-                                  textOverflow: 'ellipsis'
-                                }}
-                              >
-                                {board.description}
-                              </Typography>
-                              <Box
-                                component={Link}
-                                to={`${path.Board.detail.replace(':boardId', board?._id)}`}
-                                onClick={() => handleClickToBoard(board._id)}
-                                sx={{
-                                  mt: 2,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 0.5,
-                                  px: 1.5,
-                                  py: 0.75,
-                                  fontSize: '0.875rem',
-                                  fontWeight: 500,
-                                  color: 'primary.main',
-                                  border: '1px solid',
-                                  borderColor: 'divider',
-                                  borderRadius: 2,
-                                  textDecoration: 'none',
-                                  '&:hover': {
-                                    backgroundColor: 'action.hover'
-                                  }
-                                }}
-                              >
-                                Go to board <ArrowRightIcon fontSize="small" />
-                              </Box>
-                            </CardContent>
-                          </Card>
-                        </Grid>
+                          {/* Card content */}
+                          <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
+                            <Typography variant="h6" gutterBottom>
+                              {board.title}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap',
+                                textOverflow: 'ellipsis'
+                              }}
+                            >
+                              {board.description}
+                            </Typography>
+                            <Box
+                              component={Link}
+                              to={`${path.Board.detail.replace(':boardId', board?._id)}`}
+                              onClick={() => handleClickToBoard(board._id)}
+                              sx={{
+                                mt: 2,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                px: 1.5,
+                                py: 0.75,
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                color: 'primary.main',
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                borderRadius: 2,
+                                textDecoration: 'none',
+                                '&:hover': {
+                                  backgroundColor: 'action.hover'
+                                }
+                              }}
+                            >
+                              Go to board <ArrowRightIcon fontSize="small" />
+                            </Box>
+                          </CardContent>
+                        </Card>
                       )
                     }
                   })}
-                </Grid>
+                </Box>
               )}
 
               {/* Pagination */}
@@ -206,59 +214,68 @@ function Boards() {
                   <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3, mt: 5 }}>
                     INVITED WORKSPACES:
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: {
+                        xs: '1fr',
+                        sm: 'repeat(2, 1fr)',
+                        md: 'repeat(3, 1fr)',
+                        lg: 'repeat(4, 1fr)'
+                      },
+                      gap: 2
+                    }}
+                  >
                     {boardInvited.map((board) => (
-                      <Grid item xs={12} sm={6} md={4} lg={3} key={board._id}>
-                        <Card sx={{ width: '100%' }}>
-                          {/* Cover image */}
-                          {(() => {
-                            const cover = board?.cover
-                            if (!cover) return <Box sx={{ height: 100, background: '#bdbdbd' }} />
-                            if (cover.startsWith('l')) return <Box sx={{ height: 100, background: cover }} />
-                            return <CardMedia component="img" height="100" image={cover} />
-                          })()}
+                      <Card sx={{ width: '100%' }} key={board._id}>
+                        {/* Cover image */}
+                        {(() => {
+                          const cover = board?.cover
+                          if (!cover) return <Box sx={{ height: 100, background: '#bdbdbd' }} />
+                          if (cover.startsWith('l')) return <Box sx={{ height: 100, background: cover }} />
+                          return <CardMedia component="img" height="100" image={cover} />
+                        })()}
 
-                          <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                            <Typography gutterBottom variant="h6">
-                              {board.title || ''}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-                            >
-                              {board.description || ''}
-                            </Typography>
-                            <Box
-                              component={Link}
-                              to={`${path.Board.detail.replace(':boardId', board._id)}`}
-                              onClick={() => handleClickToBoard(board._id)}
-                              sx={{
-                                mt: 2,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                px: 1.5,
-                                py: 0.75,
-                                fontSize: '0.875rem',
-                                fontWeight: 500,
-                                color: 'primary.main',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                borderRadius: 2,
-                                textDecoration: 'none',
-                                '&:hover': {
-                                  backgroundColor: 'action.hover'
-                                }
-                              }}
-                            >
-                              Go to board <ArrowRightIcon fontSize="small" />
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      </Grid>
+                        <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
+                          <Typography gutterBottom variant="h6">
+                            {board.title || ''}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                          >
+                            {board.description || ''}
+                          </Typography>
+                          <Box
+                            component={Link}
+                            to={`${path.Board.detail.replace(':boardId', board._id)}`}
+                            onClick={() => handleClickToBoard(board._id)}
+                            sx={{
+                              mt: 2,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 0.5,
+                              px: 1.5,
+                              py: 0.75,
+                              fontSize: '0.875rem',
+                              fontWeight: 500,
+                              color: 'primary.main',
+                              border: '1px solid',
+                              borderColor: 'divider',
+                              borderRadius: 2,
+                              textDecoration: 'none',
+                              '&:hover': {
+                                backgroundColor: 'action.hover'
+                              }
+                            }}
+                          >
+                            Go to board <ArrowRightIcon fontSize="small" />
+                          </Box>
+                        </CardContent>
+                      </Card>
                     ))}
-                  </Grid>
+                  </Box>
                 </>
               )}
             </Grid>

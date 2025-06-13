@@ -12,5 +12,12 @@ export default defineConfig({
   // base: './'
   resolve: {
     alias: [{ find: '~', replacement: '/src' }]
+  },
+  server: {
+    historyApiFallback: true, // 👈 Cái này rất quan trọng để fix lỗi F5
+    port: 3000 // Hoặc port khác tuỳ em
+  },
+  build: {
+    outDir: 'dist' // default là dist
   }
 })

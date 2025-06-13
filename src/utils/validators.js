@@ -35,9 +35,9 @@ export const ALLOWED_TYPES = [
 
 
 export const singleFileAttachValidator = (file) => {
-  if (!file) return 'File không hợp lệ'
+  if (!file) return 'File is not valid'
   const maxSize = 20 * 1024 * 1024 // 20MB
-  if (file.size > maxSize) return 'File quá lớn (tối đa 20MB)'
-  if (!ALLOWED_TYPES.includes(file.type)) return 'Định dạng không hỗ trợ'
+  if (file.size > maxSize) return 'File too large (maximum 20MB)'
+  if (!ALLOWED_TYPES.includes(file.type)) return 'Format not supported'
   return null
 }
