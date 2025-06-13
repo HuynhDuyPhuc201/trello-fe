@@ -47,6 +47,7 @@ function Profiles() {
     }
   }
 
+  console.log('currentUser', currentUser)
   return (
     <Box>
       <Tooltip title="Account settings">

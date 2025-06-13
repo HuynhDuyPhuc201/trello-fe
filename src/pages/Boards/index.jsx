@@ -64,7 +64,7 @@ function Boards() {
     dispatch(updateMemberBoardBar({ user: currentUser, type: 'join' }))
   }
 
-  const boardInvited = boards.filter((board) => board.ownerIds?.[0] !== currentUser._id)
+  const boardInvited = boards.filter((board) => board.ownerIds?.[0] !== currentUser?._id)
 
   if (!boards) {
     return <LoadingSpiner caption="Loading Boards..." />
@@ -107,9 +107,9 @@ function Boards() {
               {boards && boards?.length > 0 && (
                 <Grid container spacing={2}>
                   {boards?.map((board) => {
-                    if (board.ownerIds?.[0] === currentUser._id) {
+                    if (board.ownerIds?.[0] === currentUser?._id) {
                       return (
-                        <Grid xs={4} sm={4} md={4} key={board._id}>
+                        <Grid xs={4} sm={4} md={4} key={board?._id}>
                           <Card
                             sx={(theme) => ({
                               width: '250px'
@@ -139,8 +139,8 @@ function Boards() {
                               </Typography>
                               <Box
                                 component={Link}
-                                to={`${path.Board.detail.replace(':boardId', board._id)}`}
-                                onClick={() => handleClickToBoard(board._id)}
+                                to={`${path.Board.detail.replace(':boardId', board?._id)}`}
+                                onClick={() => handleClickToBoard(board?._id)}
                                 sx={{
                                   mt: 2,
                                   display: 'inline-flex',
@@ -197,7 +197,7 @@ function Boards() {
                   </Typography>
                   <Grid container spacing={2}>
                     {boardInvited?.map((board) => (
-                      <Grid xs={4} sm={4} md={4} key={board._id}>
+                      <Grid xs={4} sm={4} md={4} key={board?._id}>
                         <Card
                           sx={(theme) => ({
                             width: '250px'
@@ -227,8 +227,8 @@ function Boards() {
                             </Typography>
                             <Box
                               component={Link}
-                              to={`${path.Board.detail.replace(':boardId', board._id)}`}
-                              onClick={() => handleClickToBoard(board._id)}
+                              to={`${path.Board.detail.replace(':boardId', board?._id)}`}
+                              onClick={() => handleClickToBoard(board?._id)}
                               sx={{
                                 mt: 2,
                                 display: 'inline-flex',

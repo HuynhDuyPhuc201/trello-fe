@@ -83,19 +83,6 @@ function AppBar() {
             </Typography>
           </Box>
         </Link>
-        {/* responsive */}
-        {/* <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
-          <Templates findColor={findColor} />
-          <Button
-            startIcon={<LibraryAddIcon />}
-            sx={{
-              color: (theme) =>
-                findColor?.text ? findColor?.text : theme.palette.mode === 'dark' ? '#fff' : '#1c1c1c'
-            }}
-          >
-            Create
-          </Button>
-        </Box> */}
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <AutoCompleteSearchBoard />

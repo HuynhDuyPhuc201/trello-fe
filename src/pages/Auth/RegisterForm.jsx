@@ -39,9 +39,18 @@ function RegisterForm() {
 
   const submitRegister = async (data) => {
     const { password_confirmation, ...rest } = data
-    toast
-      .promise(userService.register(rest), { pending: 'Register is in progress' })
-      .then((user) => navigate(`/login?verifiedEmail=${user.email}`))
+    try {
+      const user = userService.register(rest)
+      console.log('user', user)
+      if (user) {
+        navigate(`/login?verifiedEmail=${user.email}`)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+    // toast
+    //   .promise(userService.register(rest), { pending: 'Register is in progress' })
+    //   .then((user) => navigate(`/login?verifiedEmail=${user.email}`))
   }
   return (
     <form onSubmit={handleSubmit(submitRegister)}>

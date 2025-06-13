@@ -56,6 +56,7 @@ function LoginForm() {
     const token = credentialResponse.credential
     try {
       const res = await dispatch(loginGoogle({ token })).unwrap()
+      console.log('infor user google', res)
       if (res) navigate(path.Board.index)
     } catch (error) {
       toast.error(error)
