@@ -40,29 +40,32 @@ function RegisterForm() {
   const submitRegister = async (data) => {
     const { password_confirmation, ...rest } = data
     try {
-      const user = userService.register(rest)
+      const user = await userService.register(rest)
       if (user) {
         navigate(`/login?verifiedEmail=${user.email}`)
       }
     } catch (error) {
       console.log('error', error)
+      toast.error('Registration failed. Please try again.')
     }
-    // toast
-    //   .promise(userService.register(rest), { pending: 'Register is in progress' })
-    //   .then((user) => navigate(`/login?verifiedEmail=${user.email}`))
   }
+
   return (
     <form onSubmit={handleSubmit(submitRegister)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '6em' }}>
-          <Box
-            sx={{
-              margin: '1em',
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 1
-            }}
-          >
+        <MuiCard
+          sx={{
+            minWidth: 380,
+            maxWidth: 420,
+            mx: 'auto',
+            mt: 10,
+            px: 3,
+            py: 4,
+            borderRadius: 3,
+            boxShadow: 3
+          }}
+        >
+          <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
             <Avatar sx={{ bgcolor: 'primary.main' }}>
               <LockIcon />
             </Avatar>
@@ -70,98 +73,98 @@ function RegisterForm() {
               <TrelloIcon />
             </Avatar>
           </Box>
-          <Box
-            sx={{
-              marginTop: '1em',
-              display: 'flex',
-              justifyContent: 'center',
-              color: (theme) => theme.palette.grey[500]
-            }}
-          >
+
+          <Box textAlign="center" mt={1} color="text.secondary">
             Author: DuyPhucDev
           </Box>
-          <Box sx={{ padding: '0 1em 1em 1em' }}>
-            <Box sx={{ marginTop: '1em' }}>
-              <TextField
-                autoFocus
-                fullWidth
-                label="Enter Email..."
-                type="text"
-                variant="outlined"
-                error={!!errors.email}
-                {...register('email', {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: { value: EMAIL_RULE, message: EMAIL_RULE_MESSAGE }
-                })}
-              />
-              <FieldErrorAlert errors={errors} fieldName={'email'} />
-            </Box>
-            <Box sx={{ marginTop: '1em', position: 'relative' }}>
-              <TextField
-                fullWidth
-                label="Enter Password..."
-                type={showPass ? 'text' : 'password'}
-                autoComplete="current-password"
-                variant="outlined"
-                error={!!errors.password}
-                {...register('password', {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: { value: PASSWORD_RULE, message: PASSWORD_RULE_MESSAGE }
-                })}
-              />
-              {
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    right: '1em',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setShowPass(!showPass)}
-                >
-                  {showPass ? <VisibilityIcon fontSize="small" /> : <VisibilityOffIcon fontSize="small" />}
-                </Box>
-              }
-              <FieldErrorAlert errors={errors} fieldName={'password'} />
-            </Box>
-            <Box sx={{ marginTop: '1em', position: 'relative' }}>
-              <TextField
-                fullWidth
-                label="Enter Password Confirmation..."
-                type={showPassConfirm ? 'text' : 'password'}
-                variant="outlined"
-                error={!!errors.password_confirmation}
-                {...register('password_confirmation', {
-                  validate: (value) => value === watch('password') || PASSWORD_CONFIRMATION_MESSAGE
-                })}
-              />
-              {
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    right: '1em',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setShowPassConfirm(!showPassConfirm)}
-                >
-                  {showPassConfirm ? <VisibilityIcon fontSize="small" /> : <VisibilityOffIcon fontSize="small" />}
-                </Box>
-              }
-              <FieldErrorAlert errors={errors} fieldName={'password_confirmation'} />
-            </Box>
+
+          <Box mt={3}>
+            <TextField
+              autoFocus
+              fullWidth
+              label="Enter Email..."
+              variant="outlined"
+              error={!!errors.email}
+              {...register('email', {
+                required: FIELD_REQUIRED_MESSAGE,
+                pattern: { value: EMAIL_RULE, message: EMAIL_RULE_MESSAGE }
+              })}
+            />
+            <FieldErrorAlert errors={errors} fieldName="email" />
           </Box>
-          <CardActions sx={{ padding: '0 1em 1em 1em' }}>
+
+          <Box mt={2} position="relative">
+            <TextField
+              fullWidth
+              label="Enter Password..."
+              type={showPass ? 'text' : 'password'}
+              variant="outlined"
+              autoComplete="new-password"
+              error={!!errors.password}
+              {...register('password', {
+                required: FIELD_REQUIRED_MESSAGE,
+                pattern: { value: PASSWORD_RULE, message: PASSWORD_RULE_MESSAGE }
+              })}
+            />
+            <Box
+              onClick={() => setShowPass(!showPass)}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                right: '1em',
+                transform: 'translateY(-50%)',
+                cursor: 'pointer'
+              }}
+            >
+              {showPass ? <VisibilityIcon fontSize="small" /> : <VisibilityOffIcon fontSize="small" />}
+            </Box>
+            <FieldErrorAlert errors={errors} fieldName="password" />
+          </Box>
+
+          <Box mt={2} position="relative">
+            <TextField
+              fullWidth
+              label="Confirm Password..."
+              type={showPassConfirm ? 'text' : 'password'}
+              variant="outlined"
+              error={!!errors.password_confirmation}
+              {...register('password_confirmation', {
+                validate: (value) => value === watch('password') || PASSWORD_CONFIRMATION_MESSAGE
+              })}
+            />
+            <Box
+              onClick={() => setShowPassConfirm(!showPassConfirm)}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                right: '1em',
+                transform: 'translateY(-50%)',
+                cursor: 'pointer'
+              }}
+            >
+              {showPassConfirm ? <VisibilityIcon fontSize="small" /> : <VisibilityOffIcon fontSize="small" />}
+            </Box>
+            <FieldErrorAlert errors={errors} fieldName="password_confirmation" />
+          </Box>
+
+          <CardActions sx={{ mt: 3 }}>
             <Button type="submit" variant="contained" color="primary" size="large" fullWidth>
               Register
             </Button>
           </CardActions>
-          <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Typography>Already have an account?</Typography>
+
+          <Box mt={2} textAlign="center">
+            <Typography variant="body2">Already have an account?</Typography>
             <Link to="/login" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Log in!</Typography>
+              <Typography
+                sx={{
+                  color: 'primary.main',
+                  fontWeight: 500,
+                  '&:hover': { color: '#ffbb39' }
+                }}
+              >
+                Log in!
+              </Typography>
             </Link>
           </Box>
         </MuiCard>

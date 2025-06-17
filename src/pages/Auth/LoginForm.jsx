@@ -69,15 +69,18 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit(submitLogIn)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '6em' }}>
-          <Box
-            sx={{
-              margin: '1em',
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 1
-            }}
-          >
+        <MuiCard
+          sx={{
+            minWidth: 400,
+            maxWidth: 400,
+            mx: 'auto',
+            mt: 10,
+            borderRadius: 3,
+            boxShadow: 6,
+            p: 3
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 1 }}>
             <Avatar sx={{ bgcolor: 'primary.main' }}>
               <LockIcon />
             </Avatar>
@@ -85,111 +88,96 @@ function LoginForm() {
               <TrelloIcon />
             </Avatar>
           </Box>
-          <Box
-            sx={{
-              marginTop: '1em',
-              display: 'flex',
-              justifyContent: 'center',
-              color: (theme) => theme.palette.grey[500]
-            }}
-          >
-            Author: DuyPhucDev
-          </Box>
-          <Box
-            sx={{
-              marginTop: '1em',
-              display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              padding: '0 1em'
-            }}
-          >
-            {registerEmail && (
-              <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-                Your email&nbsp;
-                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
-                  {registerEmail}
-                </Typography>
-                &nbsp;has been verified.
-                <br />
-                Now you can login to enjoy our services! Have a good day!
-              </Alert>
-            )}
-            {verifiedEmail && (
-              <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-                An email has been sent to&nbsp;
-                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>
-                  hdphuc201@gmail.com
-                </Typography>
-                <br />
-                Please check and verify your account before logging in!
-              </Alert>
-            )}
-          </Box>
-          <Box sx={{ padding: '0 1em 1em 1em' }}>
-            <Box sx={{ marginTop: '1em' }}>
-              <TextField
-                autoFocus
-                fullWidth
-                label="Enter Email..."
-                type="text"
-                variant="outlined"
-                error={!!errors.email}
-                {...register('email', {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: { value: EMAIL_RULE, message: EMAIL_RULE_MESSAGE }
-                })}
-              />
-              <FieldErrorAlert errors={errors} fieldName={'email'} />
-            </Box>
-            <Box sx={{ marginTop: '1em' }}>
-              <TextField
-                fullWidth
-                label="Enter Password..."
-                type="password"
-                autoComplete="current-password"
-                variant="outlined"
-                error={!!errors.password}
-                {...register('password', {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: { value: PASSWORD_RULE, message: PASSWORD_RULE_MESSAGE }
-                })}
-              />
-              <FieldErrorAlert errors={errors} fieldName={'password'} />
-            </Box>
-          </Box>
-          <CardActions sx={{ padding: '0 1em 1em 1em' }}>
-            <Button type="submit" variant="contained" color="primary" size="large" fullWidth>
-              Login
-            </Button>
-          </CardActions>
 
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 3,
-              padding: '0 1em 1em 1em',
-              width: '100%'
-            }}
+          <Typography variant="h6" textAlign="center" color="text.secondary" mb={2}>
+            Author: DuyPhucDev
+          </Typography>
+
+          {registerEmail && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Your email&nbsp;
+              <Typography component="span" fontWeight="bold" color="primary">
+                {registerEmail}
+              </Typography>
+              &nbsp;has been verified.
+              <br />
+              Now you can login to enjoy our services!
+            </Alert>
+          )}
+
+          {verifiedEmail && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              An email has been sent to&nbsp;
+              <Typography component="span" fontWeight="bold" color="primary">
+                hdphuc201@gmail.com
+              </Typography>
+              <br />
+              Please check and verify your account.
+            </Alert>
+          )}
+
+          <TextField
+            fullWidth
+            label="Email"
+            variant="outlined"
+            margin="normal"
+            autoFocus
+            error={!!errors.email}
+            {...register('email', {
+              required: FIELD_REQUIRED_MESSAGE,
+              pattern: { value: EMAIL_RULE, message: EMAIL_RULE_MESSAGE }
+            })}
+          />
+          <FieldErrorAlert errors={errors} fieldName="email" />
+
+          <TextField
+            fullWidth
+            label="Password"
+            variant="outlined"
+            type="password"
+            margin="normal"
+            autoComplete="current-password"
+            error={!!errors.password}
+            {...register('password', {
+              required: FIELD_REQUIRED_MESSAGE,
+              pattern: { value: PASSWORD_RULE, message: PASSWORD_RULE_MESSAGE }
+            })}
+          />
+          <FieldErrorAlert errors={errors} fieldName="password" />
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth
+            sx={{ mt: 2, borderRadius: 2 }}
           >
+            Login
+          </Button>
+
+          <Box mt={2}>
             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-              <div style={{ width: '100%' }}>
-                <GoogleLogin
-                  onSuccess={handleLoginGoogle}
-                  onError={() => console.log('Login Failed')}
-                  theme="outline"
-                  size="large"
-                  cookiePolicy="single_host_origin"
-                />
-              </div>
+              <GoogleLogin
+                onSuccess={handleLoginGoogle}
+                onError={() => console.log('Login Failed')}
+                theme="outline"
+                size="large"
+                width="100%"
+              />
             </GoogleOAuthProvider>
           </Box>
-          <Box sx={{ padding: '0 1em 1em 1em', textAlign: 'center' }}>
-            <Typography>New to Trello?</Typography>
+
+          <Box mt={3} textAlign="center">
+            <Typography variant="body2">New to Trello?</Typography>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
+              <Typography
+                variant="body2"
+                color="primary"
+                sx={{ fontWeight: 'bold', mt: 1, '&:hover': { color: '#fdba26' } }}
+              >
+                Create an account!
+              </Typography>
             </Link>
           </Box>
         </MuiCard>
