@@ -11,12 +11,10 @@ const AccountVerification = () => {
 
   const verifyEmail = useCallback(async () => {
     try {
-      await userService.verifyEmail({ email, token })
-      setVarified(true)
+      const res = await userService.verifyEmail({ email, token })
+      if (res) setVarified(true)
     } catch (error) {
       console.error('Error verifying email:', error)
-    } finally {
-      setVarified(false)
     }
   }, [email, token])
   useEffect(() => {

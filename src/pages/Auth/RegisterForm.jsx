@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
 import LockIcon from '@mui/icons-material/Lock'
 import Typography from '@mui/material/Typography'
-import { Card as MuiCard } from '@mui/material'
+import { IconButton, InputAdornment, Card as MuiCard } from '@mui/material'
 import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
 import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
@@ -105,23 +105,20 @@ function RegisterForm() {
                 required: FIELD_REQUIRED_MESSAGE,
                 pattern: { value: PASSWORD_RULE, message: PASSWORD_RULE_MESSAGE }
               })}
-            />
-            <Box
-              onClick={() => setShowPass(!showPass)}
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                right: '1em',
-                transform: 'translateY(-50%)',
-                cursor: 'pointer'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPass(!showPass)} edge="end" size="small">
+                      {showPass ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                )
               }}
-            >
-              {showPass ? <VisibilityIcon fontSize="small" /> : <VisibilityOffIcon fontSize="small" />}
-            </Box>
+            />
             <FieldErrorAlert errors={errors} fieldName="password" />
           </Box>
 
-          <Box mt={2} position="relative">
+          <Box mt={2}>
             <TextField
               fullWidth
               label="Confirm Password..."
@@ -131,19 +128,16 @@ function RegisterForm() {
               {...register('password_confirmation', {
                 validate: (value) => value === watch('password') || PASSWORD_CONFIRMATION_MESSAGE
               })}
-            />
-            <Box
-              onClick={() => setShowPassConfirm(!showPassConfirm)}
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                right: '1em',
-                transform: 'translateY(-50%)',
-                cursor: 'pointer'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassConfirm(!showPassConfirm)} edge="end" size="small">
+                      {showPassConfirm ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                )
               }}
-            >
-              {showPassConfirm ? <VisibilityIcon fontSize="small" /> : <VisibilityOffIcon fontSize="small" />}
-            </Box>
+            />
             <FieldErrorAlert errors={errors} fieldName="password_confirmation" />
           </Box>
 

@@ -39,6 +39,7 @@
     "lucide-react": "^0.511.0",
     "material-ui-confirm": "^3.0.9",
     "moment": "^2.30.1",
+    "nodemailer": "^7.0.3",
     "randomcolor": "^0.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

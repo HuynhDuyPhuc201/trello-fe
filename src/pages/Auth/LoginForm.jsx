@@ -6,7 +6,6 @@ import LockIcon from '@mui/icons-material/Lock'
 import Typography from '@mui/material/Typography'
 import { Alert, Card as MuiCard } from '@mui/material'
 import { ReactComponent as TrelloIcon } from '~/assets/trello.svg'
-import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
 import { useForm } from 'react-hook-form'
@@ -109,7 +108,7 @@ function LoginForm() {
             <Alert severity="info" sx={{ mb: 2 }}>
               An email has been sent to&nbsp;
               <Typography component="span" fontWeight="bold" color="primary">
-                hdphuc201@gmail.com
+                {verifiedEmail}
               </Typography>
               <br />
               Please check and verify your account.
