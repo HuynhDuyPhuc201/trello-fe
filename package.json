@@ -10,9 +10,11 @@
   "scripts": {
     "dev": "cross-env VITE_BUILD_MODE=dev vite --port 3000 ",
     "eslint": "npx eslint . --ext .ts,.tsx,.js,.jsx --fix",
-    "build": "cross-env VITE_BUILD_MODE=production vite build --base=./",
+    "build": "cross-env VITE_BUILD_MODE=production vite build",
+    "build:prod": "cross-env VITE_BUILD_MODE=production vite build --base=/",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve:prod": "npm run build && serve -s dist -l 3000"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
@@ -65,6 +67,7 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "serve": "^14.2.4",
     "vite": "^4.3.2"
   }
 }
