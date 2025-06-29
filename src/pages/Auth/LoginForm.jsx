@@ -159,7 +159,7 @@ function LoginForm() {
             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
               <GoogleLogin
                 onSuccess={handleLoginGoogle}
-                onError={() => console.log('Login Failed')}
+                onError={() => toast.error('Login Failed')}
                 theme="outline"
                 size="large"
                 width="100%"

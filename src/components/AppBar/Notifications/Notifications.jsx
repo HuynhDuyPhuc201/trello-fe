@@ -130,7 +130,7 @@ function Notifications() {
         dispatch(clearNotification())
       }
     } catch (error) {
-      console.log('error', error)
+      toast.error(error?.message || 'Failed to update boardInvite. Please try again later.')
     }
   }
 

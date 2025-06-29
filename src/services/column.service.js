@@ -6,9 +6,6 @@ export const columnService = {
   async create(newColumnData) {
     return await api.post(ENDPOINT, newColumnData)
   },
-  // async get(column) {
-  //   return await api.get(ENDPOINT, column)
-  // },
   async update(columnId, updateData) {
     return await api.put(`${ENDPOINT}/${columnId}`, updateData)
   },

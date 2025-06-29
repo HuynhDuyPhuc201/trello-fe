@@ -15,7 +15,6 @@ export const CustomGoogleButton = () => {
   const handleLoginGoogle = useGoogleLogin({
     onSuccess: async (res) => {
       const { code } = res
-      console.log(res)
       try {
         const res = await dispatch(loginGoogle({ token: code })).unwrap()
         if (res.token) setToken(res.token)

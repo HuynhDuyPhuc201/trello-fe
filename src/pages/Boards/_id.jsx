@@ -42,7 +42,7 @@ function Board() {
         return setErrorAccess(res.payload.message)
       }
     } catch (error) {
-      console.log('error', error)
+      toast.error(error?.message || 'Failed to fetch board details. Please try again later.')
     }
   }
   useEffect(() => {
@@ -176,7 +176,7 @@ function Board() {
         setOpenSendit(true)
       }
     } catch (error) {
-      console.log('error', error)
+      toast.error(error?.message || 'Failed to create join request. Please try again later.')
     }
   }
   if (!board) {

@@ -1,8 +1,7 @@
-import { Avatar, Box, Checkbox, ListItemAvatar, Card as MuiCard } from '@mui/material'
+import { Avatar, Box, Checkbox, Card as MuiCard } from '@mui/material'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
-import GroupIcon from '@mui/icons-material/Group'
 import CommentIcon from '@mui/icons-material/Comment'
 import AttachmentIcon from '@mui/icons-material/Attachment'
 import Typography from '@mui/material/Typography'
@@ -13,7 +12,6 @@ import { CSS } from '@dnd-kit/utilities'
 import { useDispatch } from 'react-redux'
 import { showModalActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { useActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
-import { useUser } from '~/redux/user/userSlice'
 import { imageAvatar, imageCards } from '~/config/constants'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth' // icon lịch
 import dayjs from 'dayjs'
@@ -28,7 +26,6 @@ function Card({ card }) {
   })
   const { isMember } = useBoardMember()
 
-  const { currentUser } = useUser()
   const { currentActiveBoard } = useActiveBoard()
   const board = currentActiveBoard
   const dispatch = useDispatch()

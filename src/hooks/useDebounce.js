@@ -6,7 +6,7 @@ export const useDebounce = (value, delay = 1000) => {
   useEffect(() => {
     if (!value) {
       setDebouncedValue('')
-      return // Không chạy setTimeout nếu giá trị rỗng
+      return
     }
     const handler = setTimeout(() => {
       setDebouncedValue(value)

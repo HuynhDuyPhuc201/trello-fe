@@ -146,7 +146,7 @@ function ActiveCard() {
         socket.emit('delete_card', res.boardId)
       }
     } catch (error) {
-      console.log('error', error)
+      toast.error(error?.message || 'Failed to delete card. Please try again later.')
     }
   }
 

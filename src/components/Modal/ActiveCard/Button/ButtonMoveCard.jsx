@@ -12,6 +12,7 @@ import {
 import { useDispatch } from 'react-redux'
 import { cardService } from '~/services/card.service'
 import socket from '~/sockets'
+import { toast } from 'react-toastify'
 
 const ButtonMoveCard = () => {
   const { boards, currentActiveBoard } = useActiveBoard()
@@ -50,7 +51,7 @@ const ButtonMoveCard = () => {
         dispatch(updateCurrentActiveCard(updatedCard)).unwrap()
       }
     } catch (error) {
-      console.log('error', error)
+      toast.error(error?.message || 'Failed to move card. Please try again later.')
     }
     dispatch(getBoardDetail(currentActiveBoard._id)).unwrap()
     dispatch(clearAndHideCurrentActiveCard())
@@ -63,7 +64,7 @@ const ButtonMoveCard = () => {
       const res = await boardService.getDetails(id)
       setBoardDetail(res)
     } catch (error) {
-      console.log('error', error)
+      toast.error(error?.message || 'Failed to fetch board details. Please try again later.')
     }
   }
 

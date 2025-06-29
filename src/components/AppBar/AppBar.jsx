@@ -88,7 +88,6 @@ function AppBar() {
         <AutoCompleteSearchBoard />
         <ModeSelect />
 
-        {/* Notifications */}
         <Notifications />
 
         <Tooltip title="HelpOutlineIcon">

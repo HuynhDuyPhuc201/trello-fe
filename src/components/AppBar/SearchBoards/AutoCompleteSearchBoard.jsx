@@ -10,6 +10,7 @@ import { path } from '~/config/path'
 import { useDebounce } from '~/hooks/useDebounce'
 import { Box } from '@mui/material'
 import RenderColor from '~/components/renderColor'
+import { toast } from 'react-toastify'
 
 function AutoCompleteSearchBoard() {
   const navigate = useNavigate()
@@ -41,7 +42,7 @@ function AutoCompleteSearchBoard() {
         const res = await boardService.getAll(`?${searchParams}`)
         setBoards(res.boards)
       } catch (error) {
-        console.log('error', error)
+        toast.error(error?.message || 'Failed to fetch boards. Please try again later.')
       } finally {
         setLoading(false)
       }

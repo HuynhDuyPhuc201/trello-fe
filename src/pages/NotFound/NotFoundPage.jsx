@@ -5,7 +5,7 @@ import particles404Config from './tsParticles.js'
 import planet from '../../assets/planet.svg'
 import astronaut from '../../assets/astronaut.svg'
 import { Link } from 'react-router-dom'
-import './style.css' // Không import bundle js
+import './style.css'
 
 const NotFoundPage = () => {
   useEffect(() => {

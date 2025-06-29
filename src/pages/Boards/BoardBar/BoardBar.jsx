@@ -7,7 +7,7 @@ import BoardUserGroup from './BoardUserGroup'
 import InviteBoardUser from './InviteBoardUser'
 import BoardTypePopover from '~/components/BoardBar/BoardTypePopover'
 import RenderColor from '~/components/renderColor'
-import MenuIcon from '@mui/icons-material/Menu' // Nếu chưa import
+import MenuIcon from '@mui/icons-material/Menu'
 import { useUser } from '~/redux/user/userSlice'
 import { toast } from 'react-toastify'
 import socket from '~/sockets'

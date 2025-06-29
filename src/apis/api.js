@@ -16,12 +16,12 @@ export const injectStore = (store) => (reduxStore = store)
 const api = axios.create({
   baseURL: API_ROOT,
   timeout: 1000 * 60 * 10,
-  withCredentials: true // ✅ Đảm bảo luôn gửi cookie trong request
+  withCredentials: true
 })
 
 api.interceptors.request.use(
   (config) => {
-    // kỹ thuật chặn spam click
+    // prevent spam click
     interceptorLoadingElements(true)
     const token = getToken()
     if (token) {
@@ -63,11 +63,9 @@ const hanldeRefreshToken = async (error) => {
   if (!import.meta.env.VITE_COOKIE_MODE) {
     if (error?.response?.data?.message === 'Token is not valid') {
       try {
-        // Gọi API refresh token
         const token = getToken()
         const newAccessToken = await userService.refreshToken(token.refreshToken)
 
-        // Lưu token mới vào localStorage hoặc cookie
         setToken(newAccessToken.accessToken)
 
         // Cập nhật token mới vào headers của axios

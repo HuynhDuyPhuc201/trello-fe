@@ -45,7 +45,6 @@ function RegisterForm() {
         navigate(`/login?verifiedEmail=${user.email}`)
       }
     } catch (error) {
-      console.log('error', error)
       toast.error('Registration failed. Please try again.')
     }
   }
